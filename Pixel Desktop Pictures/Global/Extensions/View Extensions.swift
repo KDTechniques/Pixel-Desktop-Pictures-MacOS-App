@@ -8,10 +8,5 @@
 import SwiftUICore
 
 extension View {
-    func previewViewModifier(_ setPadding: Bool = true) -> some View {
-        self
-            .padding(setPadding ? 20 : 0)
-            .frame(width: 375)
-            .background(.white)
-    }
+    
 }

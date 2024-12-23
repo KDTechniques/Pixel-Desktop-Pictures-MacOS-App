@@ -35,17 +35,9 @@ struct ImagePreviewView: View {
             
             // Set Desktop Picture Button
             VStack {
-                Button {
+                ButtonView(title: "Set Desktop Picture", type: .regular) {
                     // set desktop pictire action goes here...
-                } label: {
-                    Text("Set Desktop Picture")
-                        .foregroundStyle(Color.buttonForeground)
-                        .fontWeight(.medium)
                 }
-                .buttonStyle(.plain)
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .background(Color.buttonBackground, in: .rect(cornerRadius: 5))
                 
                 // Author and Download Button
                 HStack {

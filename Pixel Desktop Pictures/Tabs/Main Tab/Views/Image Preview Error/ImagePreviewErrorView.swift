@@ -11,7 +11,6 @@ struct ImagePreviewErrorView: View {
     var body: some View {
         VStack {
             HeaderView()
-                .padding()
             
             // Error Message
             VStack(spacing: 2) {
@@ -20,28 +19,19 @@ struct ImagePreviewErrorView: View {
                 
                 Text("Make sure the Mac is connected to the internet.")
             }
-            .padding(.horizontal)
             .padding(.vertical, 8)
             
             // Retry Button
-            Button {
+            ButtonView(title: "Retry", type: .regular) {
                 // set desktop pictire action goes here...
-            } label: {
-                Text("Retry")
-                    .foregroundStyle(Color.buttonForeground)
-                    .fontWeight(.medium)
             }
-            .buttonStyle(.plain)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color.buttonBackground, in: .rect(cornerRadius: 5))
-            .padding()
         }
+        .padding()
     }
 }
 
 #Preview("Image Preview Error View") {
     ImagePreviewErrorView()
         .frame(width: 375)
-        .background(.white)
+        .background(Color.windowBackground)
 }

@@ -120,17 +120,9 @@ struct AddAPIAccessKeyView: View {
                 }
             
             // Connect Button
-            Button {
+            ButtonView(title: "Connect", type: .popup) {
                 // set desktop pictire action goes here...
-            } label: {
-                Text("Connect")
-                    .foregroundStyle(Color.popupButtonForeground)
-                    .fontWeight(.medium)
             }
-            .buttonStyle(.plain)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color.popupButtonBackground, in: .rect(cornerRadius: 5))
             .disabled(apiAccessKeyTextfieldText.isEmpty ? true : false)
         }
         .padding()

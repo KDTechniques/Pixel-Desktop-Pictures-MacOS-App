@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HeaderView: View {
+    // MARK: - BODY
     var body: some View {
         HStack {
             LogoNTitleView()
@@ -17,9 +18,10 @@ struct HeaderView: View {
     }
 }
 
+// MARK: - PREVIEWS
 #Preview("Header View") {
     HeaderView()
         .padding()
-        .frame(width: 375)
+        .frame(width: Utilities.allWindowWidth)
         .background(Color.windowBackground)
 }

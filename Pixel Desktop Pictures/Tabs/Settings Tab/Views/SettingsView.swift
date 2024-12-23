@@ -92,18 +92,10 @@ struct SettingsView: View {
                         status.systemImage
                     }
                     
-                    // API Key insertion
-                    Button {
+                    // API Key Insertion
+                    ButtonView(title: status.buttonTitle, type: .regular) {
                         isPresentedPopup = true
-                    } label: {
-                        Text(status.buttonTitle)
-                            .foregroundStyle(Color.buttonForeground)
-                            .fontWeight(.medium)
                     }
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(Color.buttonBackground, in: .rect(cornerRadius: 5))
                 }
                 .padding(.bottom)
                 
@@ -114,7 +106,7 @@ struct SettingsView: View {
                     } label: {
                         Text("Restore Default Settings")
                             .foregroundStyle(Color.buttonForeground)
-                            .padding(.horizontal, 6)
+                            .padding(.horizontal, 8)
                             .padding(.vertical, 2)
                             .background(Color.buttonBackground, in: .rect(cornerRadius: 5))
                     }
@@ -137,7 +129,7 @@ struct SettingsView: View {
                         } label: {
                             Text("Quit")
                                 .foregroundStyle(Color.buttonForeground)
-                                .padding(.horizontal, 6)
+                                .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
                                 .background(Color.buttonBackground, in: .rect(cornerRadius: 5))
                         }

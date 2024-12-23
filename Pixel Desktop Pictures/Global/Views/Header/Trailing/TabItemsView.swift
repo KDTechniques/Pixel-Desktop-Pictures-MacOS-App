@@ -31,6 +31,6 @@ struct TabItemsView: View {
 #Preview("Tab Items View") {
     TabItemsView()
         .padding()
-        .frame(width: 375)
+        .frame(width: Utilities.allWindowWidth)
         .background(Color.windowBackground)
 }
