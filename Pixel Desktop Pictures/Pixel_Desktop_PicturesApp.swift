@@ -11,7 +11,15 @@ import SwiftUI
 struct Pixel_Desktop_PicturesApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CollectionsGridView()
+                .frame(width: 375)
+                .background(.white)
+                .windowResizeBehavior(.disabled)
+                .windowMinimizeBehavior(.disabled)
+                .windowFullScreenBehavior(.disabled)
+                .windowDismissBehavior(.disabled)
         }
+        .windowResizability(.contentSize)
+        .windowStyle(.hiddenTitleBar)
     }
 }
