@@ -10,14 +10,15 @@ import SwiftUICore
 @MainActor
 @Observable final class CollectionsViewModel {
     // MARK: - PROPERTIES
+    let defaults: UserDefaults = .standard
     private(set) var isPresentedPopup: Bool = false
     var collectionNameTextfieldText: String = ""
+    
     @ObservationIgnored
     var popOverAnimation: (Animation, AnyHashable) { (.smooth(duration: 0.3), isPresentedPopup) }
-    var collectionVGridItemsArray: [CollectionVGridItemModel] = CollectionVGridItemModel.mockObjectsArray
-    let defaults: UserDefaults = .standard
-#warning("remove the folling asignment later")
-    var selectedCollectionsArray: [CollectionVGridItemModel] = [CollectionVGridItemModel.mockObjectsArray.first!]
+    
+    var collectionVGridItemsArray: [CollectionVGridItemModel] = CollectionVGridItemModel.defaultItemsArray
+    var selectedCollectionsArray: [CollectionVGridItemModel] = [CollectionVGridItemModel.defaultItemsArray.first!]
     
     // MARK: FUNCTIONS
     

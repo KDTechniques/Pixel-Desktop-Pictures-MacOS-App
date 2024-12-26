@@ -15,13 +15,14 @@ struct HeaderView: View {
             Spacer()
             TabItemsView()
         }
+        .padding()
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Header View") {
     HeaderView()
-        .padding()
-        .frame(width: Utilities.allWindowWidth)
+        .frame(width: TabItems.allWindowWidth)
         .background(Color.windowBackground)
+        .environment(TabsViewModel())
 }

@@ -3,53 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>top-level-items</key>
-	<array>
-		<dict>
-			<key>destination</key>
-			<dict>
-				<key>location-parameters</key>
-				<dict>
-					<key>EndingColumnNumber</key>
-					<string>85</string>
-					<key>EndingLineNumber</key>
-					<string>36</string>
-					<key>StartingColumnNumber</key>
-					<string>85</string>
-					<key>StartingLineNumber</key>
-					<string>36</string>
-					<key>Timestamp</key>
-					<string>756650920.654513</string>
-				</dict>
-				<key>rebasable-url</key>
-				<dict>
-					<key>base</key>
-					<string>workspace</string>
-					<key>payload</key>
-					<dict>
-						<key>relative-path</key>
-						<string>Pixel Desktop Pictures/Tabs/Collections Tab/Views/Collections Grid/CollectionsVGridImageView.swift</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>text-context</key>
-			<dict>
-				<key>focused</key>
-				<string></string>
-				<key>leading</key>
-				<string>    // MARK: - BODY
-    var body: some View {
-        // Need to solve proper clipping when we don't know the width of the frame..</string>
-				<key>trailing</key>
-				<string>
-        WebImage(url: .init(string: item.imageURLString), options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages])
-            .placeholder { Color.vGridItemPlaceholder }
-</string>
-			</dict>
-			<key>title</key>
-			<string>start working form here...</string>
-			<key>type</key>
-			<string>bookmark</string>
-		</dict>
-	</array>
+	<array/>
 </dict>
 </plist>

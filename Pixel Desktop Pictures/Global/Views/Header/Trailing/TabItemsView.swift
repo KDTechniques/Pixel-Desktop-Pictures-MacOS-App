@@ -8,29 +8,23 @@
 import SwiftUI
 
 struct TabItemsView: View {
-    
-    let tabItems = TabItems.self
-    
+    // MARK: - BODY
     var body: some View {
         HStack {
-            Image(systemName: tabItems.main.systemImage)
-                .foregroundStyle(.tabInactive)
-            
-            Image(systemName: tabItems.recents.systemImage)
-            
-            Image(systemName: tabItems.collections.systemImage)
-            
-            Image(systemName: tabItems.settings.systemImage)
-                .foregroundStyle(.tabActive)
+            ForEach(TabItems.allCases, id: \.self) { tab in
+                TabButtonView(tab: tab)
+            }
         }
         .font(.title2)
-        .foregroundStyle(.tabInactive)
+        .buttonStyle(.plain)
     }
 }
 
+// MARK: - PREVIEWS
 #Preview("Tab Items View") {
     TabItemsView()
         .padding()
-        .frame(width: Utilities.allWindowWidth)
+        .frame(width: TabItems.allWindowWidth)
         .background(Color.windowBackground)
+        .environment(TabsViewModel())
 }

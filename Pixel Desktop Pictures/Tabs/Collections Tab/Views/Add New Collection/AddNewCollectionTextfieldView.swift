@@ -13,34 +13,12 @@ struct AddNewCollectionTextfieldView: View {
     
     // MARK: - BODY
     var body: some View {
-        TextField("",
-                  text: collectionsVM.binding(\.collectionNameTextfieldText),
-                  prompt: Text("Ex: Landscapes")
-        )
-        .textFieldStyle(.plain)
-        .textSelection(.enabled)
-        .padding(5)
-        .padding(.trailing, 25)
-        .background(
-            Color.textfieldBackground
-                .clipShape(.rect(cornerRadius: 5))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(Color.textfieldBorder, lineWidth: 1)
-                }
-        )
-        .overlay(alignment: .trailing) {
-            Button {
-                collectionsVM.collectionNameTextfieldText = ""
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundStyle(.secondary)
-                    .padding(5)
+        TextfieldView(
+            textfieldText: collectionsVM.binding(\.collectionNameTextfieldText),
+            localizedKey: "Add New Collection",
+            prompt: "Ex: Super Cars") {
+                collectionsVM.createCollection()
             }
-            .buttonStyle(.plain)
-            .opacity(collectionsVM.collectionNameTextfieldText == "" ? 0 : 1)
-        }
-        .onSubmit { collectionsVM.createCollection() }
     }
 }
 

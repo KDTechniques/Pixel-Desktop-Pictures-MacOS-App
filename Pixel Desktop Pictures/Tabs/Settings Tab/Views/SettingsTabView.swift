@@ -1,5 +1,5 @@
 //
-//  SettingsView.swift
+//  SettingsTabView.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-22.
@@ -11,7 +11,7 @@ enum ImageUpdateIntervalTypes: String, CaseIterable {
     case hourly, daily, weekly
 }
 
-struct SettingsView: View {
+struct SettingsTabView: View {
     
     @State private var launchAtLogin: Bool = false
     @State private var showOnAllSpaces: Bool = false
@@ -20,9 +20,6 @@ struct SettingsView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            HeaderView()
-                .padding()
-            
             Text("Settings")
                 .font(.title.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -145,9 +142,7 @@ struct SettingsView: View {
 }
 
 #Preview("Settings View") {
-    SettingsView()
-        .frame(width: 375)
-        .background(Color.windowBackground)
+    PreviewView { SettingsTabView() }
 }
 
 

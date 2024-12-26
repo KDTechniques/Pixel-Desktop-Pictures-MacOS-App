@@ -12,11 +12,14 @@ struct CollectionVGridItemModel: Identifiable, Equatable, Hashable {
     let collectionName: String
     let imageURLString: String
     
-    static let mockObjectsArray: [Self] = [
-        .init(collectionName: "Nature", imageURLString: "https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-fall-nature-scenery-free-image.jpeg?w=600&quality=80"),
-        .init(collectionName: "Space", imageURLString: "https://external-preview.redd.it/7BQ9Ig391FbwCzMSgnCCgrzbEpnWXufcUSKwe6g7GXI.jpg?width=1080&crop=smart&auto=webp&s=c01b713490362ad78d7cf8dbb327c329476fb025"),
-        .init(collectionName: "Animals", imageURLString: "https://t3.ftcdn.net/jpg/06/90/65/52/360_F_690655280_428Xo4M4LTwKQnOiRWBlFMx66sRXg4Xf.jpg"),
-        .init(collectionName: "Abstract", imageURLString: "https://img.pikbest.com/ai/illus_our/20230428/a831e293e8f2a502eb0b358bd37e14b3.jpg!bw700"),
-        .init(collectionName: "Black & White", imageURLString: "https://images.squarespace-cdn.com/content/v1/5fe4caeadae61a2f19719512/7e3b6672-3567-4797-b576-6212d3331875/Firewatch%20Tower"),
+    static let defaultItemsArray: [Self] = [
+        .init(collectionName: "RANDOM", imageURLString: ""),
+        .init(collectionName: "Nature", imageURLString: "https://plus.unsplash.com/premium_photo-1719943510748-4b4354fbcf56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TmF0dXJlfGVufDB8MHwwfHx8MA%3D%3D"),
+        .init(collectionName: "Animals", imageURLString: "https://images.unsplash.com/photo-1521651201144-634f700b36ef?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fEFuaW1hbHN8ZW58MHwwfDB8fHwy"),
+        .init(collectionName: "Places", imageURLString: "https://images.unsplash.com/photo-1677180202572-3cfec2fe3fca?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fFBsYWNlc3xlbnwwfDB8MHx8fDI%3D"),
+        .init(collectionName: "Food & Drink", imageURLString: "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fEZvb2QlMjAlMjYlMjBEcmlua3xlbnwwfDB8MHx8fDI%3D"),
+        .init(collectionName: "Mountains", imageURLString: "https://images.unsplash.com/photo-1600298882525-1ac025c98b68?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fE1vdW50YWluc3xlbnwwfDB8MHx8fDI%3D"),
+        .init(collectionName: "Abstract", imageURLString: "https://images.unsplash.com/photo-1486025402772-bc179c8dfb0e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fEFic3RyYWN0fGVufDB8MHwwfHx8Mg%3D%3D"),
+        .init(collectionName: "Black & White", imageURLString: "https://images.unsplash.com/photo-1559075398-c61f41bbf892?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njd8fEJsYWNrJTIwJTI2JTIwV2hpdGV8ZW58MHwwfDB8fHwy"),
     ]
 }

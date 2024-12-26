@@ -29,6 +29,6 @@ struct AddNewCollectionView: View {
 // MARK: - PREVIEWS
 #Preview("Add New Collection View") {
     AddNewCollectionView()
-        .frame(width: Utilities.allWindowWidth)
+        .frame(width: TabItems.allWindowWidth)
         .environment(CollectionsViewModel())
 }

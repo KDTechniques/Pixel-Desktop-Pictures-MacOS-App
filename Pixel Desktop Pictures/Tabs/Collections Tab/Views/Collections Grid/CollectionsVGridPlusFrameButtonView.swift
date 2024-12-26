@@ -22,7 +22,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
     
     // MARK: - BODY
     var body: some View {
-        if id == collectionsVM.collectionVGridItemsArray.last?.id || collectionsVM.collectionVGridItemsArray.isEmpty {
+        if canShowPlusButton() {
             Button {
                 collectionsVM.presentPopup(true)
             } label: {
@@ -38,7 +38,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Plus Frame Button View") {
-    CollectionsVGridPlusFrameButtonView(id: CollectionVGridItemModel.mockObjectsArray.first!.id)
+    CollectionsVGridPlusFrameButtonView(id: CollectionVGridItemModel.defaultItemsArray.first!.id)
         .environment(CollectionsViewModel())
 }
 
@@ -49,5 +49,15 @@ extension CollectionsVGridPlusFrameButtonView {
         Image(systemName: "plus")
             .font(.title)
             .foregroundStyle(Color.collectionPlusIcon)
+    }
+    
+    // MARK: FUNCTIONS
+    
+    // MARK: - Can Show Plus Button
+    private func canShowPlusButton() -> Bool {
+        let lastItemIdMatch: Bool = id == collectionsVM.collectionVGridItemsArray.last?.id
+        let isEmptyItemsArray: Bool = collectionsVM.collectionVGridItemsArray.isEmpty
+        
+        return lastItemIdMatch || isEmptyItemsArray
     }
 }

@@ -21,9 +21,6 @@ struct CollectionsVGridImageView: View {
     @Environment(CollectionsViewModel.self) private var collectionsVM
     let item: CollectionVGridItemModel
     
-    
-    @State private var width: CGFloat = 0
-    
     // MARK: - INITIALIZER
     init(item: CollectionVGridItemModel) {
         self.item = item
@@ -34,22 +31,23 @@ struct CollectionsVGridImageView: View {
     
     // MARK: - BODY
     var body: some View {
-        // Need to solve proper clipping when we don't know the width of the frame..
-        WebImage(url: .init(string: item.imageURLString), options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages])
-            .placeholder { Color.vGridItemPlaceholder }
-            .resizable()
-            .scaledToFit()
-            .frame(height: vGridValues.height)
-            .clipped()
-            .overlay { Color.black.opacity(0.4) }
-            .overlay { overlay }
-            .onTapGesture { handleTap() }
+        WebImage(
+            url: .init(string: item.imageURLString),
+            options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
+        )
+        .placeholder { Color.vGridItemPlaceholder }
+        .resizable()
+        .frame(height: vGridValues.height)
+        .clipped()
+        .overlay { Color.black.opacity(0.4) }
+        .overlay { overlay }
+        .onTapGesture { handleTap() }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Image View") {
-    CollectionsVGridImageView(item: .mockObjectsArray.first!)
+    CollectionsVGridImageView(item: .defaultItemsArray.first!)
         .frame(width: 120)
         .padding()
         .environment(CollectionsViewModel())

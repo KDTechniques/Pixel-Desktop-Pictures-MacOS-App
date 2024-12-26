@@ -8,10 +8,6 @@
 import Foundation
 
 struct Utilities {
-    // MARK: - PROPERTIES
-    static let allWindowWidth: CGFloat = 375
-    static let collectionsTabWindowHeight: CGFloat = 282
-    
     // MARK: FUNCTIONS
     
     // MARK: - App Version

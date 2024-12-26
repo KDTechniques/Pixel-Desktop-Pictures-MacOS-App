@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum TabItems {
+enum TabItems: CaseIterable {
     case main, recents, collections, settings
     
     var systemImage: String {
@@ -20,6 +20,27 @@ enum TabItems {
             return "square.grid.2x2.fill"
         case .settings:
             return "gearshape.fill"
+        }
+    }
+    
+    static let allWindowWidth: CGFloat = 375
+    
+    var contentHeight: CGFloat {
+        switch self {
+        case .main:
+            return .infinity
+        case .recents:
+            return {
+                let values = VGridValues.self
+                return (values.height*4) + (values.spacing*3) + (values.spacing/2)
+            }()
+        case .collections:
+            return {
+                let values = VGridValues.self
+                return (values.height*3) + (values.spacing*2)
+            }()
+        case .settings:
+            return .infinity
         }
     }
 }
