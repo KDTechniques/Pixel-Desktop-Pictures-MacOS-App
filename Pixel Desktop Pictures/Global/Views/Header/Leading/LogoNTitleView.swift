@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LogoNTitleView: View {
+    // MARK: - BODY
     var body: some View {
         HStack {
             Image(.logo)
@@ -22,9 +23,10 @@ struct LogoNTitleView: View {
     }
 }
 
+// MARK: - PREVIEWS
 #Preview("Logo & Title View") {
     LogoNTitleView()
         .padding()
-        .frame(width: 375)
+        .frame(width: TabItems.allWindowWidth)
         .background(Color.windowBackground)
 }

@@ -8,18 +8,21 @@
 import SwiftUI
 
 struct HeaderView: View {
+    // MARK: - BODY
     var body: some View {
         HStack {
             LogoNTitleView()
             Spacer()
             TabItemsView()
         }
+        .padding()
     }
 }
 
+// MARK: - PREVIEWS
 #Preview("Header View") {
     HeaderView()
-        .padding()
-        .frame(width: 375)
+        .frame(width: TabItems.allWindowWidth)
         .background(Color.windowBackground)
+        .environment(TabsViewModel())
 }
