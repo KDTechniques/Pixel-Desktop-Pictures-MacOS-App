@@ -28,6 +28,7 @@ struct PreviewView<T: View>: View {
         .environment(MainTabViewModel())
         .environment(CollectionsViewModel())
         .environment(RecentsTabViewModel())
+        .environment(SettingsTabViewModel())
     }
 }
 

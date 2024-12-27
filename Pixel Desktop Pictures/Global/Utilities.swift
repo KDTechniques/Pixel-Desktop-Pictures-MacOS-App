@@ -8,8 +8,6 @@
 import Foundation
 
 struct Utilities {
-    // MARK: FUNCTIONS
-    
     // MARK: - App Version
     static func appVersion() -> String? {
         guard let version: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,

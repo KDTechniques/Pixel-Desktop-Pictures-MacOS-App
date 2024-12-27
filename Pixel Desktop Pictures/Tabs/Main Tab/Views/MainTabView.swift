@@ -31,6 +31,7 @@ struct MainTabView: View {
             }
             .padding()
         }
+        .frame(maxHeight: TabItems.main.contentHeight)
         .environment(mainTabVM)
     }
 }

@@ -32,7 +32,7 @@ struct CollectionsTabView: View {
             .padding(.horizontal)
         }
         .scrollDisabled(collectionsVM.collectionVGridItemsArray.count <= 8)
-        .frame(height: TabItems.collections.contentHeight)
+        .frame(maxHeight: TabItems.collections.contentHeight)
         .padding(.bottom)
         .overlay { CollectionsGridPopupBackgroundView() }
         .overlay(alignment: .bottom) { popup }

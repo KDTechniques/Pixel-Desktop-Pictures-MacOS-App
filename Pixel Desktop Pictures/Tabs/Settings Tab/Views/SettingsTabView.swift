@@ -7,190 +7,66 @@
 
 import SwiftUI
 
-enum ImageUpdateIntervalTypes: String, CaseIterable {
-    case hourly, daily, weekly
-}
-
 struct SettingsTabView: View {
+    // MARK: - PROPERTIES
+    @State private var settingsTabVM: SettingsTabViewModel = .init()
     
-    @State private var launchAtLogin: Bool = false
-    @State private var showOnAllSpaces: Bool = false
-    @State private var updateInterval: ImageUpdateIntervalTypes = .daily
-    @State private var isPresentedPopup: Bool = false
-    
+    // MARK: - BODY
     var body: some View {
         VStack(spacing: 0) {
-            Text("Settings")
-                .font(.title.bold())
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding([.leading, .bottom])
+            // Title
+            SettingsTitleTextView()
             
             VStack(alignment: .leading) {
-                // Launch at login checkbox
-                HStack(spacing: 5) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(launchAtLogin ? Color.accentColor : Color.buttonBackground)
-                        .frame(width: 12, height: 12)
-                        .overlay {
-                            Image(systemName: "checkmark")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 8)
-                                .foregroundStyle(.white)
-                                .fontWeight(.heavy)
-                                .opacity(launchAtLogin ? 1 : 0)
-                        }
-                        .onTapGesture {
-                            launchAtLogin.toggle()
-                        }
-                    
-                    Text("Launch at login")
-                }
+                // Launch at Login Checkbox
+                CheckboxTextView(isChecked: settingsTabVM.binding(\.launchAtLogin), text: "Launch at login")
                 
-                // Show on all spaces
-                HStack(spacing: 5) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(showOnAllSpaces ? Color.accentColor : Color.buttonBackground)
-                        .frame(width: 12, height: 12)
-                        .overlay {
-                            Image(systemName: "checkmark")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 8)
-                                .foregroundStyle(.white)
-                                .fontWeight(.heavy)
-                                .opacity(showOnAllSpaces ? 1 : 0)
-                        }
-                        .onTapGesture {
-                            showOnAllSpaces.toggle()
-                        }
-                    
-                    Text("Show on all spaces")
-                }
+                // Show on All Spaces Checkbox
+                CheckboxTextView(isChecked: settingsTabVM.binding(\.showOnAllSpaces), text: "Show on all spaces")
                 
-                // Update Time Interval
-                Picker("Update", selection: $updateInterval) {
-                    ForEach(ImageUpdateIntervalTypes.allCases, id: \.self) { interval in
-                        Text(interval.rawValue.capitalized)
-                    }
-                }
-                .frame(width: 132)
+                // Update Time Interval Menu Picker
+                UpdateIntervalSettingView()
                 
-                Divider()
-                    .padding(.vertical)
+                divider
                 
-                let status: APIAccessKeyStatus = .connected
-                
-                VStack(alignment: .leading) {
-                    // API Access key Status
-                    HStack(spacing: 5) {
-                        Text("API Access Key Staus:")
-                        status.status
-                        status.systemImage
-                    }
-                    
-                    // API Key Insertion
-                    ButtonView(title: status.buttonTitle, type: .regular) {
-                        isPresentedPopup = true
-                    }
-                }
-                .padding(.bottom)
+                // API Access Key Textfield, and Connect Button
+                apiAccessKey
                 
                 // Restore Default settings, Version and Quit button
-                VStack(alignment: .trailing, spacing: 5) {
-                    Button {
-                        // quir action goes here...
-                    } label: {
-                        Text("Restore Default Settings")
-                            .foregroundStyle(Color.buttonForeground)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 2)
-                            .background(Color.buttonBackground, in: .rect(cornerRadius: 5))
-                    }
-                    .buttonStyle(.plain)
-                    
-                    
-                    HStack(alignment: .bottom) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            if let version: String = Utilities.appVersion() {
-                                Text("Version \(version) 🇱🇰")
-                                Text("By **KAVINDA DILSHAN PARAMSOODI**")
-                            }
-                        }
-                        .font(.footnote)
-                        
-                        Spacer()
-                        
-                        Button {
-                            // quir action goes here...
-                        } label: {
-                            Text("Quit")
-                                .foregroundStyle(Color.buttonForeground)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 2)
-                                .background(Color.buttonBackground, in: .rect(cornerRadius: 5))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
+                SettingsFooterView()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
-            .padding(.bottom)
+            .padding([.horizontal, .bottom])
         }
+        .overlay(alignment: .bottom) { APIAccessKeyPopupView() }
+        .frame(maxHeight: TabItems.settings.contentHeight)
+        .environment(settingsTabVM)
     }
 }
 
+// MARK: - PREVIEWS
 #Preview("Settings View") {
     PreviewView { SettingsTabView() }
 }
 
-
-enum APIAccessKeyStatus {
-    case validating, connected, invalid, failed
-    
-    var status: some View {
-        switch self {
-        case .validating:
-            return Text("Validating")
-        case .connected:
-            return Text("Connected")
-                .foregroundStyle(.green)
-        case .invalid:
-            return Text("Invalid")
-                .foregroundStyle(.secondary)
-        case .failed:
-            return Text("Internet Connection Failure")
-                .foregroundStyle(.red)
-        }
+// MARK: - EXTENSIONS
+extension SettingsTabView {
+    // MARK: - Divider
+    private var divider: some View {
+        Divider()
+            .padding(.vertical)
     }
     
-    @ViewBuilder
-    var systemImage: some View {
-        switch self {
-        case .validating:
-            Image(systemName: "dot.radiowaves.left.and.right")
-                .symbolEffect(.variableColor.iterative)
-        case .connected:
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-        case .invalid:
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.yellow)
-        case .failed:
-            Image(systemName: "wifi.exclamationmark")
-                .foregroundStyle(.red)
+    // MARK: - API Access Key
+    private var apiAccessKey: some View {
+        VStack(alignment: .leading) {
+            // API Access key Status
+            APIAccessKeyStatusView()
+            
+            // API Key Insertion
+            ButtonView(title: settingsTabVM.apiAccessKeyStatus.buttonTitle, type: .regular) {
+                settingsTabVM.presentPopup(true)
+            }
         }
-    }
-    
-    var buttonTitle: String {
-        switch self {
-        case .validating, .connected:
-            return "API Access Key"
-        case .invalid:
-            return "Replace Your API Access Key"
-        case .failed:
-            return "Add Your API Access Key"
-        }
+        .padding(.bottom)
     }
 }

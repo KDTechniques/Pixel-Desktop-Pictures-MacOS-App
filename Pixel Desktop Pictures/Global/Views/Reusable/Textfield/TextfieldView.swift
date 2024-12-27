@@ -47,15 +47,17 @@ struct TextfieldView: View {
 // MARK: - EXTENSIONS
 extension TextfieldView {
     // MARK: - Clear Button
+    @ViewBuilder
     private var clearButton: some View {
-        Button {
-            textfieldText = ""
-        } label: {
-            Image(systemName: "xmark.circle.fill")
-                .foregroundStyle(.secondary)
-                .padding(5)
+        if !textfieldText.isEmpty {
+            Button {
+                textfieldText = ""
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundStyle(.secondary)
+                    .padding(.trailing, 5)
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
-        .opacity(textfieldText == "" ? 0 : 1)
     }
 }
