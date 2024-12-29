@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyStatus.swift
+//  APIAccessKeyValidityStatus.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-27.
@@ -7,7 +7,7 @@
 
 import SwiftUICore
 
-enum APIAccessKeyStatus: CaseIterable {
+enum APIAccessKeyValidityStatus: CaseIterable {
     case validating, connected, invalid, failed
     
     var status: some View {

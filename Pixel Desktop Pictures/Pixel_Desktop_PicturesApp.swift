@@ -11,7 +11,7 @@ import SwiftUI
 struct Pixel_Desktop_PicturesApp: App {
     var body: some Scene {
         WindowGroup {
-            TabsView()
+            SwiftUIView()
                 .windowResizeBehavior(.disabled)
                 .windowMinimizeBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)
