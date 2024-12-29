@@ -26,6 +26,6 @@ enum DesktopPictureSchedulerIntervals: String, CaseIterable, DesktopPictureSched
     }
     
     static var defaultTimeInterval: TimeInterval {
-        return DesktopPictureSchedulerIntervals.daily.timeInterval
+        return self.daily.timeInterval
     }
 }

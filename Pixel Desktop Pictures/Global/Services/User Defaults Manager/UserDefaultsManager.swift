@@ -19,4 +19,12 @@ actor UserDefaultsManager {
     func get(key: String) async -> Any? {
         return defaults.object(forKey: key)
     }
+    
+    static func clearAllUserDefaults() {
+        let defaults = UserDefaults.standard
+        for key in defaults.dictionaryRepresentation().keys {
+            defaults.removeObject(forKey: key)
+        }
+        defaults.synchronize()
+    }
 }

@@ -13,18 +13,17 @@ struct SwiftUIView: View {
         print("Background Task Started!: \(Date())")
     }
     
-    
     var body: some View {
         VStack {
             Button("Update Background Task to Hourly") {
                 Task {
-                    await scheduler.updateSchedulerInterval(to: MockDesktopPictureSchedulerIntervals.hourly)
+                    await scheduler.onChangeOfTimeIntervalSelection(from: MockDesktopPictureSchedulerIntervals.hourly)
                 }
             }
             
             Button("Update Background Task to Daily") {
                 Task {
-                    await scheduler.updateSchedulerInterval(to: MockDesktopPictureSchedulerIntervals.daily)
+                    await scheduler.onChangeOfTimeIntervalSelection(from: MockDesktopPictureSchedulerIntervals.daily)
                 }
             }
             
@@ -32,6 +31,10 @@ struct SwiftUIView: View {
                 Task {
                     await scheduler.printCurrentTimeInterval()
                 }
+            }
+            
+            Button("Clear All User Defaults") {
+                UserDefaultsManager.clearAllUserDefaults()
             }
         }
     }

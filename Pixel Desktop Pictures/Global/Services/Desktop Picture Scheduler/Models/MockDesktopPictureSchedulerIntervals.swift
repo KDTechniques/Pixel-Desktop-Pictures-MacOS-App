@@ -18,15 +18,15 @@ enum MockDesktopPictureSchedulerIntervals: String, CaseIterable, DesktopPictureS
     var timeInterval: TimeInterval {
         switch self {
         case .hourly:
-            return 60 * 15 // 15 minutes to mimic 1 hour
+            return 1 * 60 // 1 minute to mimic 1 hour
         case .daily:
-            return 60 * 20 // 20 minutes to mimic 24 hours
+            return 2 * 60 // 2 minutes to mimic 24 hours
         case .weekly:
-            return 60 * 30 // 30 minutes to mimic a week
+            return 3 * 60 // 3 minutes to mimic a week
         }
     }
     
     static var defaultTimeInterval: TimeInterval {
-        return DesktopPictureSchedulerIntervals.daily.timeInterval
+        return self.daily.timeInterval
     }
 }

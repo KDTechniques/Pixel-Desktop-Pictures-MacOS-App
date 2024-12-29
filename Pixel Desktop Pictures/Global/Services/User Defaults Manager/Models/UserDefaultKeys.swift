@@ -15,6 +15,6 @@ enum UserDefaultKeys: String {
     case selectedCollections
     case apiAccessKey
     case apiAccessKeyStatus
-    case timeInterval
-    case initialTime
+    case timeIntervalSelection
+    case executionTimeIntervalSince1970
 }

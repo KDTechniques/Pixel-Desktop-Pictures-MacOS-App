@@ -9,19 +9,28 @@ import Foundation
 
 actor DesktopPictureScheduler {
     // MARK: - INJECTED PROPERTIES
-    private let timeInterval: DesktopPictureSchedulerIntervalsProtocol.Type
+    private let timeIntervalType: DesktopPictureSchedulerIntervalsProtocol.Type
+    private var timeIntervalSelection: TimeInterval
     private let backgroundTask: () -> ()
     
     // MARK: - ASSIGNED PROPERTIES
     private let defaults: UserDefaultsManager = .init()
-    private let timeIntervalKey: String = UserDefaultKeys.timeInterval.rawValue
-    private let initialTimeKey: String = UserDefaultKeys.initialTime.rawValue
+    private let timeIntervalKey: String = UserDefaultKeys.timeIntervalSelection.rawValue
+    private let executionTimeKey: String = UserDefaultKeys.executionTimeIntervalSince1970.rawValue
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
     private var scheduler: NSBackgroundActivityScheduler?
+    private var currentTimeIntervalSince1970: TimeInterval {
+        return Date().timeIntervalSince1970
+    }
     
     // MARK: - INITIALIZER
+    /// Initializes the DesktopPictureScheduler with the specified time interval model and background task.
+    /// - Parameters:
+    ///   - timeIntervalModel: The model that conforms to the DesktopPictureSchedulerIntervalsProtocol.
+    ///   - backgroundTask: The background task to be executed.
     init(timeIntervalModel: DesktopPictureSchedulerIntervalsProtocol.Type, backgroundTask: @escaping () -> ()) {
-        self.timeInterval = timeIntervalModel
+        self.timeIntervalType = timeIntervalModel
+        timeIntervalSelection = timeIntervalModel.defaultTimeInterval
         self.backgroundTask = backgroundTask
         
         Task { await initializeScheduler() }
@@ -31,60 +40,162 @@ actor DesktopPictureScheduler {
     
     // MARK: INTERNAL FUNCTIONS
     
-    // MARK: - Update Scheduler Interval
-    /// Updates the scheduler's interval.
-    /// - Parameter timeInterval: The new time interval for scheduling.
-    func updateSchedulerInterval(to timeInterval: DesktopPictureSchedulerIntervalsProtocol) async {
-        let timeInterval: TimeInterval = timeInterval.timeInterval
+    // MARK: - on Change Of Time Interval Selection
+    /// Handles changes to the time interval selection.
+    /// - Parameter timeInterval: The new time interval selection.
+    func onChangeOfTimeIntervalSelection(from timeInterval: DesktopPictureSchedulerIntervalsProtocol) async {
+        // Save Time Interval Selection Value to User Defaults
+        let timeIntervalSelection: TimeInterval = timeInterval.timeInterval
+        await saveTimeIntervalSelectionToUserDefaults(from: timeIntervalSelection)
         
-        await setTimeIntervalToUserDefaults(with: timeInterval)
-        await setInitialTimeToUserDefaults()
-        await scheduleBackgroundTask(with: timeInterval)
-    }
-    
-    // remove the following function later, as it no longer need after testing.
-    func printCurrentTimeInterval() {
-        print(scheduler?.interval)
+        // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
+        await calculateScheduleSaveExecutionTimeIntervalSince1970(with: timeIntervalSelection)
     }
     
     // MARK: PRIVATE FUNCTIONS
     
     // MARK: - Initialize Scheduler
-    /// Initializes the scheduler with the time interval from user defaults.
+    /// Initializes the scheduler by setting the time interval and scheduling the background task.
     private func initializeScheduler() async {
-        let timeInterval: TimeInterval = await getTimeIntervalFromUserDefaults()
-        let nextExecutionTime: TimeInterval = await calculateNextExecutionTime(with: timeInterval)
+        // Assign Time Interval Selection Value to A Property to Avoid Using User Defaults Most of the Time
+        let timeIntervalSelection: TimeInterval = await getTimeIntervalSelectionFromUserDefaults()
+        self.timeIntervalSelection = timeIntervalSelection
         
-        // Check if the next execution time has already passed
-        let now: TimeInterval = Date().timeIntervalSince1970
-        if now >= nextExecutionTime {
-            // Execute the missed task immediately
-            print("Executed immediately❤️, Testings are over...")
-            await performBackgroundTask()
-            await setInitialTimeToUserDefaults() // Reset the initial time after execution
+        let timeIntervalForScheduler: TimeInterval? = await calculateTimeIntervalForScheduler()
+        try? await scheduleBackgroundTask(with: timeIntervalForScheduler)
+    }
+    
+    // MARK: - Calculate Schedule Save Execution Time Interval Since 1970
+    /// Calculates, schedules, and saves the execution time interval since 1970.
+    /// - Parameter timeIntervalSelection: The selected time interval.
+    private func calculateScheduleSaveExecutionTimeIntervalSince1970(with timeIntervalSelection: TimeInterval) async {
+        // Calculate Execution Time Interval Since 1970 from New Time Interval Selection Value
+        let executionTimeIntervalSince1970: TimeInterval = await calculateExecutionTimeIntervalSince1970(from: timeIntervalSelection)
+        
+        // Schedule Background Task by Time Interval Selection Value
+        try? await scheduleBackgroundTask(with: timeIntervalSelection)
+        
+        // Save Execution Time Interval Since 1970 to User Defaults
+        await saveExecutionTimeSince1970ToUserDefaults(from: executionTimeIntervalSince1970)
+    }
+    
+    // MARK: - Calculate Execution Time Interval Since 1970
+    /// Calculates the execution time interval since 1970 based on the selected time interval.
+    /// - Parameter timeIntervalSelection: The selected time interval.
+    /// - Returns: The execution time interval since 1970.
+    private func calculateExecutionTimeIntervalSince1970(from timeIntervalSelection: TimeInterval) async -> TimeInterval {
+        // Add Time Interval Selection Value to Current Date to get the Execution Time in the Future
+        let executionTimeIntervalSince1970: TimeInterval = Date().addingTimeInterval(timeIntervalSelection).timeIntervalSince1970
+        return executionTimeIntervalSince1970
+    }
+    
+    // MARK: - Calculate Time Interval for Scheduler
+    /// Calculates the time interval for the scheduler based on the execution time.
+    /// - Returns: The calculated time interval for the scheduler.
+    private func calculateTimeIntervalForScheduler() async -> TimeInterval? {
+        let executionTimeIntervalSince1970: TimeInterval = await getExecutionTimeIntervalSince1970FromUserDefaults(otherwiseWith: timeIntervalSelection)
+        
+        // Calculate Time Interval for the `NSBackgroundActivityScheduler`
+        let activityTimeInterval: TimeInterval = executionTimeIntervalSince1970 - currentTimeIntervalSince1970
+        
+        // Handle When User Has Passed the Execution Time and Opened the App
+        guard activityTimeInterval > 0 else {
+            return nil
         }
         
-        await scheduleBackgroundTask(with: timeInterval)
+        // Return Positive `activityTimeInterval` Value When User Opens the App Before the Execution Time
+        return activityTimeInterval
+    }
+    
+    // MARK: User Defaults Related
+    
+    // MARK: - Get Time Interval Selection from User Defaults
+    /// Retrieves the time interval selection value from User Defaults.
+    /// - Returns: The time interval selection value.
+    private func getTimeIntervalSelectionFromUserDefaults() async -> TimeInterval {
+        // Try to Get Time Interval Selection Value from User Defaults
+        guard let timeIntervalSelection: TimeInterval = await defaults.get(key: timeIntervalKey) as? TimeInterval else {
+            // Get the Default Time Interval Value from `DesktopPictureSchedulerIntervalsProtocol`
+            let defaultTimeInterval: TimeInterval = timeIntervalType.defaultTimeInterval
+            
+            return defaultTimeInterval
+        }
+        
+        // Return Saved Time Interval Selection Value from User Defaults
+        return timeIntervalSelection
+    }
+    
+    // MARK: - Get Execution Time Interval Since 1970 from User Defaults
+    /// Retrieves the execution time interval since 1970 from User Defaults or calculates a new one if not found.
+    /// - Parameter timeIntervalSelection: The selected time interval.
+    /// - Returns: The execution time interval since 1970.
+    private func getExecutionTimeIntervalSince1970FromUserDefaults(otherwiseWith timeIntervalSelection: TimeInterval) async -> TimeInterval {
+        // Try to get Saved Execution Time Interval Since 1970 from User Defaults
+        guard let savedExecutionTimeIntervalSince1970: TimeInterval = await defaults.get(key: executionTimeKey) as? TimeInterval else {
+            // Create New Execution Time Interval Since 1970 on User Defaults Failure
+            let newExecutionTimeIntervalSince1970: TimeInterval = await calculateExecutionTimeIntervalSince1970(from: timeIntervalSelection)
+            
+            // Save New Execution Time Interval Since 1970 to User Defaults
+            await saveExecutionTimeSince1970ToUserDefaults(from: newExecutionTimeIntervalSince1970)
+            return newExecutionTimeIntervalSince1970
+        }
+        
+        // Return Saved Execution Time Interval Since 1970 Value from User Defaults
+        return savedExecutionTimeIntervalSince1970
+    }
+    
+    // MARK: - Save Time Interval Selection to User Defaults
+    /// Saves the time interval selection value to User Defaults.
+    /// - Parameter timeIntervalSelection: The selected time interval.
+    private func saveTimeIntervalSelectionToUserDefaults(from timeIntervalSelection: TimeInterval) async {
+        await defaults.save(key: timeIntervalKey, value: timeIntervalSelection)
+        self.timeIntervalSelection = timeIntervalSelection
+    }
+    
+    // MARK: - Save Execution Time Since 1970 to User Defaults
+    /// Saves the execution time interval since 1970 to User Defaults.
+    /// - Parameter executionTimeIntervalSince1970: The execution time interval since 1970.
+    private func saveExecutionTimeSince1970ToUserDefaults(from executionTimeIntervalSince1970: TimeInterval) async {
+        await defaults.save(key: executionTimeKey, value: executionTimeIntervalSince1970)
     }
     
     // MARK: - Schedule Background Task
-    /// Creates a new activity with the specified time interval.
-    private func scheduleBackgroundTask(with timeInterval: TimeInterval) async {
-        let nextExecutionTime: TimeInterval = await calculateNextExecutionTime(with: timeInterval)
+    /// Schedules the background task with the given time interval.
+    /// - Parameter timeInterval: The time interval for the scheduler.
+    private func scheduleBackgroundTask(with timeInterval: TimeInterval?) async throws {
+        guard let timeInterval: TimeInterval else {
+            // Nil `timeInterval` Value Means User Has Passed the Execution Time and Opened the App
+            // So, Immediately Call the Background Task
+            await performBackgroundTask()
+            
+            // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
+            await calculateScheduleSaveExecutionTimeIntervalSince1970(with: timeIntervalSelection)
+            return
+        }
+        
         let activity: NSBackgroundActivityScheduler = .init(identifier: taskIdentifier)
-        activity.repeats = false  // Set repeats to false
-        activity.interval = nextExecutionTime - Date().timeIntervalSince1970
+        activity.repeats = false  // Set repeats to false so that we can accurately set intervals by calculating them for different edge cases.
+        activity.interval = timeInterval
         activity.tolerance = min(activity.interval * 0.1, 30 * 60) // Max tolerance is 30 min
         activity.schedule { completion in
-            Task {
-                await self.performBackgroundTask()
+            Task { [weak self] in
+                guard let self else {
+                    print("Error: Task got deallocated.")
+                    completion(.deferred)
+                    throw URLError(.badURL)
+                }
+                
+                await performBackgroundTask()
                 completion(.finished)
-                await self.resetScheduler()
+                
+                // Rescheduling Upon Completion as We Don't Repeat the Scheduler
+                // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
+                await calculateScheduleSaveExecutionTimeIntervalSince1970(with: timeIntervalSelection)
             }
         }
         
         // Assign the new activity
-        self.scheduler = activity
+        scheduler = activity
     }
     
     // MARK: - Perform Background Task
@@ -92,69 +203,11 @@ actor DesktopPictureScheduler {
     private func performBackgroundTask() async {
         backgroundTask()
     }
-    
-    // MARK: - Reset Scheduler
-    /// Resets the scheduler by recalculating the interval and setting the initial time.
-    private func resetScheduler() async {
-        let timeInterval = await getTimeIntervalFromUserDefaults()
-        await setInitialTimeToUserDefaults()
-        await scheduleBackgroundTask(with: timeInterval)
-    }
-    
-    // MARK: - Get Time Interval from User Defaults
-    /// Gets the time interval from user defaults.
-    /// - Returns: The time interval from user defaults, or the default time interval if not set.
-    private func getTimeIntervalFromUserDefaults() async -> TimeInterval {
-        guard let timeInterval = await defaults.get(key: timeIntervalKey) as? Double else {
-            return timeInterval.defaultTimeInterval
-        }
-        return timeInterval
-    }
-    
-    // MARK: - Set Time Interval to User Defaults
-    /// Sets the time interval to user defaults.
-    /// - Parameter timeInterval: The time interval to be saved to user defaults.
-    private func setTimeIntervalToUserDefaults(with timeInterval: TimeInterval) async {
-        await defaults.save(key: timeIntervalKey, value: timeInterval)
-    }
-    
-    // MARK: - Set Initial Time to User Defaults
-    /// Sets the initial time to user defaults.
-    private func setInitialTimeToUserDefaults() async {
-        let initialTime = Date().timeIntervalSince1970
-        await defaults.save(key: initialTimeKey, value: initialTime)
-    }
-    
-    // MARK: - Get Initial Time from User Defaults
-    /// Gets the initial time from user defaults.
-    /// - Returns: The initial time from user defaults, or the current time if not set.
-    private func getInitialTimeFromUserDefaults() async -> TimeInterval {
-        guard let initialTime = await defaults.get(key: initialTimeKey) as? Double else {
-            return Date().timeIntervalSince1970
-        }
-        return initialTime
-    }
-    
-    // MARK: - Calculate Next Execution Time
-    /// Calculates the next execution time based on the initial time and the interval.
-    /// - Parameter timeInterval: The time interval for scheduling.
-    /// - Returns: The next execution time.
-    private func calculateNextExecutionTime(with timeInterval: TimeInterval) async -> TimeInterval {
-        // Get the initial time from UserDefaults
-        let initialTime: TimeInterval = await getInitialTimeFromUserDefaults()
-        
-        // Get the current time
-        let now: TimeInterval = Date().timeIntervalSince1970
-        
-        // Calculate the elapsed time since the initial time
-        let elapsedTime: TimeInterval = now - initialTime
-        
-        // Determine how many complete intervals have passed
-        let intervalsPassed: Int = .init(elapsedTime / timeInterval)
-        
-        // Calculate the next execution time
-        let nextExecutionTime: TimeInterval = initialTime + timeInterval * Double(intervalsPassed + 1)
-        
-        return nextExecutionTime
-    }
+}
+
+
+enum DesktopPictureSchedulerError: Error {
+    case schedulingFailed
+    case invalidTimeInterval
+    case taskDeallocated
 }
