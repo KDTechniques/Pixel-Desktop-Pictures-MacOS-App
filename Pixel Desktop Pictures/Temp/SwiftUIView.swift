@@ -2,45 +2,36 @@
 //  SwiftUIView.swift
 //  Pixel Desktop Pictures
 //
-//  Created by Kavinda Dilshan on 2024-12-28.
+//  Created by Kavinda Dilshan on 2024-12-30.
 //
 
 import SwiftUI
 
 struct SwiftUIView: View {
-   
-    let scheduler: DesktopPictureScheduler = .init(timeIntervalModel: MockDesktopPictureSchedulerIntervals.self) {
-        print("Background Task Started!: \(Date())")
-    }
+    @State private var sampleClass: Sample = .init()
     
     var body: some View {
-        VStack {
-            Button("Update Background Task to Hourly") {
-                Task {
-                    await scheduler.onChangeOfTimeIntervalSelection(from: MockDesktopPictureSchedulerIntervals.hourly)
-                }
-            }
-            
-            Button("Update Background Task to Daily") {
-                Task {
-                    await scheduler.onChangeOfTimeIntervalSelection(from: MockDesktopPictureSchedulerIntervals.daily)
-                }
-            }
-            
-            Button("Current Interval") {
-                Task {
-                    await scheduler.printCurrentTimeInterval()
-                }
-            }
-            
-            Button("Clear All User Defaults") {
-                UserDefaultsManager.clearAllUserDefaults()
-            }
+        Button("Throw error") {
+            sampleClass.throwAnerror()
+            sampleClass.throwAnerror()
         }
+        
     }
 }
 
 #Preview {
-    SwiftUIView()
-        .padding()
+    TabsView()
+}
+
+@MainActor
+@Observable final class Sample {
+    private let scheduler = DesktopPictureScheduler.init(timeIntervalModel: MockDesktopPictureSchedulerIntervals.self) {
+        print("Hi there...")
+    }
+    
+    func throwAnerror() {
+        Task {
+            await scheduler.throwAnError()
+        }
+    }
 }

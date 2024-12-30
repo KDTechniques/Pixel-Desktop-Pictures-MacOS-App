@@ -8,5 +8,17 @@
 import SwiftUICore
 
 extension View {
-    
+    // MARK: - Set Tab Content Height To Tabs ViewModel
+    func setTabContentHeightToTabsViewModel(vm tabsVM: TabsViewModel) -> some View {
+        return self
+            .background {
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            tabsVM.setTabContentHeight(geo.size.height)
+                        }
+                }
+                
+            }
+    }
 }

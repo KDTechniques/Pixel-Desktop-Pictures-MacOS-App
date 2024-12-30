@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RecentsTabView: View {
     // MARK: - PROPERTIES
+    @Environment(TabsViewModel.self) private var tabsVM
     @State private var recentsTabVM: RecentsTabViewModel = .init()
     let vGridValues = VGridValues.self
     
@@ -24,7 +25,8 @@ struct RecentsTabView: View {
             }
             .padding([.horizontal, .bottom])
         }
-        .frame(maxHeight: TabItems.recents.contentHeight)
+        .frame(height: TabItems.recents.contentHeight)
+        .setTabContentHeightToTabsViewModel(vm: tabsVM)
         .environment(recentsTabVM)
     }
 }

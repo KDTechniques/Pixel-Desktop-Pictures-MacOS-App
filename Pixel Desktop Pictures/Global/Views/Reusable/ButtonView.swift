@@ -51,11 +51,11 @@ struct ButtonView: View {
             Text(title)
                 .foregroundStyle(foregroundColor)
                 .fontWeight(.medium)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(backgroundColor, in: .rect(cornerRadius: 5))
         }
         .buttonStyle(.plain)
-        .frame(maxWidth: .infinity)
-        .frame(height: 50)
-        .background(backgroundColor, in: .rect(cornerRadius: 5))
     }
 }
 

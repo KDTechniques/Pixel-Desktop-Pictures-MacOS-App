@@ -5,7 +5,25 @@
 //  Created by Kavinda Dilshan on 2024-12-28.
 //
 
-import Foundation
+import SwiftUICore
+
+enum DesktopPictureSchedulerError: LocalizedError {
+    case schedulingFailed
+    case invalidTimeInterval
+    case taskDeallocated
+    
+    var errorDescription: String? {
+        switch self {
+        case .schedulingFailed:
+            return ""
+        case .invalidTimeInterval:
+            return ""
+        case .taskDeallocated:
+            return "Error: `NSBackgroundActivityScheduler` Task is Deallocated on `DesktopPictureScheduler` actor."
+        }
+    }
+}
+
 
 actor DesktopPictureScheduler {
     // MARK: - INJECTED PROPERTIES
@@ -15,6 +33,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - ASSIGNED PROPERTIES
     private let defaults: UserDefaultsManager = .init()
+    @MainActor private let alertsManager: AlertsManager = .shared
     private let timeIntervalKey: String = UserDefaultKeys.timeIntervalSelection.rawValue
     private let executionTimeKey: String = UserDefaultKeys.executionTimeIntervalSince1970.rawValue
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
@@ -29,6 +48,7 @@ actor DesktopPictureScheduler {
     ///   - timeIntervalModel: The model that conforms to the DesktopPictureSchedulerIntervalsProtocol.
     ///   - backgroundTask: The background task to be executed.
     init(timeIntervalModel: DesktopPictureSchedulerIntervalsProtocol.Type, backgroundTask: @escaping () -> ()) {
+        print("🥺")
         self.timeIntervalType = timeIntervalModel
         timeIntervalSelection = timeIntervalModel.defaultTimeInterval
         self.backgroundTask = backgroundTask
@@ -72,11 +92,26 @@ actor DesktopPictureScheduler {
         // Calculate Execution Time Interval Since 1970 from New Time Interval Selection Value
         let executionTimeIntervalSince1970: TimeInterval = await calculateExecutionTimeIntervalSince1970(from: timeIntervalSelection)
         
-        // Schedule Background Task by Time Interval Selection Value
-        try? await scheduleBackgroundTask(with: timeIntervalSelection)
-        
-        // Save Execution Time Interval Since 1970 to User Defaults
-        await saveExecutionTimeSince1970ToUserDefaults(from: executionTimeIntervalSince1970)
+        do {
+            // Schedule Background Task by Time Interval Selection Value
+            try await scheduleBackgroundTask(with: timeIntervalSelection)
+            
+            // Save Execution Time Interval Since 1970 to User Defaults
+            await saveExecutionTimeSince1970ToUserDefaults(from: executionTimeIntervalSince1970)
+        } catch {
+            print("Error: Unable to calculate, schedule, and save the execution time interval since 1970. \(error.localizedDescription)")
+        }
+    }
+    
+    func throwAnError() {
+        do {
+            throw DesktopPictureSchedulerError.taskDeallocated
+        } catch {
+            Task { @MainActor in
+                alertsManager.error = .sampleError
+                alertsManager.isPresented = true
+            }
+        }
     }
     
     // MARK: - Calculate Execution Time Interval Since 1970
@@ -180,13 +215,14 @@ actor DesktopPictureScheduler {
         activity.schedule { completion in
             Task { [weak self] in
                 guard let self else {
-                    print("Error: Task got deallocated.")
+                    print("Error: `NSBackgroundActivityScheduler` task is deallocated.")
                     completion(.deferred)
-                    throw URLError(.badURL)
+                    throw DesktopPictureSchedulerError.taskDeallocated
                 }
                 
                 await performBackgroundTask()
                 completion(.finished)
+                print("Success: `NSBackgroundActivityScheduler` task is finished.")
                 
                 // Rescheduling Upon Completion as We Don't Repeat the Scheduler
                 // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
@@ -201,13 +237,7 @@ actor DesktopPictureScheduler {
     // MARK: - Perform Background Task
     /// Performs the background task.
     private func performBackgroundTask() async {
+        print("Progress: Performing background task.")
         backgroundTask()
     }
-}
-
-
-enum DesktopPictureSchedulerError: Error {
-    case schedulingFailed
-    case invalidTimeInterval
-    case taskDeallocated
 }

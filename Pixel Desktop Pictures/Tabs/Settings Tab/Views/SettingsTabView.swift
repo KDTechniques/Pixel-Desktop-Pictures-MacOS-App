@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsTabView: View {
     // MARK: - PROPERTIES
+    @Environment(TabsViewModel.self) private var tabsVM
     @State private var settingsTabVM: SettingsTabViewModel = .init()
     
     // MARK: - BODY
@@ -38,7 +39,7 @@ struct SettingsTabView: View {
             .padding([.horizontal, .bottom])
         }
         .overlay(alignment: .bottom) { APIAccessKeyPopupView() }
-        .frame(maxHeight: TabItems.settings.contentHeight)
+        .setTabContentHeightToTabsViewModel(vm: tabsVM)
         .environment(settingsTabVM)
     }
 }
