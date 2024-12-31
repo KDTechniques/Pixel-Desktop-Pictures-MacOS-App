@@ -12,10 +12,10 @@ struct TextfieldView: View {
     @Binding var textfieldText: String
     let localizedKey: String
     let prompt: String
-    let onSubmission: () -> ()
+    let onSubmission: () -> Void
     
     // MARK: - INITIALIZER
-    init(textfieldText: Binding<String>, localizedKey: String, prompt: String, onSubmission: @escaping () -> ()) {
+    init(textfieldText: Binding<String>, localizedKey: String, prompt: String, onSubmission: @escaping () -> Void) {
         _textfieldText = textfieldText
         self.localizedKey = localizedKey
         self.prompt = prompt

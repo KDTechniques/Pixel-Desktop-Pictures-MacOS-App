@@ -10,7 +10,7 @@ import SwiftUI
 struct ImageContainerOverlayCenterView: View {
     // MARK: - PROPERTIES
     let centerItem: ImageContainerCenterItems
-    let action: () -> ()
+    let action: () -> Void
     
     // MARK: - INITIALIZER
     init(centerItem: ImageContainerCenterItems, action: @escaping () -> Void) {

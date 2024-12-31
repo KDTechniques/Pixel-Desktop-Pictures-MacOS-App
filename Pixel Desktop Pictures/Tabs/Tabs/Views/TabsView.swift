@@ -10,25 +10,30 @@ import SwiftUI
 struct TabsView: View {
     // MARK: - PROPERTIES
     @State private var tabsVM: TabsViewModel = .init()
+    let alertManager: AlertsManager = .shared
     
     // MARK: - BODY
     var body: some View {
         VStack(spacing: 0) {
             HeaderView()
             
-            switch tabsVM.tabSelection {
-            case .main:
-                MainTabView()
-            case .recents:
-                RecentsTabView()
-            case .collections:
-                CollectionsTabView()
-            case .settings:
-                SettingsTabView()
+            TabView(selection: Binding(get: { tabsVM.tabSelection }, set: { _ in })) {
+                ForEach(TabItems.allCases, id: \.self) { tab in
+                    tab.content
+                        .tag(tab)
+                }
+                .background(TabBarHiderView())
             }
+            .frame(height: tabsVM.selectedTabContentHeight)
+            .tabViewStyle(.grouped)
         }
         .frame(width: TabItems.allWindowWidth)
         .background(Color.windowBackground)
+        .alert(isPresented: alertManager.binding(\.isPresented), error: alertManager.error) { error in
+            Text(error.errorDescription ?? "No Title")
+        } message: { error in
+            
+        }
         .environment(tabsVM)
     }
 }

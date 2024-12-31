@@ -5,10 +5,24 @@
 //  Created by Kavinda Dilshan on 2024-12-23.
 //
 
-import Foundation
+import SwiftUICore
 
 enum TabItems: CaseIterable {
     case main, recents, collections, settings
+    
+    @ViewBuilder
+    var content: some View {
+        switch self {
+        case .main:
+            MainTabView()
+        case .recents:
+            RecentsTabView()
+        case .collections:
+            CollectionsTabView()
+        case .settings:
+            SettingsTabView()
+        }
+    }
     
     var systemImage: String {
         switch self {
@@ -27,20 +41,12 @@ enum TabItems: CaseIterable {
     
     var contentHeight: CGFloat {
         switch self {
-        case .main:
-            return .infinity
+        case .main, .settings:
+            return CGFloat.nan // Placeholder for dynamic sizing via GeometryReader
         case .recents:
-            return {
-                let values = VGridValues.self
-                return (values.height*4) + (values.spacing*3) + (values.spacing/2)
-            }()
+            return (VGridValues.height*4) + (VGridValues.spacing*3) + (VGridValues.spacing/2)
         case .collections:
-            return {
-                let values = VGridValues.self
-                return (values.height*3) + (values.spacing*2)
-            }()
-        case .settings:
-            return .infinity
+            return (VGridValues.height*3) + (VGridValues.spacing*2)
         }
     }
 }

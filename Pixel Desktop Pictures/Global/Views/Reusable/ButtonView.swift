@@ -15,7 +15,7 @@ struct ButtonView: View {
     // MARK: - PROPERTIES
     let title: String
     let type: ButtonTypes
-    let action: () -> ()
+    let action: () -> Void
     
     // MARK: - PRIVATE PROPERTIES
     var foregroundColor: Color {
@@ -51,11 +51,11 @@ struct ButtonView: View {
             Text(title)
                 .foregroundStyle(foregroundColor)
                 .fontWeight(.medium)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(backgroundColor, in: .rect(cornerRadius: 5))
         }
         .buttonStyle(.plain)
-        .frame(maxWidth: .infinity)
-        .frame(height: 50)
-        .background(backgroundColor, in: .rect(cornerRadius: 5))
     }
 }
 

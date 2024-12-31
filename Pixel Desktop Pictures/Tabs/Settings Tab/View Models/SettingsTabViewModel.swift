@@ -13,7 +13,7 @@ import AppKit
     var launchAtLogin: Bool = false
     var showOnAllSpaces: Bool = false
     var updateIntervalSelection: ImageUpdateIntervalTypes = .daily
-    var apiAccessKeyStatus: APIAccessKeyStatus = .random() // set to validating later as the initial value
+    var apiAccessKeyStatus: APIAccessKeyValidityStatus = .random() // set to validating later as the initial value
     private(set) var isPresentedPopup: Bool = false
     var apiAccessKeyTextfieldText: String = ""
     

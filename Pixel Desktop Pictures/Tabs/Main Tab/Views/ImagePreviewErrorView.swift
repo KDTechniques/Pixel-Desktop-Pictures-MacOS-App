@@ -25,7 +25,7 @@ struct ImagePreviewErrorView: View {
     ImagePreviewErrorView()
         .frame(width: TabItems.allWindowWidth)
         .background(Color.windowBackground)
-        .environment(TabsViewModel())
+        .environment(MainTabViewModel())
 }
 
 // MARK: - EXTENSIONS

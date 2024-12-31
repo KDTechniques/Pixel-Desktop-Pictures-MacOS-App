@@ -6,32 +6,44 @@
 //
 
 import SwiftUI
-import SDWebImageSwiftUI
 
 struct MainTabView: View {
     // MARK: - PROPERTIES
     @State private var mainTabVM: MainTabViewModel = .init()
+    @State private var boolean: Bool = true
     
     // MARK: - BODY
     var body: some View {
-        VStack(spacing: 0) {
-            // Image Preview
-            ImageContainerView(
-                thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-                imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-                location: "Colombo, Sri Lanka"
-            ) // change this later with a view model property model
-            
-            VStack {
-                // Set Desktop Picture Button
-                ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
-                
-                // Author and Download Button
-                footer
+        Group {
+            if boolean {
+                VStack(spacing: 0) {
+                    // Image Preview
+                    ImageContainerView(
+                        thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+                        imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+                        location: "Colombo, Sri Lanka"
+                    ) // change this later with a view model property model
+                    
+                    VStack {
+                        // Set Desktop Picture Button
+                        ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
+                        
+                        // Author and Download Button
+                        footer
+                    }
+                    .padding()
+                }
+                .onTapGesture {
+                    boolean.toggle()
+                }
+            } else {
+                ImagePreviewErrorView()
+                    .onTapGesture {
+                        boolean.toggle()
+                    }
             }
-            .padding()
         }
-        .frame(maxHeight: TabItems.main.contentHeight)
+        .setTabContentHeightToTabsViewModelViewModifier
         .environment(mainTabVM)
     }
 }

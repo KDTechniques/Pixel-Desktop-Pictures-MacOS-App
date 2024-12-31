@@ -23,8 +23,8 @@ struct TabButtonView: View {
             tabsVM.setTabSelection(tab)
         } label: {
             Image(systemName: tab.systemImage)
+                .setForegroundColor(tab, tabsVM.tabSelection)
         }
-        .getForegroundColor(tab, tabsVM.tabSelection)
     }
 }
 
@@ -36,8 +36,8 @@ struct TabButtonView: View {
 
 // MARK: - EXTENSIONS
 extension View {
-    // MARK: - Get Foreground Color
-    fileprivate func getForegroundColor(_ tab: TabItems, _ selectedTab: TabItems) -> some View {
+    // MARK: - Set Foreground Color
+    fileprivate func setForegroundColor(_ tab: TabItems, _ selectedTab: TabItems) -> some View {
         self
             .foregroundStyle(tab == selectedTab ? Color.tabActive : Color.tabInactive)
     }

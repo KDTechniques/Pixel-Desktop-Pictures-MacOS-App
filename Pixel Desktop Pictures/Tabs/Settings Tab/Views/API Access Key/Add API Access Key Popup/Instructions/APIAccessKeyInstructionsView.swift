@@ -82,8 +82,8 @@ extension APIAccessKeyInstructionsView {
                     Image(systemName: "doc.on.doc.fill")
                         .font(.footnote)
                 }
+                .foregroundStyle(Color.accentColor)
             }
-            .foregroundStyle(Color.accentColor)
             .buttonStyle(.plain)
             
             Text("• Leave other fields blank.")
