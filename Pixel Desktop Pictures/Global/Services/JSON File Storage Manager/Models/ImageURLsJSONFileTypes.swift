@@ -8,12 +8,21 @@
 import Foundation
 
 enum ImageURLsJSONFileTypes {
-    case preSavedURLs
+    case preSavedImageURLs
     case queryURLs
+    
+    var type: String {
+        switch self {
+        case .preSavedImageURLs:
+            return "Pre Saved Image URLs"
+        case .queryURLs:
+            return "Query URLs"
+        }
+    }
     
     func fileName(_ queryText: String) -> String {
         switch self {
-        case .preSavedURLs:
+        case .preSavedImageURLs:
             "UnsplashPreSavedImageURLs/\(queryText).json"
         case .queryURLs:
             "UnsplashQueryURLs/\(queryText).json"

@@ -16,7 +16,6 @@ fileprivate struct PopOverPreferenceKey: PreferenceKey {
 
 struct CollectionsTabView: View {
     // MARK: - PROPERTIES
-    @Environment(TabsViewModel.self) private var tabsVM
     @State var collectionsVM: CollectionsViewModel = .init()
     @State private var popOverHeight: CGFloat = 0
     let vGridValues = VGridValues.self
@@ -38,7 +37,7 @@ struct CollectionsTabView: View {
         .overlay { CollectionsGridPopupBackgroundView() }
         .overlay(alignment: .bottom) { popup }
         .background(Color.windowBackground)
-        .setTabContentHeightToTabsViewModel(vm: tabsVM)
+        .setTabContentHeightToTabsViewModelViewModifier
         .onTapGesture { handleTap() }
         .environment(collectionsVM)
     }

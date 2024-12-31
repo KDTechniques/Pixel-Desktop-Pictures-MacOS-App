@@ -8,18 +8,22 @@
 import Foundation
 
 actor UserDefaultsManager {
+    // MARK: - PROPERTIES
     private let defaults = UserDefaults.standard
     
-    // Async method to save a value to UserDefaults
+    // MARK: FUNCTIONS
+    
+    // MARK: - Save Value to User Defaults
     func save(key: String, value: Any) async {
         defaults.set(value, forKey: key)
     }
     
-    // Async method to read a value from UserDefaults
+    // MARK: - Get Value from User Defaults
     func get(key: String) async -> Any? {
         return defaults.object(forKey: key)
     }
     
+    // MARK: - Clear All User Defaults
     static func clearAllUserDefaults() {
         let defaults = UserDefaults.standard
         for key in defaults.dictionaryRepresentation().keys {

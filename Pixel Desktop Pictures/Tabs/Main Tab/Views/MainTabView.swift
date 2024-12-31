@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - PROPERTIES
-    @Environment(TabsViewModel.self) private var tabsVM
     @State private var mainTabVM: MainTabViewModel = .init()
     @State private var boolean: Bool = true
     
@@ -44,7 +43,7 @@ struct MainTabView: View {
                     }
             }
         }
-        .setTabContentHeightToTabsViewModel(vm: tabsVM)
+        .setTabContentHeightToTabsViewModelViewModifier
         .environment(mainTabVM)
     }
 }

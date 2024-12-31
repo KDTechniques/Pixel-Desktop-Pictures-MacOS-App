@@ -15,7 +15,7 @@ struct ButtonView: View {
     // MARK: - PROPERTIES
     let title: String
     let type: ButtonTypes
-    let action: () -> ()
+    let action: () -> Void
     
     // MARK: - PRIVATE PROPERTIES
     var foregroundColor: Color {

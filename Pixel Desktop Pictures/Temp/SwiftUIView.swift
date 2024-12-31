@@ -8,30 +8,22 @@
 import SwiftUI
 
 struct SwiftUIView: View {
-    @State private var sampleClass: Sample = .init()
+    @State var testingClass: TestingClass = .init()
     
     var body: some View {
-        Button("Throw error") {
-            sampleClass.throwAnerror()
-            sampleClass.throwAnerror()
-        }
-        
+        Text("Thank You!")
+            .onFirstTaskViewModifier {
+                await testingClass.initializeDesktopPictureScheduler()
+            }
     }
 }
 
-#Preview {
-    TabsView()
-}
-
-@MainActor
-@Observable final class Sample {
-    private let scheduler = DesktopPictureScheduler.init(timeIntervalModel: MockDesktopPictureSchedulerIntervals.self) {
-        print("Hi there...")
+@Observable final class TestingClass {
+    let scheduler: DesktopPictureScheduler = .init(timeIntervalModel: MockDesktopPictureSchedulerIntervals.self) {
+        print("Background task goes here...")
     }
     
-    func throwAnerror() {
-        Task {
-            await scheduler.throwAnError()
-        }
+    func initializeDesktopPictureScheduler() async {
+        await scheduler.initializeScheduler()
     }
 }
