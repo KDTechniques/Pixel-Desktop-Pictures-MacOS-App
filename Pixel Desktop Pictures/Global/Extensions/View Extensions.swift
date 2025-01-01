@@ -5,10 +5,11 @@
 //  Created by Kavinda Dilshan on 2024-12-22.
 //
 
-import SwiftUICore
+import SwiftUI
+import SwiftData
 
 extension View {
-    // MARK: - Set Tab Content Height To Tabs ViewModel Modifier
+    // MARK: - Set Tab Content Height To Tabs ViewModel View Modifier
     var setTabContentHeightToTabsViewModelViewModifier: some View {
         return self.modifier(SetTabContentHeightToTabsViewModel())
     }
@@ -18,7 +19,7 @@ extension View {
         return self.modifier(OnFirstAppear(action))
     }
     
-    // MARK: - On First Task Modifier
+    // MARK: - On First Task View Modifier
     func onFirstTaskViewModifier(_ action: @escaping () async -> Void) -> some View {
         return self.modifier(OnFirstTask(action))
     }

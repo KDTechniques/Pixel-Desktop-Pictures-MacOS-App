@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
@@ -17,7 +18,15 @@ struct Pixel_Desktop_PicturesApp: App {
                 .windowFullScreenBehavior(.disabled)
                 .windowDismissBehavior(.disabled)
         }
+        .getModelContainersViewModifier(
+            in: .mock,
+            for: [
+                PreSavedImageURLModel.self,
+                ImageQueryURLModel.self,
+                RecentImageURLModel.self
+            ]
+        )
         .windowResizability(.contentSize)
-//        .windowStyle(.hiddenTitleBar)
+        //        .windowStyle(.hiddenTitleBar)
     }
 }
