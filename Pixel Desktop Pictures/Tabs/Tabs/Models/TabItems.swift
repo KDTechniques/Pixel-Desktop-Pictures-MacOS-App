@@ -14,7 +14,8 @@ enum TabItems: CaseIterable {
     var content: some View {
         switch self {
         case .main:
-            MainTabView()
+//            MainTabView()
+            SwiftUIView()
         case .recents:
             RecentsTabView()
         case .collections:

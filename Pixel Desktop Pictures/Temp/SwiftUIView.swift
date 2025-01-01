@@ -13,6 +13,7 @@ struct SwiftUIView: View {
     var body: some View {
         Text("Thank You!")
             .onFirstTaskViewModifier {
+                print(Date())
                 await testingClass.initializeDesktopPictureScheduler()
             }
     }
