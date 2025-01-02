@@ -11,7 +11,7 @@ struct TabItemsView: View {
     // MARK: - BODY
     var body: some View {
         HStack {
-            ForEach(TabItems.allCases, id: \.self) { tab in
+            ForEach(TabItemsModel.allCases, id: \.self) { tab in
                 TabButtonView(tab: tab)
             }
         }
@@ -24,7 +24,7 @@ struct TabItemsView: View {
 #Preview("Tab Items View") {
     TabItemsView()
         .padding()
-        .frame(width: TabItems.allWindowWidth)
+        .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)
         .environment(TabsViewModel())
 }

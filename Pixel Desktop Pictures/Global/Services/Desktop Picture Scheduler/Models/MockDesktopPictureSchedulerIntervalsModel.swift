@@ -1,5 +1,5 @@
 //
-//  MockDesktopPictureSchedulerIntervals.swift
+//  MockDesktopPictureSchedulerIntervalsModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-28.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MockDesktopPictureSchedulerIntervals: String, CaseIterable, DesktopPictureSchedulerIntervalsProtocol {
+enum MockDesktopPictureSchedulerIntervalsModel: String, CaseIterable, DesktopPictureSchedulerIntervalsProtocol {
     case hourly, daily, weekly
     
     var timeIntervalName: String {
@@ -15,6 +15,8 @@ enum MockDesktopPictureSchedulerIntervals: String, CaseIterable, DesktopPictureS
     }
     
     // Note: Do not test for less than 10 minutes, as it is advised for `Activities Occurring in Intervals of 10 Minutes or More`.
+    /// 1 minute is the minimum value that can be used; otherwise, the scheduler may not work properly.
+    /// A value greater than 1 minute is always fine for testing purposes, but in a production environment, 10 minutes is the recommended minimum value.
     var timeInterval: TimeInterval {
         switch self {
         case .hourly:

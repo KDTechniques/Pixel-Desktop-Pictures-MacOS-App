@@ -8,5 +8,46 @@
 import Foundation
 
 actor MockImageDownloadManager {
+    // MARK: FUNCTIONS
     
+    // MARK: - Download Image
+    /// Downloads an image from a given URL and saves it to the specified directory.
+    ///
+    /// - Parameters:
+    ///   - url: A string representing the URL of the image to be downloaded.
+    ///   - directory: An enum representing the target directory (`downloadsDirectory` or `documentsDirectory`) where the image will be saved.
+    ///
+    /// - Throws:
+    ///   - `URLError`: If the URL string is invalid or there are issues during the network request or response handling.
+    ///   - `UnsplashImageDirectoryModelErrorModel`: If there is an issue with constructing the file URL or saving the image to the directory.
+    ///
+    /// - Returns:
+    ///   A `URL` object representing the location where the image file has been saved.
+    func downloadImage(url: String, to directory: MockUnsplashImageDirectoryModel) async throws -> URL {
+        // Safe Unwrapping of URL String to URL
+        guard let url: URL = URL(string: url) else {
+            throw URLError(.badURL)
+        }
+        
+        // Download Data via URL Session
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        // Determine the File Extension from the Response MIME Type
+        guard let httpResponse: HTTPURLResponse = response as? HTTPURLResponse,
+              let mimeType: String = httpResponse.value(forHTTPHeaderField: "Content-Type") else {
+            throw URLError(.badServerResponse)
+        }
+        
+        // Map MIME Type to File Extension
+        let fileExtension: String = Utilities.mimeTypeToFileExtension(mimeType)
+        
+        // Create File Path in the Desired Directory
+        let fileURL: URL = try directory.fileURL(extension: fileExtension)
+        
+        // Save the File in the Desired Directory Path
+        try data.write(to: fileURL)
+        
+        print("Image file is successfully downloaded to \(fileURL.path())")
+        return fileURL
+    }
 }

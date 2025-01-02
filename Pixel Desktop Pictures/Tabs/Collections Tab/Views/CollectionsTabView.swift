@@ -18,7 +18,7 @@ struct CollectionsTabView: View {
     // MARK: - PROPERTIES
     @State var collectionsVM: CollectionsViewModel = .init()
     @State private var popOverHeight: CGFloat = 0
-    let vGridValues = VGridValues.self
+    let vGridValues = VGridValuesModel.self
     
     // MARK: - BODY
     var body: some View {
@@ -32,7 +32,7 @@ struct CollectionsTabView: View {
             .padding(.horizontal)
         }
         .scrollDisabled(collectionsVM.collectionVGridItemsArray.count <= 8)
-        .frame(height: TabItems.collections.contentHeight)
+        .frame(height: TabItemsModel.collections.contentHeight)
         .padding(.bottom)
         .overlay { CollectionsGridPopupBackgroundView() }
         .overlay(alignment: .bottom) { popup }

@@ -16,7 +16,7 @@ struct ImageContainerView: View {
     let location: String
     
     // MARK: - PRIVATE PROPERTIES
-    @State private var centerItem: ImageContainerCenterItems = .random() // set to progress later as default value
+    @State private var centerItem: ImageContainerCenterItemsModel = .random() // set to progress later as default value
     let imageHeight: CGFloat = 200
     
     // MARK: - INITIALIZER
@@ -50,7 +50,7 @@ struct ImageContainerView: View {
         imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
         location: "Playa Mixota, Spain"
     )
-    .frame(width: TabItems.allWindowWidth)
+    .frame(width: TabItemsModel.allWindowWidth)
     .background(Color.windowBackground)
     .environment(TabsViewModel())
 }

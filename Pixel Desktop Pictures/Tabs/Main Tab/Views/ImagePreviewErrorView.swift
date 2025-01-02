@@ -23,7 +23,7 @@ struct ImagePreviewErrorView: View {
 // MARK: - PREVIEWS
 #Preview("Image Preview Error View") {
     ImagePreviewErrorView()
-        .frame(width: TabItems.allWindowWidth)
+        .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)
         .environment(MainTabViewModel())
 }

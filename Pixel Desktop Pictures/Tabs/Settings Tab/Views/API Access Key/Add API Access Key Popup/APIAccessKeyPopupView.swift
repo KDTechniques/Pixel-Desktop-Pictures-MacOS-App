@@ -59,7 +59,7 @@ struct APIAccessKeyPopupView: View {
 // MARK: - PREVIEWS
 #Preview("API Access Key Popup View") {
     APIAccessKeyPopupView()
-        .frame(width: TabItems.allWindowWidth)
+        .frame(width: TabItemsModel.allWindowWidth)
         .environment(SettingsTabViewModel())
 }
 
