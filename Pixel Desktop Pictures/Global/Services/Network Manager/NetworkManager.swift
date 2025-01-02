@@ -10,7 +10,7 @@ import Network
 
 @MainActor
 @Observable
-final class NetworkManager {
+final class NetworkManager: NetworkManagerProtocol {
     // MARK: - PROPERTIES
     private let monitor = NWPathMonitor()
     private let networkManagerQueue = DispatchQueue(label: "com.kdtechniques.Pixel-Desktop-Pictures.NetworkManager.networkManagerQueue")

@@ -8,6 +8,7 @@
 import Foundation
 
 protocol DesktopPictureSchedulerIntervalsProtocol {
+    // MARK: - PROPERTIES
     var timeIntervalName: String { get }
     var timeInterval: TimeInterval { get }
     static var defaultTimeInterval: TimeInterval { get }

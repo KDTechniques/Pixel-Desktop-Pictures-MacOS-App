@@ -1,43 +1,43 @@
 //
-//  UnsplashImageDirectoryModel.swift
+//  MockUnsplashImageDirectoryModel.swift
 //  Pixel Desktop Pictures
 //
-//  Created by Kavinda Dilshan on 2025-01-02.
+//  Created by Kavinda Dilshan on 2025-01-03.
 //
 
 import Foundation
 
-enum UnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
+enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
     case downloadsDirectory, documentsDirectory
     
-    private var directory: FileManager.SearchPathDirectory {
+    var directory: FileManager.SearchPathDirectory {
         switch self {
         case .downloadsDirectory:
             return .downloadsDirectory
-        case .documentsDirectory:
-            return .documentDirectory
+        case .documentsDirectory: // Note: Simulate Documents Directory in the Downloads Directory for Ease of Testing
+            return .downloadsDirectory
         }
     }
     
-    private var folderName: String {
+    var folderName: String {
         switch self {
         case .downloadsDirectory:
-            return "Pixel Desktop Picture Downloads"
+            return "(Mock-temp) Pixel Desktop Picture Downloads"
         case .documentsDirectory:
-            return "Pixel Desktop Picture"
+            return "(Mock-temp) Pixel Desktop Picture"
         }
     }
     
-    private var fileName: String {
+    var fileName: String {
         switch self {
         case .downloadsDirectory:
-            return UUID().uuidString
+            return "(Mock-temp)" + UUID().uuidString
         case .documentsDirectory:
-            return "Desktop Picture"
+            return "(Mock-temp) Desktop Picture"
         }
     }
     
-    private func createDirectoryIfNeeded() throws -> URL {
+    func createDirectoryIfNeeded() throws -> URL {
         guard let directoryURL = FileManager.default
             .urls(for: directory, in: .userDomainMask)
             .first else {

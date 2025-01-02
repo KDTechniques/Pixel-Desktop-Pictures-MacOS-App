@@ -11,6 +11,18 @@ actor ImageDownloadManager {
     // MARK: FUNCTIONS
     
     // MARK: - Download Image
+    /// Downloads an image from a given URL and saves it to the specified directory.
+    ///
+    /// - Parameters:
+    ///   - url: A string representing the URL of the image to be downloaded.
+    ///   - directory: An enum representing the target directory (`downloadsDirectory` or `documentsDirectory`) where the image will be saved.
+    ///
+    /// - Throws:
+    ///   - `URLError`: If the URL string is invalid or there are issues during the network request or response handling.
+    ///   - `UnsplashImageDirectoryModelErrorModel`: If there is an issue with constructing the file URL or saving the image to the directory.
+    ///
+    /// - Returns:
+    ///   A `URL` object representing the location where the image file has been saved.
     func downloadImage(url: String, to directory: UnsplashImageDirectoryModel) async throws -> URL {
         // Safe Unwrapping of URL String to URL
         guard let url: URL = URL(string: url) else {

@@ -1,5 +1,5 @@
 //
-//  DesktopPictureSchedulerIntervals.swift
+//  DesktopPictureSchedulerIntervalsModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-28.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum DesktopPictureSchedulerIntervals: String, CaseIterable, DesktopPictureSchedulerIntervalsProtocol {
+enum DesktopPictureSchedulerIntervalsModel: String, CaseIterable, DesktopPictureSchedulerIntervalsProtocol {
     case hourly, daily, weekly
     
     var timeIntervalName: String {
