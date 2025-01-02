@@ -15,4 +15,18 @@ struct Utilities {
         
         return "\(version) (\(build))"
     }
+    
+    // MARK: - Mime Type to File Extension
+    static func mimeTypeToFileExtension(_ mimeType: String) -> String {
+        let mimeMapping: [String: String] = [
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/gif": "gif",
+            "image/webp": "webp",
+            "image/bmp": "bmp",
+            "image/tiff": "tiff"
+        ]
+        
+        return mimeMapping[mimeType] ?? "jpg"
+    }
 }

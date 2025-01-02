@@ -10,6 +10,9 @@ import SwiftData
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
+    
+    @State private var networkManager: NetworkManager = .init()
+    
     var body: some Scene {
         WindowGroup {
             TabsView()
@@ -17,11 +20,19 @@ struct Pixel_Desktop_PicturesApp: App {
                 .windowMinimizeBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)
                 .windowDismissBehavior(.disabled)
+                .environment(networkManager)
+                .onFirstTaskViewModifier {
+                    let imageDownloadManager: ImageDownloadManager = .init()
+                    do {
+                        let _ = try await imageDownloadManager.downloadImage(url: "https://unsplash.com/photos/WrawS5541bo/download?ixid=M3w2ODg0NDh8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MzU4MzQwNjR8", to: .downloadsDirectory)
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
         }
         .getModelContainersViewModifier(
             in: .mock,
             for: [
-                PreSavedImageURLModel.self,
                 ImageQueryURLModel.self,
                 RecentImageURLModel.self
             ]

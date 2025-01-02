@@ -64,7 +64,7 @@ actor DesktopPictureScheduler {
         do {
             try await scheduleBackgroundTask(with: timeIntervalForScheduler)
         } catch {
-            print("\(String(describing: DesktopPictureSchedulerError.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
+            print("\(String(describing: DesktopPictureSchedulerErrorModel.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
         }
         
         print("`DesktopPictureScheduler` is initialized.")
@@ -84,7 +84,7 @@ actor DesktopPictureScheduler {
             // Save Execution Time Interval Since 1970 to User Defaults
             await saveExecutionTimeSince1970ToUserDefaults(from: executionTimeIntervalSince1970)
         } catch {
-            print("\(String(describing: DesktopPictureSchedulerError.executionTimeProcessingFailed.errorDescription)) \(error.localizedDescription)")
+            print("\(String(describing: DesktopPictureSchedulerErrorModel.executionTimeProcessingFailed.errorDescription)) \(error.localizedDescription)")
         }
     }
     
@@ -191,7 +191,7 @@ actor DesktopPictureScheduler {
                 guard let self else {
                     print("Error: `NSBackgroundActivityScheduler` task is deallocated.")
                     completion(.deferred)
-                    throw DesktopPictureSchedulerError.taskDeallocated
+                    throw DesktopPictureSchedulerErrorModel.taskDeallocated
                 }
                 
                 await performBackgroundTask()

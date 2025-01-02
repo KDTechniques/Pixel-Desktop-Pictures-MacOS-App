@@ -22,7 +22,7 @@ struct PreviewView<T: View>: View {
             HeaderView()
             content
         }
-        .frame(width: TabItems.allWindowWidth)
+        .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)
         .environment(TabsViewModel())
         .environment(MainTabViewModel())

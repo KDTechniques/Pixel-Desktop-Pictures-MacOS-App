@@ -18,7 +18,7 @@ struct TabsView: View {
             HeaderView()
             
             TabView(selection: Binding(get: { tabsVM.tabSelection }, set: { _ in })) {
-                ForEach(TabItems.allCases, id: \.self) { tab in
+                ForEach(TabItemsModel.allCases, id: \.self) { tab in
                     tab.content
                         .tag(tab)
                 }
@@ -27,7 +27,7 @@ struct TabsView: View {
             .frame(height: tabsVM.selectedTabContentHeight)
             .tabViewStyle(.grouped)
         }
-        .frame(width: TabItems.allWindowWidth)
+        .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)
         .alert(isPresented: alertManager.binding(\.isPresented), error: alertManager.error) { error in
             Text(error.errorDescription ?? "No Title")

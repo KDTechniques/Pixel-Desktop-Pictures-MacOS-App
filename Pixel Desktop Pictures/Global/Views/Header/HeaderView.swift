@@ -22,7 +22,7 @@ struct HeaderView: View {
 // MARK: - PREVIEWS
 #Preview("Header View") {
     HeaderView()
-        .frame(width: TabItems.allWindowWidth)
+        .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)
         .environment(TabsViewModel())
 }

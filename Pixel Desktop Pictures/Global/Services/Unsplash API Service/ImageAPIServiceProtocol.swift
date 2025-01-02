@@ -13,7 +13,7 @@ protocol ImageAPIServiceProtocol: NetworkServiceProtocol {
     var defaults: UserDefaultsManager { get }
     var fileStorageManager: Manager { get }
     var apiAccessKey: String? { get async }
-    var apiAccessKeyValidityStatus: APIAccessKeyValidityStatus { get async }
+    var apiAccessKeyValidityStatus: APIAccessKeyValidityStatusModel { get async }
     var randomImageURLString: String { get }
     var timeOut: TimeInterval { get }
     

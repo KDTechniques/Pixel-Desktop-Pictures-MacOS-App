@@ -18,7 +18,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
     }
     
     // MARK: - PRIVATE PROPERTIES
-    let vGridValues = VGridValues.self
+    let vGridValues = VGridValuesModel.self
     
     // MARK: - BODY
     var body: some View {

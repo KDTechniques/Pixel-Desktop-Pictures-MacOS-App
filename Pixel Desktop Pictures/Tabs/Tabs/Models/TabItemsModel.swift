@@ -1,5 +1,5 @@
 //
-//  TabItems.swift
+//  TabItemsModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-23.
@@ -7,15 +7,14 @@
 
 import SwiftUICore
 
-enum TabItems: CaseIterable {
+enum TabItemsModel: CaseIterable {
     case main, recents, collections, settings
     
     @ViewBuilder
     var content: some View {
         switch self {
         case .main:
-//            MainTabView()
-            SwiftUIView()
+            MainTabView()
         case .recents:
             RecentsTabView()
         case .collections:
@@ -45,9 +44,9 @@ enum TabItems: CaseIterable {
         case .main, .settings:
             return CGFloat.nan // Placeholder for dynamic sizing via GeometryReader
         case .recents:
-            return (VGridValues.height*4) + (VGridValues.spacing*3) + (VGridValues.spacing/2)
+            return (VGridValuesModel.height*4) + (VGridValuesModel.spacing*3) + (VGridValuesModel.spacing/2)
         case .collections:
-            return (VGridValues.height*3) + (VGridValues.spacing*2)
+            return (VGridValuesModel.height*3) + (VGridValuesModel.spacing*2)
         }
     }
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 actor UnsplashAPIService {
-
-
+    
+    
 }
