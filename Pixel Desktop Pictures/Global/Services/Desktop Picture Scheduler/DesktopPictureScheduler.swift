@@ -24,10 +24,6 @@ actor DesktopPictureScheduler {
     }
     
     // MARK: - INITIALIZER
-    /// Initializes the DesktopPictureScheduler with the specified time interval model and background task.
-    /// - Parameters:
-    ///   - timeIntervalModel: The model that conforms to the DesktopPictureSchedulerIntervalsProtocol.
-    ///   - backgroundTask: The background task to be executed.
     init(timeIntervalModel: DesktopPictureSchedulerIntervalsProtocol.Type, backgroundTask: @escaping () -> Void) {
         self.timeIntervalType = timeIntervalModel
         timeIntervalSelection = timeIntervalModel.defaultTimeInterval
@@ -40,6 +36,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - on Change Of Time Interval Selection
     /// Handles changes to the time interval selection.
+    ///
     /// - Parameter timeInterval: The new time interval selection.
     func onChangeOfTimeIntervalSelection(from timeInterval: DesktopPictureSchedulerIntervalsProtocol) async {
         // Save Time Interval Selection Value to User Defaults
@@ -72,6 +69,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - Calculate Schedule Save Execution Time Interval Since 1970
     /// Calculates, schedules, and saves the execution time interval since 1970.
+    ///
     /// - Parameter timeIntervalSelection: The selected time interval.
     private func calculateScheduleSaveExecutionTimeIntervalSince1970(with timeIntervalSelection: TimeInterval) async {
         // Calculate Execution Time Interval Since 1970 from New Time Interval Selection Value
@@ -90,6 +88,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - Calculate Execution Time Interval Since 1970
     /// Calculates the execution time interval since 1970 based on the selected time interval.
+    ///
     /// - Parameter timeIntervalSelection: The selected time interval.
     /// - Returns: The execution time interval since 1970.
     private func calculateExecutionTimeIntervalSince1970(from timeIntervalSelection: TimeInterval) async -> TimeInterval {
@@ -100,6 +99,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - Calculate Time Interval for Scheduler
     /// Calculates the time interval for the scheduler based on the execution time.
+    ///
     /// - Returns: The calculated time interval for the scheduler.
     private func calculateTimeIntervalForScheduler() async -> TimeInterval? {
         let executionTimeIntervalSince1970: TimeInterval = await getExecutionTimeIntervalSince1970FromUserDefaults(otherwiseWith: timeIntervalSelection)
@@ -120,6 +120,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - Get Time Interval Selection from User Defaults
     /// Retrieves the time interval selection value from User Defaults.
+    ///
     /// - Returns: The time interval selection value.
     private func getTimeIntervalSelectionFromUserDefaults() async -> TimeInterval {
         // Try to Get Time Interval Selection Value from User Defaults
@@ -136,6 +137,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - Get Execution Time Interval Since 1970 from User Defaults
     /// Retrieves the execution time interval since 1970 from User Defaults or calculates a new one if not found.
+    ///
     /// - Parameter timeIntervalSelection: The selected time interval.
     /// - Returns: The execution time interval since 1970.
     private func getExecutionTimeIntervalSince1970FromUserDefaults(otherwiseWith timeIntervalSelection: TimeInterval) async -> TimeInterval {
@@ -155,6 +157,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - Save Time Interval Selection to User Defaults
     /// Saves the time interval selection value to User Defaults.
+    ///
     /// - Parameter timeIntervalSelection: The selected time interval.
     private func saveTimeIntervalSelectionToUserDefaults(from timeIntervalSelection: TimeInterval) async {
         await defaults.save(key: timeIntervalKey, value: timeIntervalSelection)
@@ -163,14 +166,20 @@ actor DesktopPictureScheduler {
     
     // MARK: - Save Execution Time Since 1970 to User Defaults
     /// Saves the execution time interval since 1970 to User Defaults.
+    ///
     /// - Parameter executionTimeIntervalSince1970: The execution time interval since 1970.
     private func saveExecutionTimeSince1970ToUserDefaults(from executionTimeIntervalSince1970: TimeInterval) async {
         await defaults.save(key: executionTimeKey, value: executionTimeIntervalSince1970)
     }
     
     // MARK: - Schedule Background Task
-    /// Schedules the background task with the given time interval.
-    /// - Parameter timeInterval: The time interval for the scheduler.
+    /// This function schedules a background task with the specified time interval.
+    /// It uses `NSBackgroundActivityScheduler` to ensure the task runs efficiently in the background.
+    ///
+    /// - Parameter timeInterval: The time interval (in seconds) for the scheduler.
+    ///   - If `timeInterval` is `nil`, it implies that the user has triggered the task manually by opening the app.
+    ///
+    /// - Throws: `DesktopPictureSchedulerErrorModel.taskDeallocated`: If the task instance is deallocated during execution.
     private func scheduleBackgroundTask(with timeInterval: TimeInterval?) async throws {
         guard let timeInterval: TimeInterval else {
             // Nil `timeInterval` Value Means User Has Passed the Execution Time and Opened the App

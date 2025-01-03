@@ -28,7 +28,7 @@ struct SwiftUIView2: View {
             
             Button("Get Random Image Model") {
                 Task {
-                    let imageDownloadManager: ImageDownloadManager = .init()
+                    let imageDownloadManager: MockImageDownloadManager = .init()
                     
                     do {
                         let model = try await apiService.getRandomImageModel()
@@ -41,9 +41,9 @@ struct SwiftUIView2: View {
             
             Button("Get Query Image Model") {
                 Task {
-                    let imageDownloadManager: ImageDownloadManager = .init()
+                    let imageDownloadManager: MockImageDownloadManager = .init()
                     do {
-                        let model = try await apiService.getQueryImageModel(queryText: "bmw", pageNumber: 1)
+                        let model = try await apiService.getQueryImageModel(queryText: "ferrari", pageNumber: 1)
                         let _ = try await imageDownloadManager.downloadImage(url: model.results.last!.imageQualityURLStrings.regular, to: .downloadsDirectory)
                     } catch {
                         print(error.localizedDescription)
