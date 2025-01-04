@@ -12,5 +12,5 @@ protocol ImageDownloadManagerProtocol {
     
     // MARK: - Download Image
     /// Downloads an image from a given URL and saves it to the specified directory.
-    func downloadImage(url: String, to directory: UnsplashImageDirectoryModel) async throws -> URL
+    func downloadImage(url: String, to directory: UnsplashImageDirectoryModel) async throws -> String
 }

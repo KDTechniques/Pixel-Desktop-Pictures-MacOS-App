@@ -1,5 +1,5 @@
 //
-//  UnsplashAPIServiceErrorModel.swift
+//  UnsplashImageAPIServiceErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-03.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum UnsplashAPIServiceErrorModel: LocalizedError {
+enum UnsplashImageAPIServiceErrorModel: LocalizedError {
     case apiAccessKeyValidationFailed(_ error: Error)
     case randomImageModelFetchFailed(_ error: Error)
     case queryImageModelFetchFailed(_ error: Error)

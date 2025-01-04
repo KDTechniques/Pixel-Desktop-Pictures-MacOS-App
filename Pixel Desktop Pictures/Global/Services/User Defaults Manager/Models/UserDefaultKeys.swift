@@ -11,10 +11,11 @@ import Foundation
 enum UserDefaultKeys: String {
     case hasFirstLaunchKey
     case launchAtLoginKey
-    case endpointSelection
-    case selectedCollections
+    case endpointSelectionKey
+    case selectedCollectionsKey
     case apiAccessKey
-    case apiAccessKeyStatus
-    case timeIntervalSelection
-    case executionTimeIntervalSince1970
+    case apiAccessKeyStatusKey
+    case timeIntervalSelectionKey
+    case executionTimeIntervalSince1970Key
+    case currentDesktopPictureFileURLStringKey
 }
