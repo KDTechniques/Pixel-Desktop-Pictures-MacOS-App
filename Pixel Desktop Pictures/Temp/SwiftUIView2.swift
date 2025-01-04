@@ -9,7 +9,9 @@ import SwiftUI
 
 struct SwiftUIView2: View {
     @State private var networkManager: NetworkManager = .init()
-    var apiService: UnsplashAPIService = .init(apiAccessKey: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
+    var apiService: UnsplashImageAPIService = .init(apiAccessKey: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
+    let desktopPictureManager: DesktopPictureManager = .init()
+    let imageDownloadManager: MockImageDownloadManager = .init()
     
     var body: some View {
         VStack {
@@ -28,11 +30,15 @@ struct SwiftUIView2: View {
             
             Button("Get Random Image Model") {
                 Task {
-                    let imageDownloadManager: MockImageDownloadManager = .init()
                     
                     do {
                         let model = try await apiService.getRandomImageModel()
-                        let _ = try await imageDownloadManager.downloadImage(url: model.imageQualityURLStrings.full, to: .downloadsDirectory)
+                        let imageFileURLString: String = try await imageDownloadManager.downloadImage(
+                            url: model.imageQualityURLStrings.full,
+                            to: .downloadsDirectory
+                        )
+                        
+                        try await desktopPictureManager.setDesktopPicture(from: imageFileURLString)
                     } catch {
                         print(error.localizedDescription)
                     }
@@ -41,15 +47,24 @@ struct SwiftUIView2: View {
             
             Button("Get Query Image Model") {
                 Task {
-                    let imageDownloadManager: MockImageDownloadManager = .init()
                     do {
-                        let model = try await apiService.getQueryImageModel(queryText: "ferrari", pageNumber: 1)
-                        let _ = try await imageDownloadManager.downloadImage(url: model.results.last!.imageQualityURLStrings.regular, to: .downloadsDirectory)
+                        let model = try await apiService.getQueryImageModel(queryText: "girl", pageNumber: 1)
+                        let imageFileURLString: String = try await imageDownloadManager.downloadImage(
+                            url: model.results.last!.imageQualityURLStrings.full,
+                            to: .downloadsDirectory
+                        )
+                        
+                        try await desktopPictureManager.setDesktopPicture(from: imageFileURLString)
                     } catch {
                         print(error.localizedDescription)
                     }
                 }
             }
+        }
+        .padding()
+        .onFirstTaskViewModifier {
+            networkManager.initializeNetworkManager()
+            await desktopPictureManager.initializeDesktopPictureManager()
         }
     }
 }

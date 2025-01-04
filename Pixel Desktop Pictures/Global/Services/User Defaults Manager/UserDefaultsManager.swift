@@ -14,13 +14,13 @@ actor UserDefaultsManager {
     // MARK: FUNCTIONS
     
     // MARK: - Save Value to User Defaults
-    func save(key: String, value: Any) async {
-        defaults.set(value, forKey: key)
+    func save(key: UserDefaultKeys, value: Any) async {
+        defaults.set(value, forKey: key.rawValue)
     }
     
     // MARK: - Get Value from User Defaults
-    func get(key: String) async -> Any? {
-        return defaults.object(forKey: key)
+    func get(key: UserDefaultKeys) async -> Any? {
+        return defaults.object(forKey: key.rawValue)
     }
     
     // MARK: - Clear All User Defaults

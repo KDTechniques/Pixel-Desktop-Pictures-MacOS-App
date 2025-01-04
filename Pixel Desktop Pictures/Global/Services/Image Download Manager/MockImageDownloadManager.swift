@@ -22,7 +22,7 @@ actor MockImageDownloadManager {
     ///
     /// - Returns:
     ///   A `URL` object representing the location where the image file has been saved.
-    func downloadImage(url: String, to directory: MockUnsplashImageDirectoryModel) async throws -> URL {
+    func downloadImage(url: String, to directory: MockUnsplashImageDirectoryModel) async throws -> String {
         // Safe Unwrapping of URL String to URL
         guard let url: URL = URL(string: url) else {
             throw URLError(.badURL)
@@ -47,6 +47,6 @@ actor MockImageDownloadManager {
         try data.write(to: fileURL)
         
         print("Image file is successfully downloaded to \(fileURL.path())")
-        return fileURL
+        return fileURL.absoluteString
     }
 }

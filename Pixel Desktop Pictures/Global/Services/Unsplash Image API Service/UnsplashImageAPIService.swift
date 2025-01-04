@@ -1,5 +1,5 @@
 //
-//  UnsplashAPIService.swift
+//  UnsplashImageAPIService.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-28.
@@ -7,12 +7,13 @@
 
 import Foundation
 
-actor UnsplashAPIService {
+actor UnsplashImageAPIService {
     // MARK: - PROPERTIES
     let apiAccessKey: String
     private let timeout: TimeInterval = 10
     private let imagesPerPage: Int = 10
     private let randomImageURLString = "https://api.unsplash.com/photos/random?orientation=landscape"
+
     
     // MARK: - INITIALIZER
     init(apiAccessKey: String) {
@@ -29,14 +30,14 @@ actor UnsplashAPIService {
     /// It attempts to fetch a random image using the provided API Access Key.
     /// If the call is successful, the key is considered valid. If it fails, an error is thrown.
     ///
-    /// - Throws: `UnsplashAPIServiceErrorModel.apiAccessKeyValidationFailed`: If the API call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed`: If the API call fails,
     /// the function wraps the underlying error in this custom error type to indicate
     /// that the access key validation was unsuccessful.
     func validateAPIAccessKey() async throws {
         do {
-            let _ = try await networkCall(for: randomImageURLString, in: UnsplashRandomImageModel.self)
+            let _ = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImageModel.self)
         } catch {
-            throw UnsplashAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
+            throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
         }
     }
     
@@ -45,14 +46,16 @@ actor UnsplashAPIService {
     /// This function performs a network call to retrieve a random image and returns the corresponding model.
     ///
     /// - Returns: An `UnsplashRandomImageModel` object representing the fetched random image.
-    /// - Throws: `UnsplashAPIServiceErrorModel.randomImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
+    ///
+    /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
     func getRandomImageModel() async throws -> UnsplashRandomImageModel {
         do {
-            let randomImageModel: UnsplashRandomImageModel = try await networkCall(for: randomImageURLString, in: UnsplashRandomImageModel.self)
+            let randomImageModel: UnsplashRandomImageModel = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImageModel.self)
             return randomImageModel
         } catch {
-            throw UnsplashAPIServiceErrorModel.randomImageModelFetchFailed(error)
+            throw UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed(error)
         }
     }
     
@@ -67,16 +70,18 @@ actor UnsplashAPIService {
     ///
     /// - Returns: An `UnsplashQueryImageModel` object containing the query-based image results.
     ///
-    /// - Throws: `UnsplashAPIServiceErrorModel.queryImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
+    ///
+    /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
     func getQueryImageModel(queryText: String, pageNumber: Int) async throws -> UnsplashQueryImageModel {
         let queryURLString: String = await constructQueryURLString(queryText: queryText, pageNumber: pageNumber)
         
         do {
-            let model: UnsplashQueryImageModel = try await networkCall(for: queryURLString, in: UnsplashQueryImageModel.self)
+            let model: UnsplashQueryImageModel = try await fetchDataNDecode(for: queryURLString, in: UnsplashQueryImageModel.self)
             return model
         } catch {
-            throw UnsplashAPIServiceErrorModel.queryImageModelFetchFailed(error)
+            throw UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed(error)
         }
     }
     
@@ -97,7 +102,7 @@ actor UnsplashAPIService {
         return queryURLString
     }
     
-    // MARK: - URL Session Network Call Request
+    // MARK: - Fetch Data and Decode
     /// Makes a network call to the given URL string and decodes the response into the specified model type.
     ///
     /// - Parameters:
@@ -109,7 +114,7 @@ actor UnsplashAPIService {
     /// - Throws: `URLError`: If the URL is invalid or the server response is not as expected.
     /// `DecodingError`: If the response data cannot be decoded into the specified type.
     /// Custom errors based on HTTP response status code.
-    private func networkCall<T: Decodable>(for urlString: String, in type: T.Type) async throws -> T {
+    private func fetchDataNDecode<T: Decodable>(for urlString: String, in type: T.Type) async throws -> T {
         // Safely Unwrap URL String to a URL
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)

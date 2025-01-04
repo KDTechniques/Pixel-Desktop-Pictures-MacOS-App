@@ -15,8 +15,8 @@ actor DesktopPictureScheduler {
     
     // MARK: - ASSIGNED PROPERTIES
     private let defaults: UserDefaultsManager = .init()
-    private let timeIntervalKey: String = UserDefaultKeys.timeIntervalSelection.rawValue
-    private let executionTimeKey: String = UserDefaultKeys.executionTimeIntervalSince1970.rawValue
+    private let timeIntervalKey: UserDefaultKeys = .timeIntervalSelectionKey
+    private let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
     private var scheduler: NSBackgroundActivityScheduler?
     private var currentTimeIntervalSince1970: TimeInterval {

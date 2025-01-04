@@ -27,13 +27,17 @@ final class NetworkManager {
         }
     }
     
-    // MARK: - INITIALIZER
-    init() {
-        print("Network Manager Initialized!")
+    // MARK: FUNCTIONS
+    
+    // MARK: INTERNAL FUNCTIONS
+    
+    // MARK: - Initialize Network Manager
+    func initializeNetworkManager() {
         startNetworkMonitor()
+        print("Network Manager Initialized!")
     }
     
-    // MARK: - FUNCTIONS
+    // MARK: PRIVATE FUNCTIONS
     
     // MARK: - startNetworkMonitor
     private func startNetworkMonitor() {

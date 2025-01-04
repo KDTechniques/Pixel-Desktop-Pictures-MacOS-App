@@ -10,17 +10,13 @@ import SwiftData
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
-    
-    @State private var networkManager: NetworkManager = .init()
-    
     var body: some Scene {
         WindowGroup {
-            TabsView()
+            SwiftUIView2()
                 .windowResizeBehavior(.disabled)
                 .windowMinimizeBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)
                 .windowDismissBehavior(.disabled)
-                .environment(networkManager)
         }
         .getModelContainersViewModifier(
             in: .mock,
