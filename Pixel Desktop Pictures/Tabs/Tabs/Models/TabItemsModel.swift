@@ -11,7 +11,7 @@ enum TabItemsModel: CaseIterable {
     case main, recents, collections, settings
     
     @ViewBuilder
-    var content: some View {
+    func content(appEnvironment: AppEnvironmentModel) -> some View {
         switch self {
         case .main:
             MainTabView()
@@ -20,7 +20,7 @@ enum TabItemsModel: CaseIterable {
         case .collections:
             CollectionsTabView()
         case .settings:
-            SettingsTabView()
+            SettingsTabView(appEnvironmentType: appEnvironment)
         }
     }
     

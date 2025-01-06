@@ -25,5 +25,5 @@ struct APIAccessKeyStatusView: View {
 #Preview("API Access Key Status View") {
     APIAccessKeyStatusView()
         .padding()
-        .environment(SettingsTabViewModel())
+         .environment(SettingsTabViewModel(appEnvironment: .mock))
 }

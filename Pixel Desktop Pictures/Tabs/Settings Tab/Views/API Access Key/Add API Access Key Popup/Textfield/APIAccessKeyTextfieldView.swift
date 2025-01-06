@@ -29,7 +29,7 @@ struct APIAccessKeyTextfieldView: View {
 #Preview("API Access Key Textfield View") {
     APIAccessKeyTextfieldView()
         .padding()
-        .environment(SettingsTabViewModel())
+         .environment(SettingsTabViewModel(appEnvironment: .mock))
 }
 
 // MARK: - EXTENSIONS

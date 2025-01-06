@@ -9,7 +9,12 @@ import SwiftUI
 
 struct SettingsTabView: View {
     // MARK: - PROPERTIES
-    @State private var settingsTabVM: SettingsTabViewModel = .init()
+    @State private var settingsTabVM: SettingsTabViewModel
+    
+    // MARK: - INITIALIZER
+    init(appEnvironmentType: AppEnvironmentModel) {
+        settingsTabVM = .init(appEnvironment: appEnvironmentType)
+    }
     
     // MARK: - BODY
     var body: some View {
@@ -40,12 +45,19 @@ struct SettingsTabView: View {
         .overlay(alignment: .bottom) { APIAccessKeyPopupView() }
         .setTabContentHeightToTabsViewModelViewModifier
         .environment(settingsTabVM)
+        .task {
+            do {
+                try await settingsTabVM.initializeSettingsTabVM()
+            } catch {
+                print("Error: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
+            }
+        }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Settings View") {
-    PreviewView { SettingsTabView() }
+    PreviewView { SettingsTabView(appEnvironmentType: .mock) }
 }
 
 // MARK: - EXTENSIONS

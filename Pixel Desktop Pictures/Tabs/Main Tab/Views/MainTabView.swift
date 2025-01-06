@@ -9,13 +9,13 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - PROPERTIES
+    @Environment(NetworkManager.self) private var networkManager
     @State private var mainTabVM: MainTabViewModel = .init()
-    @State private var boolean: Bool = true
     
     // MARK: - BODY
     var body: some View {
         Group {
-            if boolean {
+            if networkManager.connectionStatus == .connected {
                 VStack(spacing: 0) {
                     // Image Preview
                     ImageContainerView(
@@ -33,14 +33,8 @@ struct MainTabView: View {
                     }
                     .padding()
                 }
-                .onTapGesture {
-                    boolean.toggle()
-                }
             } else {
-                ImagePreviewErrorView()
-                    .onTapGesture {
-                        boolean.toggle()
-                    }
+                ContentNotAvailableView(type: .noInternetConnection)
             }
         }
         .setTabContentHeightToTabsViewModelViewModifier
@@ -50,7 +44,12 @@ struct MainTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Main Tab View") {
+    @Previewable @State var networkManager: NetworkManager = .init()
     PreviewView { MainTabView()  }
+        .environment(networkManager)
+        .onFirstTaskViewModifier {
+            networkManager.initializeNetworkManager()
+        }
 }
 
 // MARK: - EXTENSIONS

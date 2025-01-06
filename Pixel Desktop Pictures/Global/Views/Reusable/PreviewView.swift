@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PreviewView<T: View>: View {
     // MARK: - PROPERTIES
+    @Environment(\.appEnvironment) private var appEnvironment
     let content: T
     
     // MARK: - INITIALIZER
@@ -28,7 +29,7 @@ struct PreviewView<T: View>: View {
         .environment(MainTabViewModel())
         .environment(CollectionsViewModel())
         .environment(RecentsTabViewModel())
-        .environment(SettingsTabViewModel())
+         .environment(SettingsTabViewModel(appEnvironment: .mock))
     }
 }
 

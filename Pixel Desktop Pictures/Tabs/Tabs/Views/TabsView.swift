@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabsView: View {
     // MARK: - PROPERTIES
+    @Environment(\.appEnvironment) private var appEnvironment
     @State private var tabsVM: TabsViewModel = .init()
     let alertManager: AlertsManager = .shared
     
@@ -19,7 +20,7 @@ struct TabsView: View {
             
             TabView(selection: Binding(get: { tabsVM.tabSelection }, set: { _ in })) {
                 ForEach(TabItemsModel.allCases, id: \.self) { tab in
-                    tab.content
+                    tab.content(appEnvironment: appEnvironment)
                         .tag(tab)
                 }
                 .background(TabBarHiderView())
