@@ -39,7 +39,7 @@ struct SettingsTabView: View {
             .padding([.horizontal, .bottom])
         }
         .overlay(alignment: .bottom) { APIAccessKeyPopupView() }
-        .setTabContentHeightToTabsViewModelViewModifier
+        .setTabContentHeightToTabsViewModelViewModifier(from: .settings)
     }
 }
 

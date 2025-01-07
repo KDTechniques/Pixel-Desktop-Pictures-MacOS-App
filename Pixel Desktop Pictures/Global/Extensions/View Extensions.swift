@@ -10,8 +10,8 @@ import SwiftData
 
 extension View {
     // MARK: - Set Tab Content Height To Tabs ViewModel View Modifier
-    var setTabContentHeightToTabsViewModelViewModifier: some View {
-        return self.modifier(SetTabContentHeightToTabsViewModel())
+    func setTabContentHeightToTabsViewModelViewModifier(from tab: TabItemsModel) -> some View {
+        return self.modifier(SetTabContentHeightToTabsViewModel(from: tab))
     }
     
     // MARK: - On First Appear View Modifier
@@ -90,15 +90,23 @@ fileprivate struct OnFirstTask: ViewModifier {
 
 // MARK: - Set Tab Content Height to Tabs ViewModel
 fileprivate struct SetTabContentHeightToTabsViewModel: ViewModifier {
+    // MARK: - PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
+    let tab: TabItemsModel
     
+    // MARK: - INITIALIZER
+    init(from tab: TabItemsModel) {
+        self.tab = tab
+    }
+    
+    // MARK: - BODY
     func body(content: Content) -> some View {
         content
             .background {
                 GeometryReader { geo in
                     Color.clear
                         .onAppear {
-                            tabsVM.setTabContentHeight(geo.size.height)
+                            tabsVM.setTabContentHeight(height: geo.size.height, from: tab)
                         }
                 }
             }

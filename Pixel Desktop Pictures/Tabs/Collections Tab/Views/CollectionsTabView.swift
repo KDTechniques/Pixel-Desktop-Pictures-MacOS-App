@@ -37,7 +37,7 @@ struct CollectionsTabView: View {
         .overlay { CollectionsGridPopupBackgroundView() }
         .overlay(alignment: .bottom) { popup }
         .background(Color.windowBackground)
-        .setTabContentHeightToTabsViewModelViewModifier
+        .setTabContentHeightToTabsViewModelViewModifier(from: .collections)
         .onTapGesture { handleTap() }
         .environment(collectionsVM)
     }

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ContentNotAvailableView: View {
     // MARK: - PROPERTIES
-    @Environment(MainTabViewModel.self) private var mainTabVM
     @Environment(TabsViewModel.self) private var tabsVM
+    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     let type: ContentNotAvailableModel
     
     // MARK: - INITIALIZER
@@ -26,15 +26,17 @@ struct ContentNotAvailableView: View {
             
             type.description {
                 switch type {
-                case .apiAccessKeyNotFound, .apiAccessKeyError:
+                case .apiAccessKeyNotFound:
                     tabsVM.setTabSelection(.settings)
-                case .noInternetConnection: ()
+                case .noInternetConnection:
+                    ()
+                case .apiAccessKeyError:
+                    await apiAccessKeyManager.apiAccessKeyCheckup()
                 }
             }
         }
-        .padding(.vertical, 8)
-        .padding(.bottom)
-        .padding(.horizontal, 25)
+        .padding()
+        .padding(.bottom, (type == .noInternetConnection || type == .apiAccessKeyNotFound) ? 30 : 0)
     }
 }
 
@@ -43,6 +45,6 @@ struct ContentNotAvailableView: View {
     ContentNotAvailableView(type: .random())
         .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)
-        .environment(MainTabViewModel())
+        .environment(APIAccessKeyManager())
         .environment(TabsViewModel())
 }

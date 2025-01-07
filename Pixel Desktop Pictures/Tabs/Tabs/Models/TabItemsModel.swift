@@ -7,7 +7,7 @@
 
 import SwiftUICore
 
-enum TabItemsModel: CaseIterable {
+enum TabItemsModel: String, CaseIterable {
     case main, recents, collections, settings
     
     @ViewBuilder

@@ -21,7 +21,8 @@ import Foundation
     }
     
     // MARK: - Set Tab Content Height
-    func setTabContentHeight(_ height: CGFloat) {
+    func setTabContentHeight(height: CGFloat, from tab: TabItemsModel) {
+        guard tab == tabSelection else { return }
         selectedTabContentHeight = height
     }
 }

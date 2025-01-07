@@ -9,9 +9,7 @@ import SwiftUI
 
 struct TabsView: View {
     // MARK: - PROPERTIES
-    @Environment(\.appEnvironment) private var appEnvironment
-    @State private var tabsVM: TabsViewModel = .init()
-    let alertManager: AlertsManager = .shared
+    @Environment(TabsViewModel.self) private var tabsVM
     
     // MARK: - BODY
     var body: some View {
@@ -30,16 +28,16 @@ struct TabsView: View {
         }
         .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)
-        .alert(isPresented: alertManager.binding(\.isPresented), error: alertManager.error) { error in
-            Text(error.errorDescription ?? "No Title")
-        } message: { error in
-            
-        }
-        .environment(tabsVM)
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Tabs View") {
+    @Previewable @State var networkManager: NetworkManager = .init()
     TabsView()
+        .environment(networkManager)
+        .previewModifier
+        .onFirstTaskViewModifier {
+            networkManager.initializeNetworkManager()
+        }
 }

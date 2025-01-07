@@ -14,11 +14,6 @@ import Foundation
     
     // MARK: FUNCTIONS
     
-    // MARK: - Retry
-    func retryConnection() {
-        
-    }
-    
     // MARK: - Next Image
     func nextImage() {
         

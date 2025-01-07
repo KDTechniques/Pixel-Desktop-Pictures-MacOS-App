@@ -11,6 +11,7 @@ struct APIAccessKeyStatusView: View {
     // MARK: - PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsVM
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
+    @Environment(NetworkManager.self) private var networkManager
     
     // MARK: - BODY
     var body: some View {
@@ -19,6 +20,7 @@ struct APIAccessKeyStatusView: View {
             apiAccessKeyManager.apiAccessKeyStatus.status
             apiAccessKeyManager.apiAccessKeyStatus.systemImage
         }
+        .onChange(of: networkManager.connectionStatus) { onChangeOfInternetConnection($1) }
     }
 }
 
@@ -27,4 +29,17 @@ struct APIAccessKeyStatusView: View {
     APIAccessKeyStatusView()
         .padding()
         .previewModifier
+}
+
+// MARK: - EXTENSIONS
+extension APIAccessKeyStatusView {
+    // MARK: - On Change of Internet Connection
+    private func onChangeOfInternetConnection(_ status: InternetConnectionStatusModel) {
+        guard apiAccessKeyManager.apiAccessKeyStatus == .failed,
+              status == .connected else {
+            return
+        }
+        
+        apiAccessKeyManager.apiAccessKeyStatus = .notFound
+    }
 }

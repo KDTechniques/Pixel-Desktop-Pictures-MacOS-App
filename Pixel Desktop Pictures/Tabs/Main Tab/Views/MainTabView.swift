@@ -10,47 +10,38 @@ import SwiftUI
 struct MainTabView: View {
     // MARK: - PROPERTIES
     @Environment(NetworkManager.self) private var networkManager
-    @State private var mainTabVM: MainTabViewModel = .init()
+    @Environment(MainTabViewModel.self) private var mainTabVM
+    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - BODY
     var body: some View {
         Group {
             if networkManager.connectionStatus == .connected {
-//                VStack(spacing: 0) {
-//                    // Image Preview
-//                    ImageContainerView(
-//                        thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-//                        imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-//                        location: "Colombo, Sri Lanka"
-//                    ) // change this later with a view model property model
-//                    
-//                    VStack {
-//                        // Set Desktop Picture Button
-//                        ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
-//                        
-//                        // Author and Download Button
-//                        footer
-//                    }
-//                    .padding()
-//                }
-                
-                ContentNotAvailableView(type: .apiAccessKeyError)
+                switch apiAccessKeyManager.apiAccessKeyStatus {
+                case .connected : content
+                case .failed: ContentNotAvailableView(type: .apiAccessKeyNotFound)
+                case .invalid: ContentNotAvailableView(type: .apiAccessKeyError)
+                case .notFound, .validating: ContentNotAvailableView(type: .apiAccessKeyNotFound)
+                }
             } else {
                 ContentNotAvailableView(type: .noInternetConnection)
             }
         }
-        .setTabContentHeightToTabsViewModelViewModifier
-        .environment(mainTabVM)
+        .setTabContentHeightToTabsViewModelViewModifier(from: .main)
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Main Tab View") {
     @Previewable @State var networkManager: NetworkManager = .init()
+    @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
     PreviewView { MainTabView()  }
         .environment(networkManager)
+        .environment(apiAccessKeyManager)
         .onFirstTaskViewModifier {
             networkManager.initializeNetworkManager()
+            try? await apiAccessKeyManager.initializeAPIAccessKeyManager()
+            await apiAccessKeyManager.connectAPIAccessKey(key: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
         }
 }
 
@@ -64,5 +55,25 @@ extension MainTabView {
             DownloadButtonView()
         }
         .padding(.top)
+    }
+    
+    private var content: some View {
+        VStack(spacing: 0) {
+            // Image Preview
+            ImageContainerView(
+                thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+                imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+                location: "Colombo, Sri Lanka"
+            ) // change this later with a view model property model
+            
+            VStack {
+                // Set Desktop Picture Button
+                ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
+                
+                // Author and Download Button
+                footer
+            }
+            .padding()
+        }
     }
 }

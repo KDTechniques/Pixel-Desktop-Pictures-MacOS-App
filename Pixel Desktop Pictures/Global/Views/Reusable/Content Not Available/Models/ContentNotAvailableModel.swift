@@ -20,33 +20,56 @@ enum ContentNotAvailableModel: CaseIterable {
     }
     
     @ViewBuilder
-    func description(action: @escaping () -> Void) -> some View {
+    func description(action: @escaping () async -> Void) -> some View {
         switch self {
         case .apiAccessKeyNotFound:
-            HStack(spacing: 4) {
-                Text("Go to")
-                
-                Button {
-                    action()
-                } label: {
-                    HStack(spacing: 2) {
-                        Image(systemName: "gearshape.fill")
-                        Text("Settings")
-                    }
-                    .foregroundStyle(Color.accentColor)
-                    .underline()
-                }
-                .buttonStyle(.plain)
-                
-                Text("tab to add one.")
-            }
-            .foregroundStyle(.secondary)
+            apiAccessKeyNotFoundView { await action() }
         case .noInternetConnection:
-            Text("Make sure the Mac is connected to the internet.")
-                .foregroundStyle(.secondary)
+            noInternetConnectionView
         case .apiAccessKeyError:
+            apiAccessKeyErrorView { await action() }
+        }
+    }
+}
+
+// MARK: - EXTENSIONS
+fileprivate extension ContentNotAvailableModel {
+    // MARK: - API Access Key Not Found View
+    private func apiAccessKeyNotFoundView(_ action: @escaping () async -> Void) -> some View {
+        HStack(spacing: 4) {
+            Text("Go to")
+            
+            Button {
+                Task { await action() }
+            } label: {
+                HStack(spacing: 2) {
+                    Image(systemName: "gearshape.fill")
+                    Text("Settings")
+                }
+                .foregroundStyle(Color.accentColor)
+                .underline()
+            }
+            .buttonStyle(.plain)
+            
+            Text("tab to add one.")
+        }
+        .foregroundStyle(.secondary)
+    }
+    
+    // MARK: - No Internet Connection View
+    private var noInternetConnectionView: some View {
+        Text("Make sure the Mac is connected to the internet.")
+            .foregroundStyle(.secondary)
+    }
+    
+    // MARK: - API Access Key Error View
+    private func apiAccessKeyErrorView(_ action: @escaping () async -> Void) -> some View {
+        VStack(spacing: 30) {
             Text("Your API Access Key may be invalid, or you may have exceeded the allowed number of picture refreshes per hour. Please try again later.")
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            ButtonView(title: "Retry", type: .regular) { Task { await action() } }
         }
     }
 }
