@@ -12,8 +12,13 @@ import SwiftData
 struct Pixel_Desktop_PicturesApp: App {
     // MARK: - PROPERTIES
     private let appEnvironment: AppEnvironmentModel = .mock // Change to `.production` as needed
+    
+    // Services
     @State private var networkManager: NetworkManager = .init()
     @State private var apiAccessKeyManager: APIAccessKeyManager = .init()
+//    @State private var 
+    
+    // Tabs
     @State private var tabsVM: TabsViewModel = .init()
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel = .init()

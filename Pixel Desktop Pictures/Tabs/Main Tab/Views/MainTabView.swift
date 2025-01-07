@@ -18,10 +18,9 @@ struct MainTabView: View {
         Group {
             if networkManager.connectionStatus == .connected {
                 switch apiAccessKeyManager.apiAccessKeyStatus {
-                case .connected : content
-                case .failed: ContentNotAvailableView(type: .apiAccessKeyNotFound)
+                case .notFound, .validating, .failed: ContentNotAvailableView(type: .apiAccessKeyNotFound)
                 case .invalid: ContentNotAvailableView(type: .apiAccessKeyError)
-                case .notFound, .validating: ContentNotAvailableView(type: .apiAccessKeyNotFound)
+                case .connected : content
                 }
             } else {
                 ContentNotAvailableView(type: .noInternetConnection)
