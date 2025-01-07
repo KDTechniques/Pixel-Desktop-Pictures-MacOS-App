@@ -10,13 +10,14 @@ import SwiftUI
 struct APIAccessKeyStatusView: View {
     // MARK: - PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsVM
+    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - BODY
     var body: some View {
         HStack(spacing: 5) {
             Text("API Access Key Status:")
-            settingsVM.apiAccessKeyStatus.status
-            settingsVM.apiAccessKeyStatus.systemImage
+            apiAccessKeyManager.apiAccessKeyStatus.status
+            apiAccessKeyManager.apiAccessKeyStatus.systemImage
         }
     }
 }
@@ -25,5 +26,5 @@ struct APIAccessKeyStatusView: View {
 #Preview("API Access Key Status View") {
     APIAccessKeyStatusView()
         .padding()
-        .environment(SettingsTabViewModel())
+        .previewModifier
 }

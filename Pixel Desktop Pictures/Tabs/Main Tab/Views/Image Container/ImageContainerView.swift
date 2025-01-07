@@ -77,7 +77,7 @@ extension ImageContainerView {
     // MARK: - Thumbnail Placeholder
     private var thumbnailPlaceholder: some View {
         Rectangle()
-            .fill(.primary.opacity(0.1))
+            .fill(.clear)
             .frame(height: imageHeight)
     }
     

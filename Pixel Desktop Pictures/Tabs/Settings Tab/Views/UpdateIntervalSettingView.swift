@@ -14,8 +14,8 @@ struct UpdateIntervalSettingView: View {
     // MARK: - BODY
     var body: some View {
         Picker("Update", selection: settingsTabVM.binding(\.updateIntervalSelection)) {
-            ForEach(ImageUpdateIntervalModel.allCases, id: \.self) { interval in
-                Text(interval.rawValue.capitalized)
+            ForEach(DesktopPictureSchedulerIntervalsModel.allCases, id: \.self) { interval in
+                Text(interval.timeIntervalName)
             }
         }
         .frame(width: 132)
@@ -26,5 +26,5 @@ struct UpdateIntervalSettingView: View {
 #Preview("Update Interval Setting View") {
     UpdateIntervalSettingView()
         .padding()
-        .environment(SettingsTabViewModel())
+        .previewModifier
 }

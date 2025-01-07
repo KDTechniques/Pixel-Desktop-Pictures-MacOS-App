@@ -9,38 +9,34 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - PROPERTIES
+    @Environment(NetworkManager.self) private var networkManager
     @State private var mainTabVM: MainTabViewModel = .init()
-    @State private var boolean: Bool = true
     
     // MARK: - BODY
     var body: some View {
         Group {
-            if boolean {
-                VStack(spacing: 0) {
-                    // Image Preview
-                    ImageContainerView(
-                        thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-                        imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-                        location: "Colombo, Sri Lanka"
-                    ) // change this later with a view model property model
-                    
-                    VStack {
-                        // Set Desktop Picture Button
-                        ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
-                        
-                        // Author and Download Button
-                        footer
-                    }
-                    .padding()
-                }
-                .onTapGesture {
-                    boolean.toggle()
-                }
+            if networkManager.connectionStatus == .connected {
+//                VStack(spacing: 0) {
+//                    // Image Preview
+//                    ImageContainerView(
+//                        thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+//                        imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+//                        location: "Colombo, Sri Lanka"
+//                    ) // change this later with a view model property model
+//                    
+//                    VStack {
+//                        // Set Desktop Picture Button
+//                        ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
+//                        
+//                        // Author and Download Button
+//                        footer
+//                    }
+//                    .padding()
+//                }
+                
+                ContentNotAvailableView(type: .apiAccessKeyError)
             } else {
-                ImagePreviewErrorView()
-                    .onTapGesture {
-                        boolean.toggle()
-                    }
+                ContentNotAvailableView(type: .noInternetConnection)
             }
         }
         .setTabContentHeightToTabsViewModelViewModifier
@@ -50,7 +46,12 @@ struct MainTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Main Tab View") {
+    @Previewable @State var networkManager: NetworkManager = .init()
     PreviewView { MainTabView()  }
+        .environment(networkManager)
+        .onFirstTaskViewModifier {
+            networkManager.initializeNetworkManager()
+        }
 }
 
 // MARK: - EXTENSIONS

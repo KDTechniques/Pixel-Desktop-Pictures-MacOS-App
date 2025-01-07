@@ -9,13 +9,12 @@ import SwiftUICore
 
 actor DesktopPictureScheduler {
     // MARK: - INJECTED PROPERTIES
-    private let timeIntervalType: DesktopPictureSchedulerIntervalsProtocol.Type
+    private let appEnvironmentType: AppEnvironmentModel
     private var timeIntervalSelection: TimeInterval
-    private let backgroundTask: () -> Void
     
     // MARK: - ASSIGNED PROPERTIES
     private let defaults: UserDefaultsManager = .init()
-    private let timeIntervalKey: UserDefaultKeys = .timeIntervalSelectionKey
+    private let timeIntervalKey: UserDefaultKeys = .timeIntervalDoubleKey
     private let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
     private var scheduler: NSBackgroundActivityScheduler?
@@ -24,10 +23,9 @@ actor DesktopPictureScheduler {
     }
     
     // MARK: - INITIALIZER
-    init(timeIntervalModel: DesktopPictureSchedulerIntervalsProtocol.Type, backgroundTask: @escaping () -> Void) {
-        self.timeIntervalType = timeIntervalModel
-        timeIntervalSelection = timeIntervalModel.defaultTimeInterval
-        self.backgroundTask = backgroundTask
+    init(appEnvironmentType: AppEnvironmentModel) {
+        self.appEnvironmentType = appEnvironmentType
+        timeIntervalSelection = DesktopPictureSchedulerIntervalsModel.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
     }
     
     // MARK: FUNCTIONS
@@ -38,9 +36,9 @@ actor DesktopPictureScheduler {
     /// Handles changes to the time interval selection.
     ///
     /// - Parameter timeInterval: The new time interval selection.
-    func onChangeOfTimeIntervalSelection(from timeInterval: DesktopPictureSchedulerIntervalsProtocol) async {
+    func onChangeOfTimeIntervalSelection(from timeInterval: DesktopPictureSchedulerIntervalsModel) async {
         // Save Time Interval Selection Value to User Defaults
-        let timeIntervalSelection: TimeInterval = timeInterval.timeInterval
+        let timeIntervalSelection: TimeInterval = timeInterval.timeInterval(environment: appEnvironmentType)
         await saveTimeIntervalSelectionToUserDefaults(from: timeIntervalSelection)
         
         // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
@@ -125,8 +123,8 @@ actor DesktopPictureScheduler {
     private func getTimeIntervalSelectionFromUserDefaults() async -> TimeInterval {
         // Try to Get Time Interval Selection Value from User Defaults
         guard let timeIntervalSelection: TimeInterval = await defaults.get(key: timeIntervalKey) as? TimeInterval else {
-            // Get the Default Time Interval Value from `DesktopPictureSchedulerIntervalsProtocol`
-            let defaultTimeInterval: TimeInterval = timeIntervalType.defaultTimeInterval
+            // Get the Default Time Interval Value from `DesktopPictureSchedulerIntervalsModel`
+            let defaultTimeInterval: TimeInterval = DesktopPictureSchedulerIntervalsModel.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
             
             return defaultTimeInterval
         }
@@ -217,10 +215,15 @@ actor DesktopPictureScheduler {
         scheduler = activity
     }
     
+    // MARK: - Background Task
+    private func backgroundTask() async {
+        // Background task goes here...
+    }
+    
     // MARK: - Perform Background Task
     /// Performs the background task.
     private func performBackgroundTask() async {
         print("Progress: Performing background task.")
-        backgroundTask()
+        await backgroundTask()
     }
 }

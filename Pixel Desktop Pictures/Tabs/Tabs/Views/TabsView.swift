@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabsView: View {
     // MARK: - PROPERTIES
+    @Environment(\.appEnvironment) private var appEnvironment
     @State private var tabsVM: TabsViewModel = .init()
     let alertManager: AlertsManager = .shared
     

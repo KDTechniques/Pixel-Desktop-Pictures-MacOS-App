@@ -29,7 +29,7 @@ struct SettingsFooterView: View {
 #Preview("Settings Footer View") {
     SettingsFooterView()
         .padding()
-        .environment(SettingsTabViewModel())
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS

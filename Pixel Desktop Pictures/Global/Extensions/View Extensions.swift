@@ -23,6 +23,19 @@ extension View {
     func onFirstTaskViewModifier(_ action: @escaping () async -> Void) -> some View {
         return self.modifier(OnFirstTask(action))
     }
+    
+    // MARK: - Preview View Modifier
+    var previewModifier: some View {
+        self
+            .frame(width: TabItemsModel.allWindowWidth)
+            .background(Color.windowBackground)
+            .environment(TabsViewModel())
+            .environment(MainTabViewModel())
+            .environment(CollectionsViewModel())
+            .environment(RecentsTabViewModel())
+            .environment(SettingsTabViewModel(appEnvironment: .mock))
+            .environment(APIAccessKeyManager())
+    }
 }
 
 // MARK: VIEW MODIFIER STRUCTS

@@ -20,4 +20,5 @@ struct SettingsTitleTextView: View {
 // MARK: - PREVIEWS
 #Preview("Settings Title Text View") {
     SettingsTitleTextView()
+        .previewModifier
 }

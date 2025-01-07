@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SettingsTabView: View {
     // MARK: - PROPERTIES
-    @State private var settingsTabVM: SettingsTabViewModel = .init()
+    @Environment(SettingsTabViewModel.self) private var settingsTabVM
+    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - BODY
     var body: some View {
@@ -39,12 +40,11 @@ struct SettingsTabView: View {
         }
         .overlay(alignment: .bottom) { APIAccessKeyPopupView() }
         .setTabContentHeightToTabsViewModelViewModifier
-        .environment(settingsTabVM)
     }
 }
 
 // MARK: - PREVIEWS
-#Preview("Settings View") {
+#Preview("Settings Tab View") {
     PreviewView { SettingsTabView() }
 }
 
@@ -63,7 +63,7 @@ extension SettingsTabView {
             APIAccessKeyStatusView()
             
             // API Key Insertion
-            ButtonView(title: settingsTabVM.apiAccessKeyStatus.buttonTitle, type: .regular) {
+            ButtonView(title: apiAccessKeyManager.apiAccessKeyStatus.buttonTitle, type: .regular) {
                 settingsTabVM.presentPopup(true)
             }
         }
