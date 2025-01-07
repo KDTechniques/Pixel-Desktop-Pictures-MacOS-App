@@ -33,7 +33,7 @@ struct APIAccessKeyInstructionsView: View {
 #Preview("API Access Key Instructions View") {
     APIAccessKeyInstructionsView()
         .padding()
-        .frame(width: TabItemsModel.allWindowWidth)
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS

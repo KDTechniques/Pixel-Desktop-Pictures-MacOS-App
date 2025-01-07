@@ -65,9 +65,13 @@ struct APIAccessKeyPopupView: View {
 
 // MARK: - PREVIEWS
 #Preview("API Access Key Popup View") {
+    @Previewable @State var settingsTabVM: SettingsTabViewModel = .init(appEnvironment: .mock)
     APIAccessKeyPopupView()
-        .frame(width: TabItemsModel.allWindowWidth)
-        .environment(SettingsTabViewModel(appEnvironment: .mock))
+        .environment(settingsTabVM)
+        .previewModifier
+        .onAppear {
+            settingsTabVM.presentPopup(true)
+        }
 }
 
 // MARK: - EXTENSIONS

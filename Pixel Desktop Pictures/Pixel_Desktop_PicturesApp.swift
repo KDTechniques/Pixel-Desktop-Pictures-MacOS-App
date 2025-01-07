@@ -14,7 +14,11 @@ struct Pixel_Desktop_PicturesApp: App {
     private let appEnvironment: AppEnvironmentModel = .mock // Change to `.production` as needed
     @State private var networkManager: NetworkManager = .init()
     @State private var apiAccessKeyManager: APIAccessKeyManager = .init()
+    @State private var tabsVM: TabsViewModel = .init()
     @State private var settingsTabVM: SettingsTabViewModel
+    @State private var mainTabVM: MainTabViewModel = .init()
+    @State private var recentsTabVM: RecentsTabViewModel = .init()
+    @State private var collectionsTabVM: CollectionsViewModel = .init()
     
     // MARK: - INITIALIZER
     init() {
@@ -32,7 +36,11 @@ struct Pixel_Desktop_PicturesApp: App {
                 .environment(\.appEnvironment, appEnvironment)
                 .environment(networkManager)
                 .environment(apiAccessKeyManager)
+                .environment(tabsVM)
                 .environment(settingsTabVM)
+                .environment(mainTabVM)
+                .environment(recentsTabVM)
+                .environment(collectionsTabVM)
                 .onFirstTaskViewModifier {
                     networkManager.initializeNetworkManager()
                     

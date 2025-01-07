@@ -26,5 +26,5 @@ struct UpdateIntervalSettingView: View {
 #Preview("Update Interval Setting View") {
     UpdateIntervalSettingView()
         .padding()
-        .environment(SettingsTabViewModel(appEnvironment: .mock))
+        .previewModifier
 }

@@ -6,6 +6,7 @@
 //
 
 import AppKit
+import LaunchAtLogin
 
 @MainActor
 @Observable final class SettingsTabViewModel {
@@ -16,6 +17,7 @@ import AppKit
     var launchAtLogin: Bool = true {
         didSet {
             guard oldValue != launchAtLogin else { return }
+            LaunchAtLogin.isEnabled = launchAtLogin
             Task { await saveLaunchAtLoginToUserDefaults(launchAtLogin) }
         }
     }
@@ -80,11 +82,6 @@ import AppKit
     }
     
     // MARK: PRIVATE FUNCTIONS
-    
-    // MARK: - Handle Launch at Login
-    private func handleLaunchAtLogin() {
-        
-    }
     
     // MARK: - Reset API Access Key Textfield Text
     private func resetAPIAccessKeyTextfieldText() {

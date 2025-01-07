@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		82734FA62D2D320F000F43F8 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 82734FA52D2D320F000F43F8 /* LaunchAtLogin */; };
 		82FA74702D19788E002E41BC /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 82FA746F2D19788E002E41BC /* SDWebImageSwiftUI */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82734FA62D2D320F000F43F8 /* LaunchAtLogin in Frameworks */,
 				82FA74702D19788E002E41BC /* SDWebImageSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,6 +73,7 @@
 			name = "Pixel Desktop Pictures";
 			packageProductDependencies = (
 				82FA746F2D19788E002E41BC /* SDWebImageSwiftUI */,
+				82734FA52D2D320F000F43F8 /* LaunchAtLogin */,
 			);
 			productName = "Pixel Desktop Pictures";
 			productReference = 829048972D17F9840032417F /* Pixel Desktop Pictures.app */;
@@ -83,7 +86,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1610;
+				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
 					829048962D17F9840032417F = {
@@ -102,6 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				82FA746E2D19788E002E41BC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				82734FA42D2D320F000F43F8 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 829048982D17F9840032417F /* Products */;
@@ -264,7 +268,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				DEVELOPMENT_TEAM = 2V85F32NGM;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Pixel-Desktop-Pictures-Info.plist";
@@ -297,7 +301,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				DEVELOPMENT_TEAM = 2V85F32NGM;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Pixel-Desktop-Pictures-Info.plist";
@@ -342,6 +346,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		82734FA42D2D320F000F43F8 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Legacy.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		82FA746E2D19788E002E41BC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
@@ -353,6 +365,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		82734FA52D2D320F000F43F8 /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82734FA42D2D320F000F43F8 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */;
+			productName = LaunchAtLogin;
+		};
 		82FA746F2D19788E002E41BC /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 82FA746E2D19788E002E41BC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;

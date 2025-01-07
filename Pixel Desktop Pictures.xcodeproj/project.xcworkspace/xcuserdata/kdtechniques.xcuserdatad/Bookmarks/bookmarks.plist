@@ -47,52 +47,6 @@
 			<key>type</key>
 			<string>bookmark</string>
 		</dict>
-		<dict>
-			<key>destination</key>
-			<dict>
-				<key>location-parameters</key>
-				<dict>
-					<key>EndingColumnNumber</key>
-					<string>37</string>
-					<key>EndingLineNumber</key>
-					<string>83</string>
-					<key>StartingColumnNumber</key>
-					<string>37</string>
-					<key>StartingLineNumber</key>
-					<string>83</string>
-					<key>Timestamp</key>
-					<string>757901909.035885</string>
-				</dict>
-				<key>rebasable-url</key>
-				<dict>
-					<key>base</key>
-					<string>workspace</string>
-					<key>payload</key>
-					<dict>
-						<key>relative-path</key>
-						<string>Pixel Desktop Pictures/Tabs/Settings Tab/View Models/SettingsTabViewModel.swift</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>text-context</key>
-			<dict>
-				<key>focused</key>
-				<string></string>
-				<key>leading</key>
-				<string>    // MARK: PRIVATE FUNCTIONS
-    
-    // MARK: - Handle Launch at Login</string>
-				<key>trailing</key>
-				<string>
-    private func handleLaunchAtLogin() {
-        
-</string>
-			</dict>
-			<key>title</key>
-			<string>start working from here... Good Night!</string>
-			<key>type</key>
-			<string>bookmark</string>
-		</dict>
 	</array>
 </dict>
 </plist>

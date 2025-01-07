@@ -44,7 +44,7 @@ struct SettingsTabView: View {
 }
 
 // MARK: - PREVIEWS
-#Preview("Settings View") {
+#Preview("Settings Tab View") {
     PreviewView { SettingsTabView() }
 }
 

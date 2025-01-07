@@ -32,4 +32,5 @@ struct APIAccessKeyInstructionItemView<T: View>: View {
         }
     }
     .padding()
+    .previewModifier
 }

@@ -21,11 +21,7 @@ struct APIAccessKeyTextfieldView: View {
                 textfieldText: settingsTabVM.binding(\.apiAccessKeyTextfieldText),
                 localizedKey: "API Access Key",
                 prompt: "Ex: 2in4w8v0oGOqdQdPsnKBF2d5-je8fyJs8YkEsfvNaY0") {
-                    Task {
-                        let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText
-                        settingsTabVM.dismissPopUp()
-                        await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
-                    }
+                    onTextfieldSubmission()
                 }
                 .overlay(alignment: .trailing) { pasteFromClipboardButton }
         }
@@ -36,7 +32,7 @@ struct APIAccessKeyTextfieldView: View {
 #Preview("API Access Key Textfield View") {
     APIAccessKeyTextfieldView()
         .padding()
-        .environment(SettingsTabViewModel(appEnvironment: .mock))
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS
@@ -58,6 +54,17 @@ extension APIAccessKeyTextfieldView {
                     .padding(.trailing, 5)
             }
             .buttonStyle(.plain)
+        }
+    }
+    
+    // MARK: FUNCTIONS
+    
+    // MARK: - On Textfield Submission
+    private func onTextfieldSubmission() {
+        Task {
+            let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText
+            settingsTabVM.dismissPopUp()
+            await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
         }
     }
 }
