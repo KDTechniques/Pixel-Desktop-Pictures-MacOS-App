@@ -8,13 +8,13 @@
 import SwiftUI
 
 enum ContentNotAvailableModel: CaseIterable {
-    case apiAccessKeyNotFound, noInternetConnection
+    case apiAccessKeyNotFound, noInternetConnection, apiAccessKeyError
     
     var title: String {
         switch self {
         case .apiAccessKeyNotFound:
             return "API Access Key Not Found"
-        case .noInternetConnection:
+        case .noInternetConnection, .apiAccessKeyError:
             return "Failed to Fetch Content"
         }
     }
@@ -44,6 +44,9 @@ enum ContentNotAvailableModel: CaseIterable {
         case .noInternetConnection:
             Text("Make sure the Mac is connected to the internet.")
                 .foregroundStyle(.secondary)
+        case .apiAccessKeyError:
+            Text("Your API Access Key may be invalid, or you may have exceeded the allowed number of picture refreshes per hour. Please try again later.")
+                .multilineTextAlignment(.center)
         }
     }
 }

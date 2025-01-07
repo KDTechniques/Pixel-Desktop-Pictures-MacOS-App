@@ -37,7 +37,16 @@ actor UnsplashImageAPIService {
         do {
             let _ = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImageModel.self)
         } catch {
-            throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
+            guard let urlError = error as? URLError else {
+                throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
+            }
+            
+            switch urlError.code {
+            case .notConnectedToInternet:
+                throw error
+            default:
+                throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
+            }
         }
     }
     
@@ -153,13 +162,22 @@ actor UnsplashImageAPIService {
     private func parseHTTPResponseStatusCode(_ response: HTTPURLResponse) async throws {
         switch response.statusCode {
         case 200:
-            print("Request was successful. Status code: 200")
+            print("Everything worked as expected. Status code: 200 - OK")
+        case 400:
+            print("The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
+            throw URLError(.badURL)
         case 401:
-            print("Unauthorized request. Status code: 401")
+            print("Invalid Access Token. Status code: 401 - Unauthorized")
             throw URLError(.userAuthenticationRequired)
+        case 403:
+            print("Missing permissions to perform request. Status code: 403 - Forbidden")
+            throw URLError(.clientCertificateRejected)
         case 404:
             print("Resource not found. Status code: 404")
             throw URLError(.fileDoesNotExist)
+        case 500, 503:
+            print("Something went wrong on Unsplash server side. Status code: 500, 503")
+            throw URLError(.badServerResponse)
         default:
             print("Request failed with status code: \(response.statusCode)")
             throw URLError(.badServerResponse)

@@ -13,7 +13,14 @@ struct Pixel_Desktop_PicturesApp: App {
     // MARK: - PROPERTIES
     private let appEnvironment: AppEnvironmentModel = .mock // Change to `.production` as needed
     @State private var networkManager: NetworkManager = .init()
-   
+    @State private var apiAccessKeyManager: APIAccessKeyManager = .init()
+    @State private var settingsTabVM: SettingsTabViewModel
+    
+    // MARK: - INITIALIZER
+    init() {
+        settingsTabVM = .init(appEnvironment: appEnvironment)
+    }
+    
     // MARK: - BODY
     var body: some Scene {
         WindowGroup {
@@ -24,8 +31,22 @@ struct Pixel_Desktop_PicturesApp: App {
                 .windowDismissBehavior(.disabled)
                 .environment(\.appEnvironment, appEnvironment)
                 .environment(networkManager)
+                .environment(apiAccessKeyManager)
+                .environment(settingsTabVM)
                 .onFirstTaskViewModifier {
                     networkManager.initializeNetworkManager()
+                    
+                    do {
+                        try await settingsTabVM.initializeSettingsTabVM()
+                    } catch {
+                        print("Error: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
+                    }
+                    
+                    do {
+                        try await apiAccessKeyManager.initializeAPIAccessKeyManager()
+                    } catch {
+                        print("Error: Initializing `API Access Key Manager`, \(error.localizedDescription)")
+                    }
                 }
         }
         .getModelContainersViewModifier(

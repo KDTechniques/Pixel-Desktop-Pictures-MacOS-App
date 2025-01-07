@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyValidityStatusModel.swift
+//  APIAccessKeyValidityStatusValues.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-27.
@@ -7,9 +7,7 @@
 
 import SwiftUICore
 
-enum APIAccessKeyValidityStatusModel: CaseIterable {
-    case notFound, validating, connected, invalid, failed
-    
+extension APIAccessKeyValidityStatusModel {
     var status: some View {
         switch self {
         case .notFound:

@@ -13,13 +13,13 @@ import AppKit
     let desktopPictureScheduler: DesktopPictureScheduler
     
     // MARK: - ASSIGNED PROPERTIES
-    var launchAtLogin: Bool = false {
+    var launchAtLogin: Bool = true {
         didSet {
             guard oldValue != launchAtLogin else { return }
             Task { await saveLaunchAtLoginToUserDefaults(launchAtLogin) }
         }
     }
-    var showOnAllSpaces: Bool = false {
+    var showOnAllSpaces: Bool = true {
         didSet {
             guard oldValue != showOnAllSpaces else { return }
             Task { await saveShowOnAllSpacesToUserDefaults(showOnAllSpaces) }
@@ -31,7 +31,6 @@ import AppKit
             Task { await saveUpdateIntervalToUserDefaults(updateIntervalSelection) }
         }
     }
-    var apiAccessKeyStatus: APIAccessKeyValidityStatusModel = .validating
     private(set) var isPresentedPopup: Bool = false
     var apiAccessKeyTextfieldText: String = ""
     let defaults: UserDefaultsManager = .init()
@@ -55,20 +54,24 @@ import AppKit
         isPresentedPopup = present
     }
     
+    // MARK: - Dismiss Popup
+    func dismissPopUp() {
+        presentPopup(false)
+        apiAccessKeyTextfieldText = ""
+    }
+    
     // MARK: - Pate API Access Key from Clipboard
     func pasteAPIAccessKeyFromClipboard() {
         guard let clipboardString = NSPasteboard.general.string(forType: .string) else { return }
         apiAccessKeyTextfieldText = clipboardString
     }
     
-    // MARK: - Connect API Access Key
-    func connectAPIAccessKey() {
-        
-    }
-    
     // MARK: - Restore Default Settings
+    /// the defaults values will be also saved to user defaults when calling this function.
     func restoreDefaultSettings() {
-        
+        launchAtLogin = true
+        showOnAllSpaces = true
+        updateIntervalSelection = .defaultTimeInterval
     }
     
     // MARK: - Quit App
@@ -78,20 +81,33 @@ import AppKit
     
     // MARK: PRIVATE FUNCTIONS
     
+    // MARK: - Handle Launch at Login
+    private func handleLaunchAtLogin() {
+        
+    }
+    
+    // MARK: - Reset API Access Key Textfield Text
+    private func resetAPIAccessKeyTextfieldText() {
+        apiAccessKeyTextfieldText = ""
+    }
+    
     //  MARK: - Save Launch at Login to User Defaults
     private func saveLaunchAtLoginToUserDefaults(_ value: Bool) async {
         await defaults.save(key: .launchAtLoginKey, value: value)
+        print("Saved `launchAtLogin` to user defaults.")
     }
     
     // MARK: - Save Show on All Spaces to User Defaults
     private func saveShowOnAllSpacesToUserDefaults(_ value: Bool) async {
         await defaults.save(key: .showOnAllSpacesKey, value: value)
+        print("Saved `showOnAllSpaces` to user defaults.")
     }
     
     // MARK: - Save Update Interval to User Defaults
     private func saveUpdateIntervalToUserDefaults(_ value: DesktopPictureSchedulerIntervalsModel) async {
         do {
             try await defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
+            print("Saved `updateIntervalSelection` to user defaults.")
         } catch {
             print("Error: Saving update Interval to user defaults.")
         }

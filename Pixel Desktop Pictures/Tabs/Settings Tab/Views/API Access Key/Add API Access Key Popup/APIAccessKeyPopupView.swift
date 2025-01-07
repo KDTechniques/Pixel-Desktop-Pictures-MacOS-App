@@ -17,6 +17,7 @@ struct APIAccessKeyPopupViewPreferenceKey: PreferenceKey {
 struct APIAccessKeyPopupView: View {
     // MARK: - PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
+    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - PRIVATE PROPERTIES
     @State private var height: CGFloat = 0
@@ -30,8 +31,14 @@ struct APIAccessKeyPopupView: View {
                 APIAccessKeyTextfieldView()
                 
                 // Connect Button
-                ButtonView(title: "Connect", type: .popup) { settingsTabVM.connectAPIAccessKey() }
-                    .disabled(settingsTabVM.apiAccessKeyTextfieldText.isEmpty ? true : false)
+                ButtonView(title: "Connect", type: .popup) {
+                    Task {
+                        let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText
+                        settingsTabVM.dismissPopUp()
+                        await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
+                    }
+                }
+                .disabled(settingsTabVM.apiAccessKeyTextfieldText.isEmpty ? true : false)
                 
                 // Instructions Container
                 APIAccessKeyInstructionsView()
@@ -60,7 +67,7 @@ struct APIAccessKeyPopupView: View {
 #Preview("API Access Key Popup View") {
     APIAccessKeyPopupView()
         .frame(width: TabItemsModel.allWindowWidth)
-         .environment(SettingsTabViewModel(appEnvironment: .mock))
+        .environment(SettingsTabViewModel(appEnvironment: .mock))
 }
 
 // MARK: - EXTENSIONS

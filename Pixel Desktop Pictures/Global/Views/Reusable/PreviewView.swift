@@ -29,7 +29,8 @@ struct PreviewView<T: View>: View {
         .environment(MainTabViewModel())
         .environment(CollectionsViewModel())
         .environment(RecentsTabViewModel())
-         .environment(SettingsTabViewModel(appEnvironment: .mock))
+        .environment(SettingsTabViewModel(appEnvironment: .mock))
+        .environment(APIAccessKeyManager())
     }
 }
 

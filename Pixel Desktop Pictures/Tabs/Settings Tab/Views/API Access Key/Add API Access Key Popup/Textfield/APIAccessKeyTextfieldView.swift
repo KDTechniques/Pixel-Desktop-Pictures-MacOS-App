@@ -10,6 +10,7 @@ import SwiftUI
 struct APIAccessKeyTextfieldView: View {
     // MARK: - PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
+    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - BODY
     var body: some View {
@@ -19,7 +20,13 @@ struct APIAccessKeyTextfieldView: View {
             TextfieldView(
                 textfieldText: settingsTabVM.binding(\.apiAccessKeyTextfieldText),
                 localizedKey: "API Access Key",
-                prompt: "Ex: 2in4w8v0oGOqdQdPsnKBF2d5-je8fyJs8YkEsfvNaY0") { settingsTabVM.connectAPIAccessKey() }
+                prompt: "Ex: 2in4w8v0oGOqdQdPsnKBF2d5-je8fyJs8YkEsfvNaY0") {
+                    Task {
+                        let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText
+                        settingsTabVM.dismissPopUp()
+                        await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
+                    }
+                }
                 .overlay(alignment: .trailing) { pasteFromClipboardButton }
         }
     }
@@ -29,7 +36,7 @@ struct APIAccessKeyTextfieldView: View {
 #Preview("API Access Key Textfield View") {
     APIAccessKeyTextfieldView()
         .padding()
-         .environment(SettingsTabViewModel(appEnvironment: .mock))
+        .environment(SettingsTabViewModel(appEnvironment: .mock))
 }
 
 // MARK: - EXTENSIONS

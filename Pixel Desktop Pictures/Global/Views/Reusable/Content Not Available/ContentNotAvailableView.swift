@@ -26,7 +26,7 @@ struct ContentNotAvailableView: View {
             
             type.description {
                 switch type {
-                case .apiAccessKeyNotFound:
+                case .apiAccessKeyNotFound, .apiAccessKeyError:
                     tabsVM.setTabSelection(.settings)
                 case .noInternetConnection: ()
                 }
@@ -34,11 +34,12 @@ struct ContentNotAvailableView: View {
         }
         .padding(.vertical, 8)
         .padding(.bottom)
+        .padding(.horizontal, 25)
     }
 }
 
 // MARK: - PREVIEWS
-#Preview("Image Preview Error View") {
+#Preview("Content Not Available View") {
     ContentNotAvailableView(type: .random())
         .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)

@@ -16,23 +16,25 @@ struct MainTabView: View {
     var body: some View {
         Group {
             if networkManager.connectionStatus == .connected {
-                VStack(spacing: 0) {
-                    // Image Preview
-                    ImageContainerView(
-                        thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-                        imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-                        location: "Colombo, Sri Lanka"
-                    ) // change this later with a view model property model
-                    
-                    VStack {
-                        // Set Desktop Picture Button
-                        ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
-                        
-                        // Author and Download Button
-                        footer
-                    }
-                    .padding()
-                }
+//                VStack(spacing: 0) {
+//                    // Image Preview
+//                    ImageContainerView(
+//                        thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+//                        imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+//                        location: "Colombo, Sri Lanka"
+//                    ) // change this later with a view model property model
+//                    
+//                    VStack {
+//                        // Set Desktop Picture Button
+//                        ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
+//                        
+//                        // Author and Download Button
+//                        footer
+//                    }
+//                    .padding()
+//                }
+                
+                ContentNotAvailableView(type: .apiAccessKeyError)
             } else {
                 ContentNotAvailableView(type: .noInternetConnection)
             }
