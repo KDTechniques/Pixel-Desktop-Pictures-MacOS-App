@@ -7,13 +7,12 @@
 
 import Foundation
 
-actor UnsplashImageAPIService {
+final class UnsplashImageAPIService {
     // MARK: - PROPERTIES
     let apiAccessKey: String
     private let timeout: TimeInterval = 10
     private let imagesPerPage: Int = 10
     private let randomImageURLString = "https://api.unsplash.com/photos/random?orientation=landscape"
-
     
     // MARK: - INITIALIZER
     init(apiAccessKey: String) {
@@ -84,7 +83,7 @@ actor UnsplashImageAPIService {
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
     func getQueryImageModel(queryText: String, pageNumber: Int) async throws -> UnsplashQueryImageModel {
-        let queryURLString: String = await constructQueryURLString(queryText: queryText, pageNumber: pageNumber)
+        let queryURLString: String = constructQueryURLString(queryText: queryText, pageNumber: pageNumber)
         
         do {
             let model: UnsplashQueryImageModel = try await fetchDataNDecode(for: queryURLString, in: UnsplashQueryImageModel.self)
@@ -104,7 +103,7 @@ actor UnsplashImageAPIService {
     ///   - pageNumber: An `Int` specifying the page number for paginated results.
     ///
     /// - Returns: A `String` containing the constructed query URL.
-    private func constructQueryURLString(queryText: String, pageNumber: Int) async -> String {
+    private func constructQueryURLString(queryText: String, pageNumber: Int) -> String {
         let capitalizedQueryText: String = queryText.capitalized
         let queryURLString: String = "https://api.unsplash.com/search/photos?orientation=landscape&page=\(pageNumber)&per_page=\(imagesPerPage)&query=\(capitalizedQueryText)"
         
@@ -142,7 +141,7 @@ actor UnsplashImageAPIService {
         }
         
         // Handle Different Status Codes of the Response
-        try await parseHTTPResponseStatusCode(httpResponse)
+        try parseHTTPResponseStatusCode(httpResponse)
         
         // Decode JSON Data into Desired Model
         let model: T = try JSONDecoder().decode(T.self, from: data)
@@ -159,7 +158,7 @@ actor UnsplashImageAPIService {
     /// - Throws: `URLError.userAuthenticationRequired`: If the status code is 401 (Unauthorized).
     /// `URLError.fileDoesNotExist`: If the status code is 404 (Not Found).
     /// `URLError.badServerResponse`: For all other non-200 status codes.
-    private func parseHTTPResponseStatusCode(_ response: HTTPURLResponse) async throws {
+    private func parseHTTPResponseStatusCode(_ response: HTTPURLResponse) throws {
         switch response.statusCode {
         case 200:
             print("Everything worked as expected. Status code: 200 - OK")
