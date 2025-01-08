@@ -16,6 +16,7 @@ struct Pixel_Desktop_PicturesApp: App {
     // Services
     @State private var networkManager: NetworkManager = .init()
     @State private var apiAccessKeyManager: APIAccessKeyManager = .init()
+    @State private var swiftDataManager: SwiftDataManager
     
     // Tabs
     @State private var tabsVM: TabsViewModel = .init()
@@ -27,12 +28,22 @@ struct Pixel_Desktop_PicturesApp: App {
     // MARK: - INITIALIZER
     init() {
         settingsTabVM = .init(appEnvironment: appEnvironment)
+        
+        do {
+            swiftDataManager = try .init(appEnvironment: appEnvironment)
+        } catch {
+            print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
+            // Fallback code goes here..
+#if DEBUG
+            fatalError()
+#endif
+        }
     }
     
     // MARK: - BODY
     var body: some Scene {
         WindowGroup {
-            SwiftUIView2()
+            TabsView()
                 .windowResizeBehavior(.disabled)
                 .windowMinimizeBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)
@@ -41,6 +52,7 @@ struct Pixel_Desktop_PicturesApp: App {
                 .environment(\.appEnvironment, appEnvironment)
                 .environment(networkManager)
                 .environment(apiAccessKeyManager)
+                .environment(swiftDataManager)
             // Tabs Environment Values
                 .environment(tabsVM)
                 .environment(settingsTabVM)
@@ -50,7 +62,7 @@ struct Pixel_Desktop_PicturesApp: App {
                 .onFirstTaskViewModifier {
                     // MARK: - Service Initializations
                     networkManager.initializeNetworkManager()
-            
+                    
                     do {
                         try await apiAccessKeyManager.initializeAPIAccessKeyManager()
                     } catch {
@@ -65,13 +77,13 @@ struct Pixel_Desktop_PicturesApp: App {
                     }
                 }
         }
-        .getModelContainersViewModifier(
-            in: appEnvironment,
-            for: [
-                ImageQueryURLModel.self,
-                RecentImageURLModel.self
-            ]
-        )
+        //        .getModelContainersViewModifier(
+        //            in: appEnvironment,
+        //            for: [
+        //                ImageQueryURLModel.self,
+        //                RecentImageURLModel.self
+        //            ]
+        //        )
         .windowResizability(.contentSize)
         //        .windowStyle(.hiddenTitleBar)
     }

@@ -17,8 +17,8 @@ import SwiftUICore
     @ObservationIgnored
     var popOverAnimation: (Animation, AnyHashable) { (.smooth(duration: 0.3), isPresentedPopup) }
     
-    var collectionVGridItemsArray: [CollectionVGridItemModel] = CollectionVGridItemModel.defaultItemsArray
-    var selectedCollectionsArray: [CollectionVGridItemModel] = [CollectionVGridItemModel.defaultItemsArray.first!]
+    var collectionVGridItemsArray: [CollectionVGridItemModel] = CollectionVGridItemModel.defaultCollectionsArray
+    var selectedCollectionsArray: [CollectionVGridItemModel] = [CollectionVGridItemModel.defaultCollectionsArray.first!]
     
     // MARK: FUNCTIONS
     

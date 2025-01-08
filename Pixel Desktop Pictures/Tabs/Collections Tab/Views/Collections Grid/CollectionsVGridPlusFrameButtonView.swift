@@ -38,7 +38,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Plus Frame Button View") {
-    CollectionsVGridPlusFrameButtonView(id: CollectionVGridItemModel.defaultItemsArray.first!.id)
+    CollectionsVGridPlusFrameButtonView(id: CollectionVGridItemModel.defaultCollectionsArray.first!.id)
         .environment(CollectionsViewModel())
 }
 

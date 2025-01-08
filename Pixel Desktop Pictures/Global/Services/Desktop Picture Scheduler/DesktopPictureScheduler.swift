@@ -93,7 +93,7 @@ final class DesktopPictureScheduler {
             print("\(String(describing: DesktopPictureSchedulerErrorModel.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
         }
         
-        print("`DesktopPictureScheduler` is initialized.")
+        print("Desktop Picture Scheduler is initialized.")
     }
     
     // MARK: - Calculate Schedule Save Execution Time Interval Since 1970

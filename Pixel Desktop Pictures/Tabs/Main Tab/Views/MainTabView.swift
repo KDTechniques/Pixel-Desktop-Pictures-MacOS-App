@@ -12,6 +12,7 @@ struct MainTabView: View {
     @Environment(NetworkManager.self) private var networkManager
     @Environment(MainTabViewModel.self) private var mainTabVM
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
+    @Environment(SwiftDataManager.self) private var swiftDataManager
     
     // MARK: - BODY
     var body: some View {
@@ -60,8 +61,8 @@ extension MainTabView {
         VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
-                thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-                imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
+                thumbnailURLString: CollectionVGridItemModel.defaultCollectionsArray.first!.imageURLString,
+                imageURLString: CollectionVGridItemModel.defaultCollectionsArray.first!.imageURLString,
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
             

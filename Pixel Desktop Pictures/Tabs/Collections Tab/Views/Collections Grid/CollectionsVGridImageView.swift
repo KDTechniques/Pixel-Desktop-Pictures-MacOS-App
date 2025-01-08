@@ -47,7 +47,7 @@ struct CollectionsVGridImageView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Image View") {
-    CollectionsVGridImageView(item: .defaultItemsArray.first!)
+    CollectionsVGridImageView(item: .defaultCollectionsArray.first!)
         .frame(width: 120)
         .padding()
         .environment(CollectionsViewModel())
