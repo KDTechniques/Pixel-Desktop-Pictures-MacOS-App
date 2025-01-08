@@ -32,7 +32,7 @@ struct Pixel_Desktop_PicturesApp: App {
     // MARK: - BODY
     var body: some Scene {
         WindowGroup {
-            TabsView()
+            SwiftUIView2()
                 .windowResizeBehavior(.disabled)
                 .windowMinimizeBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)

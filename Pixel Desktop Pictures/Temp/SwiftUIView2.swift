@@ -11,7 +11,7 @@ struct SwiftUIView2: View {
     @State private var networkManager: NetworkManager = .init()
     var apiService: UnsplashImageAPIService = .init(apiAccessKey: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
     let desktopPictureManager: DesktopPictureManager = .shared
-    let imageDownloadManager: MockImageDownloadManager = .init()
+    let imageDownloadManager: ImageDownloadManager = .shared
     
     var body: some View {
         VStack {
@@ -35,7 +35,7 @@ struct SwiftUIView2: View {
                         let model = try await apiService.getRandomImageModel()
                         let imageFileURLString: String = try await imageDownloadManager.downloadImage(
                             url: model.imageQualityURLStrings.full,
-                            to: .downloadsDirectory
+                            to: MockUnsplashImageDirectoryModel.downloadsDirectory
                         )
                         
                         try await desktopPictureManager.setDesktopPicture(from: imageFileURLString)
@@ -51,7 +51,7 @@ struct SwiftUIView2: View {
                         let model = try await apiService.getQueryImageModel(queryText: "girl", pageNumber: 1)
                         let imageFileURLString: String = try await imageDownloadManager.downloadImage(
                             url: model.results.last!.imageQualityURLStrings.full,
-                            to: .downloadsDirectory
+                            to: MockUnsplashImageDirectoryModel.downloadsDirectory
                         )
                         
                         try await desktopPictureManager.setDesktopPicture(from: imageFileURLString)

@@ -28,7 +28,7 @@ actor ImageDownloadManager {
     ///
     /// - Returns:
     ///   A `URL` object representing the location where the image file has been saved.
-    func downloadImage(url: String, to directory: UnsplashImageDirectoryModel) async throws -> String {
+    func downloadImage(url: String, to directory: UnsplashImageDirectoryModelProtocol) async throws -> String {
         // Safe Unwrapping of URL String to URL
         guard let url: URL = URL(string: url) else {
             throw URLError(.badURL)
