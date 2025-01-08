@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+ The `UnsplashImageAPIService` class provides an interface for interacting with the Unsplash API. This class is responsible for fetching random images or query-based images from Unsplash and validating the API access key. It handles constructing the necessary network requests, parsing the responses, and decoding the JSON data into the appropriate model objects.
+ */
 final class UnsplashImageAPIService {
     // MARK: - PROPERTIES
     let apiAccessKey: String

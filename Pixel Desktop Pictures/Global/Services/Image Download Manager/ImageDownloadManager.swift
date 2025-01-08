@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+ The `ImageDownloadManager` actor is responsible for downloading images from a given URL and saving them to a specified directory. This class ensures that the image download process is thread-safe and efficient by using the actor model.
+ */
 actor ImageDownloadManager {
     // MARK: - PROPERTIES
     static let shared: ImageDownloadManager = .init()

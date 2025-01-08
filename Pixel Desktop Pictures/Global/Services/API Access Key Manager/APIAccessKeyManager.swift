@@ -14,7 +14,7 @@ import Foundation
 @MainActor
 @Observable final class APIAccessKeyManager {
     // MARK: - PROPERTIES
-    let defaults: UserDefaultsManager = .init()
+    private let defaults: UserDefaultsManager = .shared
     
     /// Current status of the API access key, which updates and triggers status change handling logic.
     var apiAccessKeyStatus: APIAccessKeyValidityStatusModel = .notFound {

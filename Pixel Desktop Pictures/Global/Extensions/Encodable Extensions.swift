@@ -8,6 +8,7 @@
 import Foundation
 
 extension Encodable {
+    // MARK: - Print Line Description
     func printLineDescription() {
         do {
             let encoder = JSONEncoder()

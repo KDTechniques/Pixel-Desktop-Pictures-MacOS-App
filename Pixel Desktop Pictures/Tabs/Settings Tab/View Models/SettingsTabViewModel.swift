@@ -35,7 +35,7 @@ import LaunchAtLogin
     }
     private(set) var isPresentedPopup: Bool = false
     var apiAccessKeyTextfieldText: String = ""
-    let defaults: UserDefaultsManager = .init()
+    let defaults: UserDefaultsManager = .shared
     
     // MARK: - INITIALIZER
     init(appEnvironment: AppEnvironmentModel) {

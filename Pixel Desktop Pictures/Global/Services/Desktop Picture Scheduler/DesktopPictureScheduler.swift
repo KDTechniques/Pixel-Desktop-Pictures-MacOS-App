@@ -7,6 +7,9 @@
 
 import SwiftUICore
 
+/**
+ The `DesktopPictureScheduler` class is responsible for managing the scheduling of desktop picture updates. It allows for configuring the time intervals for when desktop pictures should be changed and ensures the task is performed in the background using `NSBackgroundActivityScheduler`.
+ */
 @MainActor
 final class DesktopPictureScheduler {
     // MARK: - SINGLETON
@@ -17,7 +20,7 @@ final class DesktopPictureScheduler {
     private var timeIntervalSelection: TimeInterval
     
     // MARK: - ASSIGNED PROPERTIES
-    private let defaults: UserDefaultsManager = .init()
+    private let defaults: UserDefaultsManager = .shared
     private let timeIntervalKey: UserDefaultKeys = .timeIntervalDoubleKey
     private let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"

@@ -16,9 +16,9 @@ class ImageQueryURLModel {
     var queryURLString: String { // Ex: "https://api.unsplash.com/search/photos?orientation=landscape&page=3&per_page=10&query=Nature"
         return "https://api.unsplash.com/search/photos?orientation=landscape&page=\(pageNumber)&per_page=10&query=\(queryText.capitalized)"
     }
-    var imageDataArray: UnsplashQueryImageModel
+    var imageDataArray: Data
     
-    init(queryText: String, pageNumber: Int, imageDataArray: UnsplashQueryImageModel) {
+    init(queryText: String, pageNumber: Int, imageDataArray: Data) {
         self.queryText = queryText
         self.pageNumber = pageNumber
         self.imageDataArray = imageDataArray

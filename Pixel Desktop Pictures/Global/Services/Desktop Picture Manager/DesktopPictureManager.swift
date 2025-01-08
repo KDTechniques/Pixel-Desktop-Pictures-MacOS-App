@@ -7,7 +7,7 @@
 
 import AppKit
 
-/*
+/**
  An actor responsible for managing desktop pictures across all screens (monitors).
  
  The `DesktopPictureManager` provides functionality to:
@@ -21,7 +21,7 @@ actor DesktopPictureManager {
     // MARK: - PROPERTIES
     static let shared: DesktopPictureManager = .init()
     private let workspace = NSWorkspace.shared
-    private let defaults: UserDefaultsManager = .init()
+    private let defaults: UserDefaultsManager = .shared
     private let currentDesktopPictureFileURLStringKey: UserDefaultKeys = .currentDesktopPictureFileURLStringKey
     private var currentDesktopPictureFileURLString: String?
     
