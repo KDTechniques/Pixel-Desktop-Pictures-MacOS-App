@@ -55,13 +55,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>39</string>
+					<string>38</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>35</string>
+					<string>37</string>
 					<key>Timestamp</key>
-					<string>758037886.671677</string>
+					<string>758057168.137934</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -78,18 +78,148 @@
 			<dict>
 				<key>focused</key>
 				<string>            // Fallback code goes here..
-#if DEBUG
-            fatalError()
-#endif
 </string>
 				<key>leading</key>
 				<string>        } catch {
             print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
 </string>
 				<key>trailing</key>
-				<string>        }
-    }
-    
+				<string>#if DEBUG
+            fatalError()
+#endif
+</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
+					<key>EndingLineNumber</key>
+					<string>55</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
+					<key>StartingLineNumber</key>
+					<string>54</string>
+					<key>Timestamp</key>
+					<string>758065821.402181</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Tabs/Collections Tab/View Models/CollectionsViewModel.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string>            guard !checkCollectionNameDuplications(collectionName) else {
+</string>
+				<key>leading</key>
+				<string>        showCreateButtonProgress = true
+        do {
+</string>
+				<key>trailing</key>
+				<string>                throw CollectionsViewModelErrorModel.duplicateCollectionName
+            }
+            
+</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>91</string>
+					<key>EndingLineNumber</key>
+					<string>77</string>
+					<key>StartingColumnNumber</key>
+					<string>91</string>
+					<key>StartingLineNumber</key>
+					<string>77</string>
+					<key>Timestamp</key>
+					<string>758066910.609072</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Tabs/Collections Tab/Views/Collections Grid/CollectionsVGridImageView.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string></string>
+				<key>leading</key>
+				<string>    private var editButton: some View {
+        Button {
+            // open up another sheet here, rename the first popup befoe creating a new one.</string>
+				<key>trailing</key>
+				<string>
+            try! collectionsVM.deleteCollection(item)
+        } label: {
+</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>30</string>
+					<key>EndingLineNumber</key>
+					<string>104</string>
+					<key>StartingColumnNumber</key>
+					<string>30</string>
+					<key>StartingLineNumber</key>
+					<string>104</string>
+					<key>Timestamp</key>
+					<string>758067676.674078</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Tabs/Collections Tab/Views/Collections Grid/CollectionsVGridImageView.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string></string>
+				<key>leading</key>
+				<string>    
+    // MARK: - Handle Tap
+    private func handleTap() { // create a function in collection view model to handle tap gesture to remove selection when click on random and so on.</string>
+				<key>trailing</key>
+				<string>
+        Task {
+            await collectionsVM.updateCollectionSelectionStatus(item: item, isSelected: !item.isSelected)
 </string>
 			</dict>
 			<key>type</key>

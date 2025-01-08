@@ -1,39 +1,30 @@
 //
-//  CollectionVGridItemModel.swift
+//  CollectionItemModel.swift
 //  Pixel Desktop Pictures
 //
-//  Created by Kavinda Dilshan on 2024-12-23.
+//  Created by Kavinda Dilshan on 2025-01-08.
 //
 
 import Foundation
+import SwiftData
 
-struct CollectionVGridItemModel: Identifiable, Equatable, Hashable {
-    // MARK: - PROPERTIES
-    var id: String { collectionName.lowercased() }
-    private(set) var collectionName: String
+fileprivate let randomKeyword: String = "RANDOM"
+
+@Model
+class CollectionItemModel {
+    @Attribute(.unique) private(set) var collectionName: String
     private(set) var imageURLString: String
     private(set) var pageNumber: Int = 1
     private(set) var isSelected: Bool = false
-    let isEditable: Bool
+    var isEditable: Bool
     
-    // MARK: - INITIALIZER
     init(collectionName: String, imageURLString: String, isSelected: Bool = false, isEditable: Bool = true) {
-        self.collectionName = collectionName
+        self.collectionName = collectionName == randomKeyword ? collectionName : collectionName.capitalized
         self.imageURLString = imageURLString
         self.isSelected = isSelected
         self.isEditable = isEditable
     }
     
-    // MARK: MUTATING FUNCTIONS
-    
-    /// Important:  before calling this function make sure the new name doesn't exist.
-    mutating
-    func updateCollectionName(_ newName: String) {
-        guard collectionName != newName else { return }
-        collectionName = newName
-    }
-    
-    mutating
     func updateImageURLString(imageAPIServiceReference: UnsplashImageAPIService) async throws {
         let nextPageNumber:Int = pageNumber + 1
         let nextQueryImageURLModel: UnsplashQueryImageModel = try await imageAPIServiceReference.getQueryImageModel(queryText: collectionName.capitalized, pageNumber: nextPageNumber, imagesPerPage: 1)
@@ -45,15 +36,16 @@ struct CollectionVGridItemModel: Identifiable, Equatable, Hashable {
         pageNumber = nextPageNumber
     }
     
-    mutating
     func updateIsSelected(_ boolean: Bool) {
         guard isSelected != boolean else { return }
         isSelected = boolean
     }
     
-    static let defaultCollectionsArray: [Self] = [
+    
+    static let randomKeywordString: String = randomKeyword
+    static let defaultCollectionsArray: [CollectionItemModel] = [
         .init(
-            collectionName: "RANDOM",
+            collectionName: randomKeyword,
             imageURLString: "",
             isSelected: true,
             isEditable: false
@@ -102,3 +94,4 @@ struct CollectionVGridItemModel: Identifiable, Equatable, Hashable {
         ),
     ]
 }
+

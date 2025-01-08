@@ -46,8 +46,8 @@ struct ImageContainerView: View {
 // MARK: - PREVIEWS
 #Preview("Image Preview Image Container View") {
     ImageContainerView(
-        thumbnailURLString: CollectionVGridItemModel.defaultCollectionsArray.first!.imageURLString,
-        imageURLString: CollectionVGridItemModel.defaultCollectionsArray.first!.imageURLString,
+        thumbnailURLString: CollectionItemModel.defaultCollectionsArray.first!.imageURLString,
+        imageURLString: CollectionItemModel.defaultCollectionsArray.first!.imageURLString,
         location: "Playa Mixota, Spain"
     )
     .frame(width: TabItemsModel.allWindowWidth)

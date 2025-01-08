@@ -16,8 +16,14 @@ struct AddNewCollectionTextfieldView: View {
         TextfieldView(
             textfieldText: collectionsVM.binding(\.collectionNameTextfieldText),
             localizedKey: "Add New Collection",
-            prompt: "Ex: Super Cars") {
-                collectionsVM.createCollection()
+            prompt: "Ex: Super Car") {
+                Task {
+                    do {
+                        try await collectionsVM.createCollection(collectionName: collectionsVM.collectionNameTextfieldText)
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
             }
     }
 }
@@ -26,5 +32,5 @@ struct AddNewCollectionTextfieldView: View {
 #Preview("Add New Collection Textfield View") {
     AddNewCollectionTextfieldView()
         .padding()
-        .environment(CollectionsViewModel())
+        .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
 }

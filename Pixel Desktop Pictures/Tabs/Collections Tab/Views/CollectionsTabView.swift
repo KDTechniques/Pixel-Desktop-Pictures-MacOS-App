@@ -16,22 +16,25 @@ fileprivate struct PopOverPreferenceKey: PreferenceKey {
 
 struct CollectionsTabView: View {
     // MARK: - PROPERTIES
-    @State var collectionsVM: CollectionsViewModel = .init()
+    @Environment(CollectionsViewModel.self) private var collectionsVM
     @State private var popOverHeight: CGFloat = 0
+    @State private var scrollPosition: ScrollPosition = .init()
     let vGridValues = VGridValuesModel.self
+    let nonScrollableItemsCount: Int = 8
     
     // MARK: - BODY
     var body: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(collectionsVM.collectionVGridItemsArray, id: \.self) { item in
+                ForEach(collectionsVM.collectionItemsArray, id: \.self) { item in
+                    CollectionsVGridPlusFrameButtonView(collectionName: item.collectionName)
                     CollectionsVGridImageView(item: item)
-                    CollectionsVGridPlusFrameButtonView(id: item.id)
                 }
             }
             .padding(.horizontal)
         }
-        .scrollDisabled(collectionsVM.collectionVGridItemsArray.count <= 8)
+        .scrollPosition($scrollPosition)
+        .scrollDisabled(collectionsVM.collectionItemsArray.count <= nonScrollableItemsCount)
         .frame(height: TabItemsModel.collections.contentHeight)
         .padding(.bottom)
         .overlay { CollectionsGridPopupBackgroundView() }
@@ -39,7 +42,9 @@ struct CollectionsTabView: View {
         .background(Color.windowBackground)
         .setTabContentHeightToTabsViewModelViewModifier(from: .collections)
         .onTapGesture { handleTap() }
-        .environment(collectionsVM)
+        .onChange(of: collectionsVM.collectionItemsArray.count) {
+            onCollectionItemsArrayChange(oldValue: $0, newValue: $1)
+        }
     }
 }
 
@@ -63,6 +68,12 @@ extension CollectionsTabView {
     // MARK: - Handle Tap
     private func handleTap() {
         collectionsVM.presentPopup(false)
+    }
+    
+    // MARK: - On Collection Items Array Change
+    private func onCollectionItemsArrayChange(oldValue: Int, newValue: Int) {
+        guard oldValue != 0, oldValue < newValue else { return }
+        withAnimation { scrollPosition.scrollTo(edge: .bottom) }
     }
 }
 

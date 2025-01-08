@@ -31,7 +31,7 @@ extension View {
             .background(Color.windowBackground)
             .environment(TabsViewModel())
             .environment(MainTabViewModel())
-            .environment(CollectionsViewModel())
+            .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
             .environment(RecentsTabViewModel())
             .environment(SettingsTabViewModel(appEnvironment: .mock))
             .environment(APIAccessKeyManager())

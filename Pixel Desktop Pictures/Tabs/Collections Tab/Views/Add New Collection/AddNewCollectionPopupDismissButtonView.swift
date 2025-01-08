@@ -30,5 +30,5 @@ struct AddNewCollectionPopupDismissButtonView: View {
 #Preview("Add New Collection Textfield Reset Button View") {
     AddNewCollectionPopupDismissButtonView()
         .padding()
-        .environment(CollectionsViewModel())
+        .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
 }

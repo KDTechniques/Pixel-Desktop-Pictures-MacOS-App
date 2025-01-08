@@ -22,5 +22,5 @@ struct CollectionsGridPopupBackgroundView: View {
 // MARK: - PREVIEWS
 #Preview("Collections Grid Popup Background View") {
     CollectionsGridPopupBackgroundView()
-        .environment(CollectionsViewModel())
+        .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
 }

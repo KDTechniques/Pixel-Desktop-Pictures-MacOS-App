@@ -11,7 +11,7 @@ import SwiftData
 @main
 struct Pixel_Desktop_PicturesApp: App {
     // MARK: - PROPERTIES
-    private let appEnvironment: AppEnvironmentModel = .mock // Note: Change to `.production` as needed
+    private let appEnvironment: AppEnvironmentModel = .production // Note: Change to `.production` as needed
     
     // Services
     @State private var networkManager: NetworkManager = .init()
@@ -23,14 +23,16 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel = .init()
     @State private var recentsTabVM: RecentsTabViewModel = .init()
-    @State private var collectionsTabVM: CollectionsViewModel = .init()
+    @State private var collectionsTabVM: CollectionsViewModel
     
     // MARK: - INITIALIZER
     init() {
         settingsTabVM = .init(appEnvironment: appEnvironment)
         
         do {
-            swiftDataManager = try .init(appEnvironment: appEnvironment)
+            let tempSwiftDataManager: SwiftDataManager = try .init(appEnvironment: appEnvironment)
+            swiftDataManager = tempSwiftDataManager
+            collectionsTabVM = .init(swiftDataManager: tempSwiftDataManager)
         } catch {
             print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
             // Fallback code goes here..
@@ -75,15 +77,10 @@ struct Pixel_Desktop_PicturesApp: App {
                     } catch {
                         print("Error: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
                     }
+                    
+                    collectionsTabVM.initializeCollectionsViewModel()
                 }
         }
-        //        .getModelContainersViewModifier(
-        //            in: appEnvironment,
-        //            for: [
-        //                ImageQueryURLModel.self,
-        //                RecentImageURLModel.self
-        //            ]
-        //        )
         .windowResizability(.contentSize)
         //        .windowStyle(.hiddenTitleBar)
     }

@@ -1,14 +1,13 @@
 //
-//  UnsplashSwiftDataModels.swift
+//  ImageQueryURLModel.swift
 //  Pixel Desktop Pictures
 //
-//  Created by Kavinda Dilshan on 2025-01-01.
+//  Created by Kavinda Dilshan on 2025-01-08.
 //
 
 import Foundation
 import SwiftData
 
-// MARK: - Image Query URL Model
 @Model
 class ImageQueryURLModel {
     @Attribute(.unique) var queryText: String // EX: nature
@@ -22,17 +21,5 @@ class ImageQueryURLModel {
         self.queryText = queryText
         self.pageNumber = pageNumber
         self.imageDataArray = imageDataArray
-    }
-}
-
-// MARK: - Recent Image URL Model
-@Model
-class RecentImageURLModel {
-    var downloadedDate: Date // Ex: 2025-01-01 11:12:54 AM +0000
-    var imageURLString: String // Ex: "https://www.example.com/Nature/image5"
-    
-    init(downloadedDate: Date, imageURLString: String) {
-        self.downloadedDate = downloadedDate
-        self.imageURLString = imageURLString
     }
 }

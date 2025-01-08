@@ -18,12 +18,12 @@ import SwiftUI
     init(appEnvironment: AppEnvironmentModel) throws {
         do {
             container = try ModelContainer(
-                for: ImageQueryURLModel.self, RecentImageURLModel.self,
+                for: ImageQueryURLModel.self, RecentImageURLModel.self, CollectionItemModel.self,
                 configurations: .init(isStoredInMemoryOnly: appEnvironment == .mock)
             )
             print("Swift Data Manager is initialized!")
         } catch {
-            let error: SwiftDataManagerErrorModel = .modelContainerInitializationFailed(error)
+            let error: SwiftDataManagerErrorModel = .collectionItemModelCreationFailed(error)
             print(error.localizedDescription)
             throw error
         }
@@ -50,9 +50,21 @@ import SwiftUI
     }
     
     // MARK: Add Recent Image URL Model
-    func addRecentImageURLModel(downloadedDate: Date, imageURLString: String) throws {
-        let newObject: RecentImageURLModel = .init(downloadedDate: downloadedDate, imageURLString: imageURLString)
-        container.mainContext.insert(newObject)
+    func addRecentImageURLModel(_ object: RecentImageURLModel) throws {
+        container.mainContext.insert(object)
+        
+        do {
+            try saveContext()
+        } catch {
+            let error: SwiftDataManagerErrorModel = .recentImageURLModelCreationFailed(error)
+            print(error.localizedDescription)
+            throw error
+        }
+    }
+    
+    // MARK: Add Collection Item Model
+    func addCollectionItemModel(_ object: CollectionItemModel) throws {
+        container.mainContext.insert(object)
         
         do {
             try saveContext()
@@ -89,6 +101,18 @@ import SwiftUI
         }
     }
     
+    // MARK: Fetch Collection Item Models Array
+    func fetchCollectionItemModelsArray() throws -> [CollectionItemModel] {
+        do {
+            let collectionItemModelsArray: [CollectionItemModel] = try container.mainContext.fetch(FetchDescriptor<CollectionItemModel>())
+            return collectionItemModelsArray
+        } catch {
+            let error: SwiftDataManagerErrorModel = .collectionItemModelsArrayFetchFailed(error)
+            print(error.localizedDescription)
+            throw error
+        }
+    }
+    
     // MARK: - Update Operations
     
     // MARK: Update Image Query URL Model
@@ -107,13 +131,30 @@ import SwiftUI
     }
     
     // MARK: Update Recent Image URL Model
-    func updateRecentImageURLModel(_ recentImage: RecentImageURLModel, newDownloadedDate: Date, newImageURLString: String) throws {
-        recentImage.downloadedDate = newDownloadedDate
-        recentImage.imageURLString = newImageURLString
+    func updateRecentImageURLModel(_ recentImage: RecentImageURLModel, newValues: RecentImageURLModel) throws {
+        recentImage.downloadedDate = newValues.downloadedDate
+        recentImage.imageURLString = newValues.imageURLString
+        
         do {
             try saveContext()
         } catch {
             let error: SwiftDataManagerErrorModel = .recentImageURLModelUpdateFailed(error)
+            print(error.localizedDescription)
+            throw error
+        }
+    }
+    
+    // MARK: Update Collection Item Model
+    func updateCollectionItemModel(_ collectionItem: CollectionItemModel, isSelected: Bool?, imageAPIServiceReference: UnsplashImageAPIService?) async throws {
+        if let isSelected { collectionItem.updateIsSelected(isSelected) }
+        
+        do {
+            if let imageAPIServiceReference {
+                try await collectionItem.updateImageURLString(imageAPIServiceReference: imageAPIServiceReference)
+            }
+            try saveContext()
+        } catch {
+            let error: SwiftDataManagerErrorModel = .collectionItemModelUpdateFailed(error)
             print(error.localizedDescription)
             throw error
         }
@@ -144,6 +185,28 @@ import SwiftUI
             throw error
         }
     }
+    
+    // MARK: Delete Recent Image URL Model
+    func deleteCollectionItemModel(_ collectionItem: CollectionItemModel) throws {
+        container.mainContext.delete(collectionItem)
+        do {
+            try saveContext()
+        } catch {
+            let error: SwiftDataManagerErrorModel = .collectionItemModelDeletionFailed(error)
+            print(error.localizedDescription)
+            throw error
+        }
+    }
+    
+#if DEBUG
+    func eraseAllData() {
+        do {
+            try container.erase()
+        } catch {
+            print("Error: Erasing all the swift data from container. \(error.localizedDescription)")
+        }
+    }
+#endif
     
     // MARK: PRIVATE FUNCTIONS
     

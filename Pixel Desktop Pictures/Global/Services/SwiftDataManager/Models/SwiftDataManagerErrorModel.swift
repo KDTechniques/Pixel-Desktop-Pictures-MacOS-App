@@ -14,18 +14,22 @@ enum SwiftDataManagerErrorModel: LocalizedError {
     // Create Operation Errors
     case imageQueryURLModelCreationFailed(_ error: Error)
     case recentImageURLModelCreationFailed(_ error: Error)
+    case collectionItemModelCreationFailed(_ error: Error)
     
     // Read Operation Errors
     case imageQueryURLModelsArrayFetchFailed(_ error: Error)
     case recentImageURLModelsArrayFetchFailed(_ error: Error)
+    case collectionItemModelsArrayFetchFailed(_ error: Error)
     
     // Update Operation Errors
     case imageQueryURLModelUpdateFailed(_ error: Error)
     case recentImageURLModelUpdateFailed(_ error: Error)
+    case collectionItemModelUpdateFailed(_ error: Error)
     
     // Delete Operation Errors
     case imageQueryURLModelDeletionFailed(_ error: Error)
     case recentImageURLModelDeletionFailed(_ error: Error)
+    case collectionItemModelDeletionFailed(_ error: Error)
     
     var errorDescription: String? {
         switch self {
@@ -39,24 +43,32 @@ enum SwiftDataManagerErrorModel: LocalizedError {
             return "Error: Failed to create an image query url model. \(error.localizedDescription)"
         case .recentImageURLModelCreationFailed(let error):
             return "Error: Failed to create a recent image url model. \(error.localizedDescription)"
+        case .collectionItemModelCreationFailed(let error):
+            return "Error: Failed to create a collection item model. \(error.localizedDescription)"
             
             // Read Operation Errors
         case .imageQueryURLModelsArrayFetchFailed(let error):
             return "Error: Failed to fetch image query url model from context. \(error.localizedDescription)"
         case .recentImageURLModelsArrayFetchFailed(let error):
             return "Error: Failed to fetch recent image url model from context. \(error.localizedDescription)"
+        case .collectionItemModelsArrayFetchFailed(let error):
+            return "Error: Failed to fetch collection item model from context. \(error.localizedDescription)"
             
             // Update Operation Errors
         case .imageQueryURLModelUpdateFailed(let error):
             return "Error: Failed to update image query url model in context. \(error.localizedDescription)"
         case .recentImageURLModelUpdateFailed(let error):
             return "Error: failed to update recent image url model in context. \(error.localizedDescription)"
+        case .collectionItemModelUpdateFailed(let error):
+            return "Error: failed to update collection item model in context. \(error.localizedDescription)"
             
             // Delete Operation Errors
         case .imageQueryURLModelDeletionFailed(let error):
-            return "Error: Failed to delete image query url model. \(error.localizedDescription)"
+            return "Error: Failed to delete image query url model from context. \(error.localizedDescription)"
         case .recentImageURLModelDeletionFailed(let error):
-            return "Error: Failed to delete recent image url model. \(error.localizedDescription)"
+            return "Error: Failed to delete recent image url model from context. \(error.localizedDescription)"
+        case .collectionItemModelDeletionFailed(let error):
+            return "Error: Failed to delete collection item model from context. \(error.localizedDescription)"
         }
     }
 }

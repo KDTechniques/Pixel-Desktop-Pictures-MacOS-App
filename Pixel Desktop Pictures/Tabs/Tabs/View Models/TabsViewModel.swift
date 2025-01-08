@@ -10,7 +10,7 @@ import Foundation
 @MainActor
 @Observable final class TabsViewModel {
     // MARK: - PROPERTIES
-    private(set) var tabSelection: TabItemsModel = .main
+    private(set) var tabSelection: TabItemsModel = .collections
     private(set) var selectedTabContentHeight: CGFloat = .infinity
     
     // MARK: FUNCTIONS

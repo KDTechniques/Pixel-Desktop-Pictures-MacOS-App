@@ -16,7 +16,15 @@ struct AddNewCollectionView: View {
         VStack(alignment: .leading) {
             AddNewCollectionTextfieldHeaderView()
             AddNewCollectionTextfieldView()
-            ButtonView(title: "Create", type: .popup) { collectionsVM.createCollection() }
+            ButtonView(title: "Create", showProgress: collectionsVM.showCreateButtonProgress, type: .popup) {
+                Task {
+                    do {
+                        try await collectionsVM.createCollection(collectionName: collectionsVM.collectionNameTextfieldText)
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
         }
         .padding()
         .background(Color.popupBackground)
@@ -30,5 +38,5 @@ struct AddNewCollectionView: View {
 #Preview("Add New Collection View") {
     AddNewCollectionView()
         .frame(width: TabItemsModel.allWindowWidth)
-        .environment(CollectionsViewModel())
+        .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
 }
