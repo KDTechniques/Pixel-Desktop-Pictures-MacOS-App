@@ -39,7 +39,7 @@ import LaunchAtLogin
     
     // MARK: - INITIALIZER
     init(appEnvironment: AppEnvironmentModel) {
-        desktopPictureScheduler = .init(appEnvironmentType: appEnvironment)
+        desktopPictureScheduler = .shared(appEnvironmentType: appEnvironment)
     }
     
     // MARK: FUNCTIONS

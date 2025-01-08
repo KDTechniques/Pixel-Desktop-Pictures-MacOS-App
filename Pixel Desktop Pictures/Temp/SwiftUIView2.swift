@@ -10,7 +10,7 @@ import SwiftUI
 struct SwiftUIView2: View {
     @State private var networkManager: NetworkManager = .init()
     var apiService: UnsplashImageAPIService = .init(apiAccessKey: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
-    let desktopPictureManager: DesktopPictureManager = .init()
+    let desktopPictureManager: DesktopPictureManager = .shared
     let imageDownloadManager: MockImageDownloadManager = .init()
     
     var body: some View {
@@ -64,7 +64,6 @@ struct SwiftUIView2: View {
         .padding()
         .onFirstTaskViewModifier {
             networkManager.initializeNetworkManager()
-            await desktopPictureManager.initializeDesktopPictureManager()
         }
     }
 }

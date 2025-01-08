@@ -8,6 +8,12 @@
 import Foundation
 
 actor ImageDownloadManager {
+    // MARK: - PROPERTIES
+    static let shared: ImageDownloadManager = .init()
+    
+    // MARK: - INITIALIZER
+    private init() {}
+    
     // MARK: FUNCTIONS
     
     // MARK: - Download Image
