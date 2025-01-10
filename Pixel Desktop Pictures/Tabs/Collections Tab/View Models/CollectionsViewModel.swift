@@ -28,7 +28,6 @@ enum CollectionsViewPopOverModel: CaseIterable {
     private(set) var popOverItem: (isPresented: Bool, type: CollectionsViewPopOverModel) = (false, .collectionCreationPopOver)
     var updatingItem: CollectionItemModel?
     
-    
     // MARK: - INITIALIZER
     init(swiftDataManager: SwiftDataManager) {
         self.swiftDataManager = swiftDataManager
@@ -42,7 +41,7 @@ enum CollectionsViewPopOverModel: CaseIterable {
         do {
             let fetchedCollectionItemsArray: [CollectionItemModel] = try swiftDataManager.fetchCollectionItemModelsArray()
             guard !fetchedCollectionItemsArray.isEmpty else {
-                let defaultCollectionItemsArray: [CollectionItemModel] = CollectionItemModel.defaultCollectionsArray
+                let defaultCollectionItemsArray: [CollectionItemModel] = try CollectionItemModel.getDefaultCollectionsArray()
                 collectionItemsArray = defaultCollectionItemsArray
                 try addInitialCollectionsArrayToSwiftData(defaultCollectionItemsArray)
                 return
@@ -52,7 +51,6 @@ enum CollectionsViewPopOverModel: CaseIterable {
             print("Collections View Model is initialized!")
         } catch {
             print(error.localizedDescription)
-            collectionItemsArray = CollectionItemModel.defaultCollectionsArray
         }
     }
     
@@ -84,7 +82,7 @@ enum CollectionsViewPopOverModel: CaseIterable {
                     throw URLError(.badServerResponse)
                 }
                 
-                let object: CollectionItemModel = .init(collectionName: collectionName, imageURLs: imageURLs)
+                let object: CollectionItemModel = try .init(collectionName: collectionName, imageURLs: imageURLs)
                 try swiftDataManager.addCollectionItemModel(object)
                 collectionItemsArray.append(object)
                 showCreateButtonProgress = false
@@ -154,6 +152,29 @@ enum CollectionsViewPopOverModel: CaseIterable {
         }
     }
     
+    // MARK: - Handle Collection Item Tap
+    func handleCollectionItemTap(item: CollectionItemModel) {
+        let randomCollectionName: String = CollectionItemModel.randomKeywordString
+        
+        // Handle case where the tapped item is the random collection
+        guard item.collectionName != randomCollectionName else {
+            // Select the random collection and deselect others
+            collectionItemsArray.forEach { $0.updateIsSelected($0.collectionName == randomCollectionName) }
+            return
+        }
+        
+        // Deselect the random collection if tapped item is not the random collection
+        collectionItemsArray.first(where: { $0.collectionName == randomCollectionName })?.updateIsSelected(false)
+        
+        // Toggle the tapped item's selection state
+        item.updateIsSelected(!item.isSelected)
+        
+        // Ensure at least one item is selected, and reselect random collection if none are selected
+        if collectionItemsArray.first(where: { $0.isSelected }) == nil {
+            collectionItemsArray.first(where: { $0.collectionName == randomCollectionName })?.updateIsSelected(true)
+        }
+    }
+    
     // MARK: - Delete Collection
     func deleteCollection(item: CollectionItemModel) throws {
         do {
@@ -179,6 +200,12 @@ enum CollectionsViewPopOverModel: CaseIterable {
             try? await Task.sleep(nanoseconds: 400_000_000) // Adds one millisecond to animation duration
             resetUpdatingItem()
         }
+    }
+    
+    // MARK: - On Collection Items Array Change
+    func onCollectionItemsArrayChange(oldValue: Int, newValue: Int, scrollPosition: Binding<ScrollPosition>) {
+        guard oldValue != 0, oldValue < newValue else { return }
+        withAnimation { scrollPosition.wrappedValue.scrollTo(edge: .bottom) }
     }
     
     // MARK: PRIVATE FUNCTIONS

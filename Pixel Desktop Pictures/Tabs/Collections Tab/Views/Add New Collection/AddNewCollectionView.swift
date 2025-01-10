@@ -22,7 +22,7 @@ struct AddNewCollectionView: View {
             .disabled(collectionsVM.collectionNameTextfieldText.isEmpty)
         }
         .padding()
-        .background(Color.popupBackground)
+        .background(Color.bottomPopupBackground)
         .overlay(alignment: .topTrailing) {
             CollectionPopupDismissButtonView(popOverType: .collectionCreationPopOver)
         }

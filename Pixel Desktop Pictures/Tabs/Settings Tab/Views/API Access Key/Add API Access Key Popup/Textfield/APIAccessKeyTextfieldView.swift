@@ -35,7 +35,7 @@ struct APIAccessKeyTextfieldView: View {
         .previewModifier
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension APIAccessKeyTextfieldView {
     // MARK: - Header
     private var header: some View {

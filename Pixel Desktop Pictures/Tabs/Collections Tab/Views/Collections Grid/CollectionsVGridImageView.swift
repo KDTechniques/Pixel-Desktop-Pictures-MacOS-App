@@ -34,16 +34,26 @@ struct CollectionsVGridImageView: View {
     
     // MARK: - BODY
     var body: some View {
-        WebImage(
-            url: .init(string: try! item.getImageURLs().small),
-            options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
-        )
-        .placeholder { Color.vGridItemPlaceholder }
-        .resizable()
-        .scaledToFill()
+        Group {
+            if let imageURLString: String = try? item.getImageURLs().small {
+                WebImage(
+                    url: .init(string: imageURLString),
+                    options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
+                )
+                .placeholder {
+                    if item.collectionName != CollectionItemModel.randomKeywordString {
+                        ProgressView().scaleEffect(0.3)
+                    }
+                }
+                .resizable()
+                .scaledToFill()
+            } else {
+                Color.clear
+            }
+        }
         .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
-        .overlay(vGridValues.overlayColor)
+        .overlay(Color.vGridItemOverlay)
         .overlay { overlay }
         .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
@@ -52,15 +62,16 @@ struct CollectionsVGridImageView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Image View") {
-    CollectionsVGridImageView(item: .defaultCollectionsArray[3])
+    CollectionsVGridImageView(item: try! .getDefaultCollectionsArray()[3])
         .frame(width: 120)
         .padding()
         .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
         .previewModifier
 }
 
+// MARK: EXTENSIONS
 extension CollectionsVGridImageView {
-    // MARK: - checkmark
+    // MARK: - Checkmark
     private var checkmark: some View {
         Image(systemName: "checkmark")
             .font(.subheadline.bold())
@@ -69,6 +80,7 @@ extension CollectionsVGridImageView {
             .opacity(item.isSelected ? 1 : 0)
     }
     
+    // MARK: - Edit Button
     private var editButton: some View {
         Button {
             Task {
@@ -89,7 +101,7 @@ extension CollectionsVGridImageView {
         .disabled(!item.isEditable)
     }
     
-    // MARK: - overlay
+    // MARK: - Overlay
     private var overlay: some View {
         Group {
             checkmark
@@ -102,10 +114,8 @@ extension CollectionsVGridImageView {
     // MARK: FUNCTIONS
     
     // MARK: - Handle Tap
-    private func handleTap() { // create a function in collection view model to handle tap gesture to remove selection when click on random and so on.
-        Task {
-            await collectionsVM.updateCollectionSelectionStatus(item: item, isSelected: !item.isSelected)
-        }
+    private func handleTap() {
+        collectionsVM.handleCollectionItemTap(item: item)
     }
     
     // MARK: - Handle Hover

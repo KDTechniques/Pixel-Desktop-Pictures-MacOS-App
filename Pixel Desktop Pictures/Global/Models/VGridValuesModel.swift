@@ -21,5 +21,4 @@ struct VGridValuesModel {
     static var width: CGFloat {
         (TabItemsModel.allWindowWidth - horizontalPadding - (spacing*2)) / 3
     }
-    static let overlayColor: Color = .black.opacity(0.4)
 }

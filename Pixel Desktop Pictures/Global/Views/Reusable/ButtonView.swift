@@ -24,7 +24,7 @@ struct ButtonView: View {
         case .regular:
             return .buttonForeground
         case .popup:
-            return .popupButtonForeground
+            return .bottomPopupButtonForeground
         }
     }
     
@@ -33,7 +33,7 @@ struct ButtonView: View {
         case .regular:
             return .buttonBackground
         case .popup:
-            return .popupButtonBackground
+            return .bottomPopupButtonBackground
         }
     }
     

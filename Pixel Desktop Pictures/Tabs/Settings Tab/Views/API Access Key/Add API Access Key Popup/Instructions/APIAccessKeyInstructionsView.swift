@@ -36,7 +36,7 @@ struct APIAccessKeyInstructionsView: View {
         .previewModifier
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension APIAccessKeyInstructionsView {
     // MARK: - First Instruction
     private var first: some View {

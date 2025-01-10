@@ -79,6 +79,7 @@ struct Pixel_Desktop_PicturesApp: App {
                     }
                     
                     collectionsTabVM.initializeCollectionsViewModel()
+//                    swiftDataManager.eraseAllData()
                 }
         }
         .windowResizability(.contentSize)

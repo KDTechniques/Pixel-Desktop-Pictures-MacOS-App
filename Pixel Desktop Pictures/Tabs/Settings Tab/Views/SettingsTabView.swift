@@ -48,7 +48,7 @@ struct SettingsTabView: View {
     PreviewView { SettingsTabView() }
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension SettingsTabView {
     // MARK: - Divider
     private var divider: some View {

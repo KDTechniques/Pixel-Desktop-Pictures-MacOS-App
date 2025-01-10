@@ -45,7 +45,7 @@ struct MainTabView: View {
         }
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension MainTabView {
     // MARK: - Footer
     private var footer: some View {
@@ -61,8 +61,8 @@ extension MainTabView {
         VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
-                thumbnailURLString: try! CollectionItemModel.defaultCollectionsArray.first!.getImageURLs().thumb,
-                imageURLString: try! CollectionItemModel.defaultCollectionsArray.first!.getImageURLs().regular,
+                thumbnailURLString: try! CollectionItemModel.getDefaultCollectionsArray().first!.getImageURLs().thumb,
+                imageURLString: try! CollectionItemModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
             

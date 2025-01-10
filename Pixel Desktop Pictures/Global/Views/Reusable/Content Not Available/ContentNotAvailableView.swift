@@ -28,7 +28,7 @@ struct ContentNotAvailableView: View {
                 switch type {
                 case .apiAccessKeyNotFound:
                     tabsVM.setTabSelection(.settings)
-                case .noInternetConnection:
+                case .noInternetConnection, .updatingCollectionItemNotFound:
                     ()
                 case .apiAccessKeyError:
                     await apiAccessKeyManager.apiAccessKeyCheckup()

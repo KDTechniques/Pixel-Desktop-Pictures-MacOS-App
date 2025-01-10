@@ -45,13 +45,13 @@ struct APIAccessKeyPopupView: View {
                     .padding(.top)
             }
             .padding([.horizontal, .bottom])
-            .background(Color.popupBackground)
+            .background(Color.bottomPopupBackground)
         }
         .padding(.top, dismissButtonFrameHeight)
         .overlay(alignment: .topTrailing) { dismissButton }
         .background {
             GeometryReader { geo in
-                Color.popupBackground
+                Color.bottomPopupBackground
                     .preference(key: APIAccessKeyPopupViewPreferenceKey.self, value: geo.size.height)
             }
             .onPreferenceChange(APIAccessKeyPopupViewPreferenceKey.self) { value in
@@ -74,7 +74,7 @@ struct APIAccessKeyPopupView: View {
         }
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension APIAccessKeyPopupView {
     // MARK: - Dismiss Button
     private var dismissButton: some View {
@@ -90,6 +90,6 @@ extension APIAccessKeyPopupView {
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity, alignment: .trailing)
         .frame(height: dismissButtonFrameHeight, alignment: .top)
-        .background(Color.popupBackground)
+        .background(Color.bottomPopupBackground)
     }
 }

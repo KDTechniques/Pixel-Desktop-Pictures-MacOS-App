@@ -10,50 +10,52 @@ import SDWebImageSwiftUI
 
 struct UpdateCollectionPreviewImageView: View {
     //MARK: - INJECTED PROPERTIES
-    let imageURLs: UnsplashImageURLsModel
-    let collectionName: String
+    let item: CollectionItemModel
     
     // MARK: - ASSIGNED PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
     let vGridValues = VGridValuesModel.self
     
     // MARK: - INITIALIZER
-    init(imageURLs: UnsplashImageURLsModel, collectionName: String) {
-        self.imageURLs = imageURLs
-        self.collectionName = collectionName
+    init(item: CollectionItemModel) {
+        self.item = item
     }
     
     // MARK: - BODY
     var body: some View {
-        WebImage(
-            url: .init(string: imageURLs.small),
-            options: [.retryFailed, .highPriority]
-        )
-        .resizable()
-        .scaledToFill()
+        Group {
+            if let imageURLString: String = try? item.getImageURLs().small {
+                WebImage(
+                    url: .init(string: imageURLString),
+                    options: [.retryFailed, .highPriority, .continueInBackground]
+                )
+                .placeholder { ProgressView().scaleEffect(0.3) }
+                .resizable()
+                .scaledToFill()
+            } else {
+                Color.clear
+            }
+        }
         .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
-        .overlay(vGridValues.overlayColor)
+        .overlay(Color.vGridItemOverlay)
         .overlay(CollectionNameOverlayView(collectionName: imageOverlayText()))
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("UpdateCollectionPreviewImageView") {
-    UpdateCollectionPreviewImageView(
-        imageURLs: try! CollectionItemModel.defaultCollectionsArray[1].getImageURLs(),
-        collectionName: "Nature"
-    )
-    .border(Color.red)
-    .padding()
-    .previewModifier
+    UpdateCollectionPreviewImageView(item: try! .getDefaultCollectionsArray()[1])
+        .padding()
+        .previewModifier
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension UpdateCollectionPreviewImageView {
+    // MARK: - Image Overlay Text
     private func imageOverlayText() -> String {
         return collectionsVM.collectionRenameTextfieldText.isEmpty
-        ? collectionName
+        ? item.collectionName
         : collectionsVM.collectionRenameTextfieldText.capitalized
     }
 }

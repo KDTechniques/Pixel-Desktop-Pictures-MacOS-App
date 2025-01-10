@@ -15,36 +15,39 @@ struct UpdateCollectionView: View {
     
     // MARK: - BODY
     var body: some View {
-        if let item: CollectionItemModel = collectionsVM.updatingItem {
-            VStack(alignment: .leading) {
-                UpdateCollectionTextfieldHeaderView()
-                UpdateCollectionTextfieldView(collectionName: item.collectionName)
-                
-                ButtonView(title: "Rename", showProgress: collectionsVM.showRenameButtonProgress, type: .popup) {
-                    collectionsVM.updateCollectionName()
-                }
-                .disabled(collectionsVM.collectionRenameTextfieldText.isEmpty)
-                
+        Group {
+            if let item: CollectionItemModel = collectionsVM.updatingItem {
                 VStack(alignment: .leading) {
-                    HStack {
-                        previewImage(item: item)
-                        
-                        VStack(spacing: 0) {
-                            changeThumbnailButton(item: item)
-                            Spacer()
-                            deleteButton(item: item)
-                        }
+                    UpdateCollectionTextfieldHeaderView()
+                    UpdateCollectionTextfieldView(collectionName: item.collectionName)
+                    
+                    ButtonView(title: "Rename", showProgress: collectionsVM.showRenameButtonProgress, type: .popup) {
+                        collectionsVM.updateCollectionName()
                     }
-                    .frame(height: vGridValues.height)
+                    .disabled(collectionsVM.collectionRenameTextfieldText.isEmpty)
+                    
+                    VStack(alignment: .leading) {
+                        HStack {
+                            previewImage(item: item)
+                            
+                            VStack(spacing: 0) {
+                                changeThumbnailButton(item: item)
+                                Spacer()
+                                deleteButton(item: item)
+                            }
+                        }
+                        .frame(height: vGridValues.height)
+                    }
                 }
+                .padding()
+            } else {
+                ContentNotAvailableView(type: .updatingCollectionItemNotFound)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding()
-            .background(Color.popupBackground)
-            .overlay(alignment: .topTrailing) {
-                CollectionPopupDismissButtonView(popOverType: .collectionUpdatePopOver)
-            }
-        } else {
-            Color.clear
+        }
+        .background(Color.bottomPopupBackground)
+        .overlay(alignment: .topTrailing) {
+            CollectionPopupDismissButtonView(popOverType: .collectionUpdatePopOver)
         }
     }
 }
@@ -55,14 +58,11 @@ struct UpdateCollectionView: View {
         .previewModifier
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension UpdateCollectionView {
     // MARK: - Preview Image
     private func previewImage(item: CollectionItemModel) -> some View {
-        UpdateCollectionPreviewImageView(
-            imageURLs: try! item.getImageURLs(),
-            collectionName: item.collectionName
-        )
+        UpdateCollectionPreviewImageView(item: item)
     }
     
     // MARK: - Change Thumbnail Button

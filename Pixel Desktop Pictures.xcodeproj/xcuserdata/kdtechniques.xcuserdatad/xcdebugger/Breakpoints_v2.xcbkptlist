@@ -135,52 +135,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "154"
-            endingLineNumber = "154"
-            landmarkName = "updateCollectionName(_:newCollectionName:imageAPIServiceReference:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031 - 3ef3fa250fe61e11"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) suspend resume partial function for Pixel_Desktop_Pictures.SwiftDataManager.updateCollectionName(_: Pixel_Desktop_Pictures.CollectionItemModel, newCollectionName: Swift.String, imageAPIServiceReference: Pixel_Desktop_Pictures.UnsplashImageAPIService) async throws -&gt; ()"
-                  moduleName = "Pixel Desktop Pictures.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kdtechniques/Desktop/Pixel%20Desktop%20Pictures/Pixel%20Desktop%20Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "154"
-                  endingLineNumber = "154">
-               </Location>
-               <Location
-                  uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031 - 2d4bd21d98f37010"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for Pixel_Desktop_Pictures.SwiftDataManager.updateCollectionName(_: Pixel_Desktop_Pictures.CollectionItemModel, newCollectionName: Swift.String, imageAPIServiceReference: Pixel_Desktop_Pictures.UnsplashImageAPIService) async throws -&gt; ()"
-                  moduleName = "Pixel Desktop Pictures.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kdtechniques/Desktop/Pixel%20Desktop%20Pictures/Pixel%20Desktop%20Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "154"
-                  endingLineNumber = "154">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "5DA9498D-B77D-433E-84EE-F4CE98D48AB9"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"

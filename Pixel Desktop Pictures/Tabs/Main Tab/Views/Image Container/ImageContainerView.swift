@@ -46,8 +46,8 @@ struct ImageContainerView: View {
 // MARK: - PREVIEWS
 #Preview("Image Preview Image Container View") {
     ImageContainerView(
-        thumbnailURLString: try! CollectionItemModel.defaultCollectionsArray.first!.getImageURLs().small,
-        imageURLString: try! CollectionItemModel.defaultCollectionsArray.first!.getImageURLs().regular,
+        thumbnailURLString: try! CollectionItemModel.getDefaultCollectionsArray().first!.getImageURLs().small,
+        imageURLString: try! CollectionItemModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
         location: "Playa Mixota, Spain"
     )
     .frame(width: TabItemsModel.allWindowWidth)
@@ -55,7 +55,7 @@ struct ImageContainerView: View {
     .environment(TabsViewModel())
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension ImageContainerView {
     // MARK: - Center Item
     private var centerButton: some View {

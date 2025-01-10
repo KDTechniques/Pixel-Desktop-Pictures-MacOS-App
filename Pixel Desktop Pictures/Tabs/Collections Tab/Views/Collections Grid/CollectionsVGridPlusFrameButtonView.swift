@@ -38,11 +38,11 @@ struct CollectionsVGridPlusFrameButtonView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Plus Frame Button View") {
-    CollectionsVGridPlusFrameButtonView(collectionName: CollectionItemModel.defaultCollectionsArray.first!.collectionName)
+    CollectionsVGridPlusFrameButtonView(collectionName: try! CollectionItemModel.getDefaultCollectionsArray().first!.collectionName)
         .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension CollectionsVGridPlusFrameButtonView {
     // MARK: - overlay
     private var overlay: some View {

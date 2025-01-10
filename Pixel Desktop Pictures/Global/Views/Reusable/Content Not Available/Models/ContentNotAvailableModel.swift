@@ -8,7 +8,10 @@
 import SwiftUI
 
 enum ContentNotAvailableModel: CaseIterable {
-    case apiAccessKeyNotFound, noInternetConnection, apiAccessKeyError
+    case apiAccessKeyNotFound
+    case noInternetConnection
+    case apiAccessKeyError
+    case updatingCollectionItemNotFound
     
     var title: String {
         switch self {
@@ -16,6 +19,8 @@ enum ContentNotAvailableModel: CaseIterable {
             return "API Access Key Not Found"
         case .noInternetConnection, .apiAccessKeyError:
             return "Failed to Fetch Content"
+        case .updatingCollectionItemNotFound:
+            return "You May Be Unable to Edit the Collection"
         }
     }
     
@@ -28,11 +33,13 @@ enum ContentNotAvailableModel: CaseIterable {
             noInternetConnectionView
         case .apiAccessKeyError:
             apiAccessKeyErrorView { await action() }
+        case .updatingCollectionItemNotFound:
+            unableToEditCollectionView
         }
     }
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 fileprivate extension ContentNotAvailableModel {
     // MARK: - API Access Key Not Found View
     private func apiAccessKeyNotFoundView(_ action: @escaping () async -> Void) -> some View {
@@ -71,5 +78,11 @@ fileprivate extension ContentNotAvailableModel {
             
             ButtonView(title: "Retry", type: .regular) { Task { await action() } }
         }
+    }
+    
+    // MARK: - Unable to Edit Collection View
+    private var unableToEditCollectionView: some View {
+        Text("Something went wrong! Please try again later.")
+            .foregroundStyle(.secondary)
     }
 }

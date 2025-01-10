@@ -100,13 +100,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>105</string>
+					<string>118</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>104</string>
+					<string>116</string>
 					<key>Timestamp</key>
-					<string>758154750.773175</string>
+					<string>758212903.710578</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -122,16 +122,17 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>    private func handleTap() { // create a function in collection view model to handle tap gesture to remove selection when click on random and so on.
+				<string>    private func handleTap() {
+        collectionsVM.handleCollectionItemTap(item: item)
 </string>
 				<key>leading</key>
 				<string>    
     // MARK: - Handle Tap
 </string>
 				<key>trailing</key>
-				<string>        Task {
-            await collectionsVM.updateCollectionSelectionStatus(item: item, isSelected: !item.isSelected)
-        }
+				<string>    }
+    
+    // MARK: - Handle Hover
 </string>
 			</dict>
 			<key>type</key>
@@ -145,13 +146,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>67</string>
+					<string>65</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>66</string>
+					<string>64</string>
 					<key>Timestamp</key>
-					<string>758165869.230943</string>
+					<string>758200485.970795</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -167,16 +168,14 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>    // please create an extension for the following to store
+				<string>    }
 </string>
 				<key>leading</key>
-				<string>    
-    static let randomKeywordString: String = randomKeyword
+				<string>        let imageURLsData: Data = try JSONEncoder().encode(imageURLs)
+        self.imageURLs = imageURLsData
 </string>
 				<key>trailing</key>
-				<string>    static let defaultCollectionsArray: [CollectionItemModel] = [
-        .init(
-            collectionName: randomKeyword,
+				<string>}
 </string>
 			</dict>
 			<key>type</key>

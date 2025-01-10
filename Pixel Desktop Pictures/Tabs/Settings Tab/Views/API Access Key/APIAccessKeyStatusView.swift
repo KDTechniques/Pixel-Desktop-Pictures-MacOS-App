@@ -31,7 +31,7 @@ struct APIAccessKeyStatusView: View {
         .previewModifier
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension APIAccessKeyStatusView {
     // MARK: - On Change of Internet Connection
     private func onChangeOfInternetConnection(_ status: InternetConnectionStatusModel) {

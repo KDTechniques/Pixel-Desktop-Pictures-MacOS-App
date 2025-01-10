@@ -28,7 +28,7 @@ struct UnsplashImageURLsModel: Codable {
     let full: String // 2MB
     let regular: String // Ex: 241KB
     let small: String // Ex: 38KB
-    let thumb: String // Ex: 11KB
+    var thumb: String // Ex: 11KB
 }
 
 // MARK: - User Model

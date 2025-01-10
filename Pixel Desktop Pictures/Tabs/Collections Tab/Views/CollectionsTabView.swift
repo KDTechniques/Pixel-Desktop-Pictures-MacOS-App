@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-fileprivate struct PopOverPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 struct CollectionsTabView: View {
     // MARK: - PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
@@ -44,7 +37,7 @@ struct CollectionsTabView: View {
         .background(Color.windowBackground)
         .setTabContentHeightToTabsViewModelViewModifier(from: .collections)
         .onChange(of: collectionsVM.collectionItemsArray.count) {
-            onCollectionItemsArrayChange(oldValue: $0, newValue: $1)
+            collectionsVM.onCollectionItemsArrayChange(oldValue: $0, newValue: $1, scrollPosition: $scrollPosition)
         }
     }
 }
@@ -54,43 +47,19 @@ struct CollectionsTabView: View {
     PreviewView { CollectionsTabView() }
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension CollectionsTabView {
     // MARK: - Collection Creation PopOver
     private var collectionCreationPopOver: some View {
         AddNewCollectionView()
-            .getGeometryHeight($collectionCreationPopOverHeight)
+            .getBottomPopoverGeometryHeight($collectionCreationPopOverHeight)
             .offset(y: collectionsVM.popOverItem == (true, .collectionCreationPopOver) ? 0 : collectionCreationPopOverHeight)
     }
     
     // MARK: - Collection Update PopOver
     private var collectionUpdatePopOver: some View {
         UpdateCollectionView()
-            .getGeometryHeight($collectionUpdatePopOverHeight)
+            .getBottomPopoverGeometryHeight($collectionUpdatePopOverHeight)
             .offset(y: collectionsVM.popOverItem == (true, .collectionUpdatePopOver) ? 0 : collectionUpdatePopOverHeight)
-    }
-    
-    // MARK: FUNCTIONS
-    
-    // MARK: - On Collection Items Array Change
-    private func onCollectionItemsArrayChange(oldValue: Int, newValue: Int) {
-        guard oldValue != 0, oldValue < newValue else { return }
-        withAnimation { scrollPosition.scrollTo(edge: .bottom) }
-    }
-}
-
-fileprivate extension View {
-    // MARK: - Get Geometry Height
-    func getGeometryHeight(_ height: Binding<CGFloat>) -> some View {
-        self
-            .background {
-                GeometryReader { geo in
-                    Color.clear
-                        .preference(key: PopOverPreferenceKey.self, value: geo.frame(in: .local).height)
-                }
-                .onPreferenceChange(PopOverPreferenceKey.self) { value in
-                    height.wrappedValue = value
-                }
-            }
     }
 }

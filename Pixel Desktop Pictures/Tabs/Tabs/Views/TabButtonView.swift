@@ -34,7 +34,7 @@ struct TabButtonView: View {
         .environment(TabsViewModel())
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension View {
     // MARK: - Set Foreground Color
     fileprivate func setForegroundColor(_ tab: TabItemsModel, _ selectedTab: TabItemsModel) -> some View {

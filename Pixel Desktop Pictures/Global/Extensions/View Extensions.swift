@@ -37,24 +37,38 @@ extension View {
             .environment(APIAccessKeyManager())
             .environment(try! SwiftDataManager(appEnvironment: .mock))
     }
+    
+    // MARK: - Get Bottom Popover Geometry Height
+    func getBottomPopoverGeometryHeight(_ height: Binding<CGFloat>) -> some View {
+        self
+            .background {
+                GeometryReader { geo in
+                    Color.clear
+                        .preference(key: BottomPopoverPreferenceKey.self, value: geo.frame(in: .local).height)
+                }
+                .onPreferenceChange(BottomPopoverPreferenceKey.self) { value in
+                    height.wrappedValue = value
+                }
+            }
+    }
 }
 
-// MARK: VIEW MODIFIER STRUCTS
+// MARK: - VIEW MODIFIER STRUCTS
 
-// MARK: - On First Appear
+// MARK: On First Appear
 fileprivate struct OnFirstAppear: ViewModifier {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: INJECTED PROPERTIES
     let action: () -> Void
     
-    // MARK: - ASSIGNED PROPERTIES
+    // MARK: ASSIGNED PROPERTIES
     @State private var didAppear: Bool = false
     
-    // MARK: - INITIALIZER
+    // MARK: INITIALIZER
     init(_ action: @escaping () -> Void) {
         self.action = action
     }
     
-    // MARK: - BODY
+    // MARK: BODY
     func body(content: Content) -> some View {
         content
             .onAppear {
@@ -65,20 +79,20 @@ fileprivate struct OnFirstAppear: ViewModifier {
     }
 }
 
-// MARK: - On First Task
+// MARK: On First Task
 fileprivate struct OnFirstTask: ViewModifier {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: INJECTED PROPERTIES
     let action: () async -> Void
     
-    // MARK: - ASSIGNED PROPERTIES
+    // MARK: ASSIGNED PROPERTIES
     @State private var didAppear: Bool = false
     
-    // MARK: - INITIALIZER
+    // MARK: INITIALIZER
     init(_ action: @escaping () async -> Void) {
         self.action = action
     }
     
-    // MARK: - BODY
+    // MARK: BODY
     func body(content: Content) -> some View {
         content
             .task {
@@ -89,18 +103,18 @@ fileprivate struct OnFirstTask: ViewModifier {
     }
 }
 
-// MARK: - Set Tab Content Height to Tabs ViewModel
+// MARK: Set Tab Content Height to Tabs ViewModel
 fileprivate struct SetTabContentHeightToTabsViewModel: ViewModifier {
-    // MARK: - PROPERTIES
+    // MARK: PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     let tab: TabItemsModel
     
-    // MARK: - INITIALIZER
+    // MARK: INITIALIZER
     init(from tab: TabItemsModel) {
         self.tab = tab
     }
     
-    // MARK: - BODY
+    // MARK: BODY
     func body(content: Content) -> some View {
         content
             .background {
@@ -111,5 +125,15 @@ fileprivate struct SetTabContentHeightToTabsViewModel: ViewModifier {
                         }
                 }
             }
+    }
+}
+
+// MARK: - PREFERENCE KEYS
+
+// MARK: Bottom Popover Preference Key
+struct BottomPopoverPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }
