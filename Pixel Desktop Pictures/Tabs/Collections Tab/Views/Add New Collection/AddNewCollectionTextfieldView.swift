@@ -15,16 +15,8 @@ struct AddNewCollectionTextfieldView: View {
     var body: some View {
         TextfieldView(
             textfieldText: collectionsVM.binding(\.collectionNameTextfieldText),
-            localizedKey: "Add New Collection",
-            prompt: "Ex: Super Car") {
-                Task {
-                    do {
-                        try await collectionsVM.createCollection(collectionName: collectionsVM.collectionNameTextfieldText)
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
+            localizedKey: "Add New Collection Textfield",
+            prompt: "Ex: Super Car") { collectionsVM.createCollection() }
     }
 }
 

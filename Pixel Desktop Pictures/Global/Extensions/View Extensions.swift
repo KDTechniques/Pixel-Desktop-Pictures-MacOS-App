@@ -35,6 +35,7 @@ extension View {
             .environment(RecentsTabViewModel())
             .environment(SettingsTabViewModel(appEnvironment: .mock))
             .environment(APIAccessKeyManager())
+            .environment(try! SwiftDataManager(appEnvironment: .mock))
     }
 }
 

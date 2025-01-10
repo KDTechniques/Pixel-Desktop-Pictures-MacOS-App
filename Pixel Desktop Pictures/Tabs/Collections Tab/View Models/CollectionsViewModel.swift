@@ -7,6 +7,11 @@
 
 import SwiftUICore
 
+enum CollectionsViewPopOverModel: CaseIterable {
+    case collectionCreationPopOver
+    case collectionUpdatePopOver
+}
+
 @MainActor
 @Observable final class CollectionsViewModel {
     // MARK: - INJECTED PROPERTIES
@@ -14,12 +19,15 @@ import SwiftUICore
     
     // MARK: - ASSIGNED PROPERTIES
     let defaults: UserDefaultsManager = .shared
-    private(set) var isPresentedPopup: Bool = false
     var collectionNameTextfieldText: String = ""
+    var collectionRenameTextfieldText: String = ""
     var collectionItemsArray: [CollectionItemModel] = []
     var showCreateButtonProgress: Bool = false
-    @ObservationIgnored
-    var popOverAnimation: (Animation, AnyHashable) { (.smooth(duration: 0.3), isPresentedPopup) }
+    var showRenameButtonProgress: Bool = false
+    var showChangeThumbnailButtonProgress: Bool = false
+    private(set) var popOverItem: (isPresented: Bool, type: CollectionsViewPopOverModel) = (false, .collectionCreationPopOver)
+    var updatingItem: CollectionItemModel?
+    
     
     // MARK: - INITIALIZER
     init(swiftDataManager: SwiftDataManager) {
@@ -49,67 +57,113 @@ import SwiftUICore
     }
     
     // MARK: - Create Collection
-    func createCollection(collectionName: String) async throws {
+    func createCollection() {
+        let collectionName: String = collectionNameTextfieldText
+        guard !collectionName.isEmpty else { return }
         showCreateButtonProgress = true
-        do {
-            guard !checkCollectionNameDuplications(collectionName) else {
-                throw CollectionsViewModelErrorModel.duplicateCollectionName
+        
+        Task {
+            do {
+                guard !checkCollectionNameDuplications(collectionName) else {
+                    throw CollectionsViewModelErrorModel.duplicateCollectionName
+                }
+                
+                guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
+                    throw CollectionsViewModelErrorModel.apiAccessKeyNotFound
+                }
+                
+                let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+                
+                let model: UnsplashQueryImageModel = try await imageAPIService.getQueryImageModel(
+                    queryText: collectionName,
+                    pageNumber: 1,
+                    imagesPerPage: 1
+                )
+                
+                guard let imageURLs: UnsplashImageURLsModel = model.results.first?.imageQualityURLStrings else {
+                    throw URLError(.badServerResponse)
+                }
+                
+                let object: CollectionItemModel = .init(collectionName: collectionName, imageURLs: imageURLs)
+                try swiftDataManager.addCollectionItemModel(object)
+                collectionItemsArray.append(object)
+                showCreateButtonProgress = false
+                presentPopup(false, for: .collectionCreationPopOver)
+                // show success alert here...
+            } catch {
+                showCreateButtonProgress = false
+                // show an alert based on the throwing error here...
+                print(error.localizedDescription)
             }
-            
-            guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
-                throw CollectionsViewModelErrorModel.apiAccessKeyNotFound
+        }
+    }
+    
+    // MARK: - Update Collection Name
+    func updateCollectionName() {
+        let newCollectionName: String = collectionRenameTextfieldText
+        guard !newCollectionName.isEmpty,
+              let item: CollectionItemModel = updatingItem else {
+            return
+        }
+        
+        showRenameButtonProgress = true
+        
+        Task {
+            do {
+                guard !checkCollectionNameDuplications(newCollectionName) else {
+                    throw CollectionsViewModelErrorModel.duplicateCollectionName
+                }
+                
+                guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
+                    throw CollectionsViewModelErrorModel.apiAccessKeyNotFound
+                }
+                
+                let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+                try await swiftDataManager.updateCollectionName(item, newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIService)
+                showRenameButtonProgress = false
+                resetTextfieldTexts()
+            } catch {
+                showRenameButtonProgress = false
+                print(error.localizedDescription)
             }
-            
-            let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
-            
-            let model: UnsplashQueryImageModel = try await imageAPIService.getQueryImageModel(queryText: collectionName, pageNumber: 1, imagesPerPage: 1)
-            guard let imageURLString: String = model.results.first?.imageQualityURLStrings.small else {
-                throw URLError(.badServerResponse)
-            }
-            
-            let object: CollectionItemModel = .init(collectionName: collectionName, imageURLString: imageURLString)
-            try swiftDataManager.addCollectionItemModel(object)
-            collectionItemsArray.append(object)
-            showCreateButtonProgress = false
-            presentPopup(false)
-            // show success alert here...
-        } catch {
-            showCreateButtonProgress = false
-            // show an alert based on the throwing error here...
-            print(error.localizedDescription)
-            throw error
         }
     }
     
     func updateCollectionImageURLString(item: CollectionItemModel) async {
+        showChangeThumbnailButtonProgress = true
         do {
             guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
                 throw CollectionsViewModelErrorModel.apiAccessKeyNotFound
             }
             
             let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
-            try await swiftDataManager.updateCollectionItemModel(item, isSelected: nil, imageAPIServiceReference: imageAPIService)
+            try await swiftDataManager.updateCollectionImageURLString(item, imageAPIServiceReference: imageAPIService)
+            showChangeThumbnailButtonProgress = false
         } catch {
+            showChangeThumbnailButtonProgress = false
             print("Error: Updating collection item's image url string. \(error.localizedDescription)")
         }
     }
     
     // MARK: - Update Collection Selection Status
-    func updateCollectionSelectionStatus(item: CollectionItemModel, isSelected: Bool) async {
+    func updateCollectionSelectionStatus(item: CollectionItemModel, isSelected: Bool) {
         do {
-            try await swiftDataManager.updateCollectionItemModel(item, isSelected: isSelected, imageAPIServiceReference: nil)
+            try swiftDataManager.updateCollectionSelectionState(item, isSelected: isSelected)
         } catch {
             print("Error: Updating collection selection status to `\(isSelected)`. \(error.localizedDescription)")
         }
     }
     
     // MARK: - Delete Collection
-    func deleteCollection(_ object: CollectionItemModel) throws {
+    func deleteCollection(item: CollectionItemModel) throws {
         do {
-            try swiftDataManager.deleteCollectionItemModel(object)
+            showChangeThumbnailButtonProgress = true
+            try swiftDataManager.deleteCollectionItemModel(item)
+            presentPopup(false, for: .collectionUpdatePopOver)
             withAnimation(.smooth(duration: 0.3)) {
-                collectionItemsArray.removeAll(where: { $0 == object })
+                collectionItemsArray.removeAll(where: { $0 == item })
             }
+            showChangeThumbnailButtonProgress = false
         } catch {
             print(error.localizedDescription)
             throw error
@@ -117,9 +171,14 @@ import SwiftUICore
     }
     
     // MARK: - Present & Dismiss Popup
-    func presentPopup(_ isPresented: Bool) {
-        isPresentedPopup = isPresented
-        isPresented ? () : resetCollectionNameTextfieldText()
+    func presentPopup(_ isPresented: Bool, for type: CollectionsViewPopOverModel) {
+        withAnimation(.smooth(duration: 0.3)) { popOverItem = (isPresented, type) }
+        guard !isPresented else { return }
+        resetTextfieldTexts()
+        Task {
+            try? await Task.sleep(nanoseconds: 400_000_000) // Adds one millisecond to animation duration
+            resetUpdatingItem()
+        }
     }
     
     // MARK: PRIVATE FUNCTIONS
@@ -149,7 +208,13 @@ import SwiftUICore
     }
     
     // MARK: - Reset Collection Name Textfield Text
-    private func resetCollectionNameTextfieldText() {
+    private func resetTextfieldTexts() {
         collectionNameTextfieldText = ""
+        collectionRenameTextfieldText = ""
+    }
+    
+    // MARK: - Reset Updating Item
+    private func resetUpdatingItem() {
+        updatingItem = nil
     }
 }

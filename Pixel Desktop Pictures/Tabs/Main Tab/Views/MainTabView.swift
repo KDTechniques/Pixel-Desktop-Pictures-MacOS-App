@@ -61,8 +61,8 @@ extension MainTabView {
         VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
-                thumbnailURLString: CollectionItemModel.defaultCollectionsArray.first!.imageURLString,
-                imageURLString: CollectionItemModel.defaultCollectionsArray.first!.imageURLString,
+                thumbnailURLString: try! CollectionItemModel.defaultCollectionsArray.first!.getImageURLs().thumb,
+                imageURLString: try! CollectionItemModel.defaultCollectionsArray.first!.getImageURLs().regular,
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
             

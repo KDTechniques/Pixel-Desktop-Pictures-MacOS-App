@@ -17,19 +17,14 @@ struct AddNewCollectionView: View {
             AddNewCollectionTextfieldHeaderView()
             AddNewCollectionTextfieldView()
             ButtonView(title: "Create", showProgress: collectionsVM.showCreateButtonProgress, type: .popup) {
-                Task {
-                    do {
-                        try await collectionsVM.createCollection(collectionName: collectionsVM.collectionNameTextfieldText)
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
+                collectionsVM.createCollection()
             }
+            .disabled(collectionsVM.collectionNameTextfieldText.isEmpty)
         }
         .padding()
         .background(Color.popupBackground)
         .overlay(alignment: .topTrailing) {
-            AddNewCollectionPopupDismissButtonView()
+            CollectionPopupDismissButtonView(popOverType: .collectionCreationPopOver)
         }
     }
 }
@@ -39,4 +34,5 @@ struct AddNewCollectionView: View {
     AddNewCollectionView()
         .frame(width: TabItemsModel.allWindowWidth)
         .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
+        .previewModifier
 }

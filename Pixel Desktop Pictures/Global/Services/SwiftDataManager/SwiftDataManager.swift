@@ -40,6 +40,7 @@ import SwiftUI
         do {
             let imageData: Data = try JSONEncoder().encode(imageDataArray)
             let newObject: ImageQueryURLModel = .init(queryText: queryText, pageNumber: pageNumber, imageDataArray: imageData)
+            
             container.mainContext.insert(newObject)
             try saveContext()
         } catch {
@@ -145,13 +146,9 @@ import SwiftUI
     }
     
     // MARK: Update Collection Item Model
-    func updateCollectionItemModel(_ collectionItem: CollectionItemModel, isSelected: Bool?, imageAPIServiceReference: UnsplashImageAPIService?) async throws {
-        if let isSelected { collectionItem.updateIsSelected(isSelected) }
-        
+    func updateCollectionName(_ collectionItem: CollectionItemModel, newCollectionName: String, imageAPIServiceReference: UnsplashImageAPIService) async throws {
         do {
-            if let imageAPIServiceReference {
-                try await collectionItem.updateImageURLString(imageAPIServiceReference: imageAPIServiceReference)
-            }
+            try await collectionItem.renameCollectionName(newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIServiceReference)
             try saveContext()
         } catch {
             let error: SwiftDataManagerErrorModel = .collectionItemModelUpdateFailed(error)
@@ -159,6 +156,30 @@ import SwiftUI
             throw error
         }
     }
+    
+    func updateCollectionSelectionState(_ collectionItem: CollectionItemModel, isSelected: Bool) throws {
+        collectionItem.updateIsSelected(isSelected)
+        
+        do {
+            try saveContext()
+        } catch {
+            let error: SwiftDataManagerErrorModel = .collectionItemModelUpdateFailed(error)
+            print(error.localizedDescription)
+            throw error
+        }
+    }
+    
+    func updateCollectionImageURLString(_ collectionItem: CollectionItemModel, imageAPIServiceReference: UnsplashImageAPIService) async throws {
+        do {
+            try await collectionItem.updateImageURLString(imageAPIServiceReference: imageAPIServiceReference)
+            try saveContext()
+        } catch {
+            let error: SwiftDataManagerErrorModel = .collectionItemModelUpdateFailed(error)
+            print(error.localizedDescription)
+            throw error
+        }
+    }
+    
     
     // MARK: - Delete Operations
     

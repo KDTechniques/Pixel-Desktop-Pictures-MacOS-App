@@ -19,6 +19,7 @@ struct TabsView: View {
             TabView(selection: Binding(get: { tabsVM.tabSelection }, set: { _ in })) {
                 ForEach(TabItemsModel.allCases, id: \.self) { tab in
                     tab.content
+                        .frame(width: TabItemsModel.allWindowWidth)
                         .tag(tab)
                 }
                 .background(TabBarHiderView())

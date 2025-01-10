@@ -17,7 +17,8 @@ fileprivate struct PopOverPreferenceKey: PreferenceKey {
 struct CollectionsTabView: View {
     // MARK: - PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
-    @State private var popOverHeight: CGFloat = 0
+    @State private var collectionCreationPopOverHeight: CGFloat = 0
+    @State private var collectionUpdatePopOverHeight: CGFloat = 0
     @State private var scrollPosition: ScrollPosition = .init()
     let vGridValues = VGridValuesModel.self
     let nonScrollableItemsCount: Int = 8
@@ -38,10 +39,10 @@ struct CollectionsTabView: View {
         .frame(height: TabItemsModel.collections.contentHeight)
         .padding(.bottom)
         .overlay { CollectionsGridPopupBackgroundView() }
-        .overlay(alignment: .bottom) { popup }
+        .overlay(alignment: .bottom) { collectionCreationPopOver }
+        .overlay(alignment: .bottom) { collectionUpdatePopOver }
         .background(Color.windowBackground)
         .setTabContentHeightToTabsViewModelViewModifier(from: .collections)
-        .onTapGesture { handleTap() }
         .onChange(of: collectionsVM.collectionItemsArray.count) {
             onCollectionItemsArrayChange(oldValue: $0, newValue: $1)
         }
@@ -55,20 +56,21 @@ struct CollectionsTabView: View {
 
 // MARK: - EXTENSIONS
 extension CollectionsTabView {
-    // MARK: - popup
-    private var popup: some View {
+    // MARK: - Collection Creation PopOver
+    private var collectionCreationPopOver: some View {
         AddNewCollectionView()
-            .getGeometryHeight($popOverHeight)
-            .offset(y: collectionsVM.isPresentedPopup ? 0 : popOverHeight)
-            .animation(collectionsVM.popOverAnimation.0, value: collectionsVM.popOverAnimation.1)
+            .getGeometryHeight($collectionCreationPopOverHeight)
+            .offset(y: collectionsVM.popOverItem == (true, .collectionCreationPopOver) ? 0 : collectionCreationPopOverHeight)
+    }
+    
+    // MARK: - Collection Update PopOver
+    private var collectionUpdatePopOver: some View {
+        UpdateCollectionView()
+            .getGeometryHeight($collectionUpdatePopOverHeight)
+            .offset(y: collectionsVM.popOverItem == (true, .collectionUpdatePopOver) ? 0 : collectionUpdatePopOverHeight)
     }
     
     // MARK: FUNCTIONS
-    
-    // MARK: - Handle Tap
-    private func handleTap() {
-        collectionsVM.presentPopup(false)
-    }
     
     // MARK: - On Collection Items Array Change
     private func onCollectionItemsArrayChange(oldValue: Int, newValue: Int) {

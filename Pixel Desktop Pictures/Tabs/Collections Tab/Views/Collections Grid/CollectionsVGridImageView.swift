@@ -17,9 +17,11 @@ struct VGridItemWidthPreferenceKey: PreferenceKey {
 }
 
 struct CollectionsVGridImageView: View {
-    // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    // MARK: - INJECTED PROPERTIES
     let item: CollectionItemModel
+    
+    // MARK: - ASSIGNED PROPERTIES
+    @Environment(CollectionsViewModel.self) private var collectionsVM
     @State private var showEditButton: Bool = false
     
     // MARK: - INITIALIZER
@@ -33,14 +35,15 @@ struct CollectionsVGridImageView: View {
     // MARK: - BODY
     var body: some View {
         WebImage(
-            url: .init(string: item.imageURLString),
+            url: .init(string: try! item.getImageURLs().small),
             options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
         )
         .placeholder { Color.vGridItemPlaceholder }
         .resizable()
-        .frame(height: vGridValues.height)
+        .scaledToFill()
+        .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
-        .overlay { Color.black.opacity(0.4) }
+        .overlay(vGridValues.overlayColor)
         .overlay { overlay }
         .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
@@ -49,7 +52,7 @@ struct CollectionsVGridImageView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Image View") {
-    CollectionsVGridImageView(item: .defaultCollectionsArray.first!)
+    CollectionsVGridImageView(item: .defaultCollectionsArray[3])
         .frame(width: 120)
         .padding()
         .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
@@ -66,34 +69,31 @@ extension CollectionsVGridImageView {
             .opacity(item.isSelected ? 1 : 0)
     }
     
-    // MARK: - Collection Name Text
-    private var collectionName: some View {
-        Text(item.collectionName)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-            .padding(8)
-    }
-    
     private var editButton: some View {
         Button {
-            // open up another sheet here, rename the first popup befoe creating a new one.
-            try! collectionsVM.deleteCollection(item)
+            Task {
+                collectionsVM.updatingItem = item
+                try? await Task.sleep(nanoseconds: 50_000_000)
+                collectionsVM.presentPopup(true, for: .collectionUpdatePopOver)
+            }
         } label: {
             Image(systemName: "applepencil.gen1")
                 .font(.subheadline)
                 .fontWeight(.black)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .padding(6)
-                .opacity(item.isEditable ? 1 : 0)
-                .opacity(showEditButton ? 1 : 0)
         }
+        .opacity(item.isEditable ? 1 : 0)
+        .opacity(showEditButton ? 1 : 0)
         .buttonStyle(.plain)
+        .disabled(!item.isEditable)
     }
     
     // MARK: - overlay
     private var overlay: some View {
         Group {
             checkmark
-            collectionName
+            CollectionNameOverlayView(collectionName: item.collectionName)
             editButton
         }
         .foregroundStyle(.white)

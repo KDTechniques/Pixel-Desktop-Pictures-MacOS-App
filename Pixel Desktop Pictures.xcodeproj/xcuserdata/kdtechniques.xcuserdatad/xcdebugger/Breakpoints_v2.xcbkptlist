@@ -30,8 +30,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "110"
-            endingLineNumber = "110"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "fetchCollectionItemModelsArray()"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "59"
-            endingLineNumber = "59"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
             landmarkName = "addRecentImageURLModel(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "72"
-            endingLineNumber = "72"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
             landmarkName = "addCollectionItemModel(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "fetchImageQueryURLModelsArray()"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,8 +94,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
             landmarkName = "fetchRecentImageURLModelsArray()"
             landmarkType = "7">
          </BreakpointContent>
@@ -110,8 +110,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
             landmarkName = "updateImageQueryURLModel(_:newQueryText:newPageNumber:newImageDataArray:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -126,8 +126,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
             landmarkName = "updateRecentImageURLModel(_:newValues:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -142,52 +142,38 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "updateCollectionItemModel(_:isSelected:imageAPIServiceReference:)"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "updateCollectionName(_:newCollectionName:imageAPIServiceReference:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031 - 2c52f20c3f026fd5"
+                  uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031 - 3ef3fa250fe61e11"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for Pixel_Desktop_Pictures.SwiftDataManager.updateCollectionItemModel(_: Pixel_Desktop_Pictures.CollectionItemModel, isSelected: Swift.Optional&lt;Swift.Bool&gt;, imageAPIServiceReference: Swift.Optional&lt;Pixel_Desktop_Pictures.UnsplashImageAPIService&gt;) async throws -&gt; ()"
+                  symbolName = "(2) suspend resume partial function for Pixel_Desktop_Pictures.SwiftDataManager.updateCollectionName(_: Pixel_Desktop_Pictures.CollectionItemModel, newCollectionName: Swift.String, imageAPIServiceReference: Pixel_Desktop_Pictures.UnsplashImageAPIService) async throws -&gt; ()"
                   moduleName = "Pixel Desktop Pictures.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/kdtechniques/Desktop/Pixel%20Desktop%20Pictures/Pixel%20Desktop%20Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "157"
-                  endingLineNumber = "157">
+                  startingLineNumber = "154"
+                  endingLineNumber = "154">
                </Location>
                <Location
-                  uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031 - d4275ab4717963eb"
+                  uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031 - 2d4bd21d98f37010"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for Pixel_Desktop_Pictures.SwiftDataManager.updateCollectionItemModel(_: Pixel_Desktop_Pictures.CollectionItemModel, isSelected: Swift.Optional&lt;Swift.Bool&gt;, imageAPIServiceReference: Swift.Optional&lt;Pixel_Desktop_Pictures.UnsplashImageAPIService&gt;) async throws -&gt; ()"
+                  symbolName = "(3) suspend resume partial function for Pixel_Desktop_Pictures.SwiftDataManager.updateCollectionName(_: Pixel_Desktop_Pictures.CollectionItemModel, newCollectionName: Swift.String, imageAPIServiceReference: Pixel_Desktop_Pictures.UnsplashImageAPIService) async throws -&gt; ()"
                   moduleName = "Pixel Desktop Pictures.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/kdtechniques/Desktop/Pixel%20Desktop%20Pictures/Pixel%20Desktop%20Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "157"
-                  endingLineNumber = "157">
-               </Location>
-               <Location
-                  uuid = "FD3647DE-0F2A-449F-BF47-E4CAD4840031 - 381e15606a85e5e8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for Pixel_Desktop_Pictures.SwiftDataManager.updateCollectionItemModel(_: Pixel_Desktop_Pictures.CollectionItemModel, isSelected: Swift.Optional&lt;Swift.Bool&gt;, imageAPIServiceReference: Swift.Optional&lt;Pixel_Desktop_Pictures.UnsplashImageAPIService&gt;) async throws -&gt; ()"
-                  moduleName = "Pixel Desktop Pictures.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kdtechniques/Desktop/Pixel%20Desktop%20Pictures/Pixel%20Desktop%20Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "157"
-                  endingLineNumber = "157">
+                  startingLineNumber = "154"
+                  endingLineNumber = "154">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -202,8 +188,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
+            startingLineNumber = "192"
+            endingLineNumber = "192"
             landmarkName = "deleteImageQueryURLModel(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -218,8 +204,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "183"
-            endingLineNumber = "183"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
             landmarkName = "deleteRecentImageURLModel(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -234,8 +220,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "195"
-            endingLineNumber = "195"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
             landmarkName = "deleteCollectionItemModel(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -250,8 +236,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "219"
-            endingLineNumber = "219"
+            startingLineNumber = "240"
+            endingLineNumber = "240"
             landmarkName = "saveContext()"
             landmarkType = "7">
          </BreakpointContent>
@@ -266,8 +252,8 @@
             filePath = "Pixel Desktop Pictures/Global/Services/SwiftDataManager/SwiftDataManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "206"
-            endingLineNumber = "206"
+            startingLineNumber = "227"
+            endingLineNumber = "227"
             landmarkName = "eraseAllData()"
             landmarkType = "7">
          </BreakpointContent>

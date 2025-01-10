@@ -61,7 +61,7 @@
 					<key>StartingLineNumber</key>
 					<string>37</string>
 					<key>Timestamp</key>
-					<string>758057168.137934</string>
+					<string>758165826.2225111</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -100,58 +100,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>55</string>
+					<string>105</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>54</string>
+					<string>104</string>
 					<key>Timestamp</key>
-					<string>758065821.402181</string>
-				</dict>
-				<key>rebasable-url</key>
-				<dict>
-					<key>base</key>
-					<string>workspace</string>
-					<key>payload</key>
-					<dict>
-						<key>relative-path</key>
-						<string>Pixel Desktop Pictures/Tabs/Collections Tab/View Models/CollectionsViewModel.swift</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>text-context</key>
-			<dict>
-				<key>focused</key>
-				<string>            guard !checkCollectionNameDuplications(collectionName) else {
-</string>
-				<key>leading</key>
-				<string>        showCreateButtonProgress = true
-        do {
-</string>
-				<key>trailing</key>
-				<string>                throw CollectionsViewModelErrorModel.duplicateCollectionName
-            }
-            
-</string>
-			</dict>
-			<key>type</key>
-			<string>bookmark</string>
-		</dict>
-		<dict>
-			<key>destination</key>
-			<dict>
-				<key>location-parameters</key>
-				<dict>
-					<key>EndingColumnNumber</key>
-					<string>91</string>
-					<key>EndingLineNumber</key>
-					<string>77</string>
-					<key>StartingColumnNumber</key>
-					<string>91</string>
-					<key>StartingLineNumber</key>
-					<string>77</string>
-					<key>Timestamp</key>
-					<string>758066910.609072</string>
+					<string>758154750.773175</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -167,59 +122,61 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string></string>
-				<key>leading</key>
-				<string>    private var editButton: some View {
-        Button {
-            // open up another sheet here, rename the first popup befoe creating a new one.</string>
-				<key>trailing</key>
-				<string>
-            try! collectionsVM.deleteCollection(item)
-        } label: {
+				<string>    private func handleTap() { // create a function in collection view model to handle tap gesture to remove selection when click on random and so on.
 </string>
-			</dict>
-			<key>type</key>
-			<string>bookmark</string>
-		</dict>
-		<dict>
-			<key>destination</key>
-			<dict>
-				<key>location-parameters</key>
-				<dict>
-					<key>EndingColumnNumber</key>
-					<string>30</string>
-					<key>EndingLineNumber</key>
-					<string>104</string>
-					<key>StartingColumnNumber</key>
-					<string>30</string>
-					<key>StartingLineNumber</key>
-					<string>104</string>
-					<key>Timestamp</key>
-					<string>758067676.674078</string>
-				</dict>
-				<key>rebasable-url</key>
-				<dict>
-					<key>base</key>
-					<string>workspace</string>
-					<key>payload</key>
-					<dict>
-						<key>relative-path</key>
-						<string>Pixel Desktop Pictures/Tabs/Collections Tab/Views/Collections Grid/CollectionsVGridImageView.swift</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>text-context</key>
-			<dict>
-				<key>focused</key>
-				<string></string>
 				<key>leading</key>
 				<string>    
     // MARK: - Handle Tap
-    private func handleTap() { // create a function in collection view model to handle tap gesture to remove selection when click on random and so on.</string>
+</string>
 				<key>trailing</key>
-				<string>
-        Task {
+				<string>        Task {
             await collectionsVM.updateCollectionSelectionStatus(item: item, isSelected: !item.isSelected)
+        }
+</string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
+					<key>EndingLineNumber</key>
+					<string>67</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
+					<key>StartingLineNumber</key>
+					<string>66</string>
+					<key>Timestamp</key>
+					<string>758165869.230943</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Global/Services/SwiftDataManager/Models/Swift Data Models/CollectionItemModel.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string>    // please create an extension for the following to store
+</string>
+				<key>leading</key>
+				<string>    
+    static let randomKeywordString: String = randomKeyword
+</string>
+				<key>trailing</key>
+				<string>    static let defaultCollectionsArray: [CollectionItemModel] = [
+        .init(
+            collectionName: randomKeyword,
 </string>
 			</dict>
 			<key>type</key>

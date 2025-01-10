@@ -14,7 +14,7 @@ struct AddNewCollectionPopupDismissButtonView: View {
     // MARK: - BODY
     var body: some View {
         Button {
-            collectionsVM.presentPopup(false)
+            collectionsVM.presentPopup(false, for: .collectionCreationPopOver)
         } label: {
             Image(systemName: "xmark.circle.fill")
                 .foregroundStyle(.secondary)

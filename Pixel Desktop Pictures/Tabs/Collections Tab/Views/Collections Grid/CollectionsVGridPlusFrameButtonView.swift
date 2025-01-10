@@ -24,7 +24,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
     var body: some View {
         if canShowPlusButton() {
             Button {
-                collectionsVM.presentPopup(true)
+                collectionsVM.presentPopup(true, for: .collectionCreationPopOver)
             } label: {
                 Rectangle()
                     .fill(Color.collectionPlusFrameBackground)
