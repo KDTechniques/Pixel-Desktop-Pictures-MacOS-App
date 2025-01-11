@@ -18,14 +18,14 @@ struct VGridItemWidthPreferenceKey: PreferenceKey {
 
 struct CollectionsVGridImageView: View {
     // MARK: - INJECTED PROPERTIES
-    let item: CollectionItemModel
+    let item: CollectionModel
     
     // MARK: - ASSIGNED PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
     @State private var showEditButton: Bool = false
     
     // MARK: - INITIALIZER
-    init(item: CollectionItemModel) {
+    init(item: CollectionModel) {
         self.item = item
     }
     
@@ -41,7 +41,7 @@ struct CollectionsVGridImageView: View {
                     options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
                 )
                 .placeholder {
-                    if item.collectionName != CollectionItemModel.randomKeywordString {
+                    if item.collectionName != CollectionModel.randomKeywordString {
                         ProgressView().scaleEffect(0.3)
                     }
                 }
@@ -65,7 +65,7 @@ struct CollectionsVGridImageView: View {
     CollectionsVGridImageView(item: try! .getDefaultCollectionsArray()[3])
         .frame(width: 120)
         .padding()
-        .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
+        .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
         .previewModifier
 }
 

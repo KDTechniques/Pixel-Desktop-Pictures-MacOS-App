@@ -1,5 +1,5 @@
 //
-//  CollectionItemModel.swift
+//  CollectionModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-08.
@@ -11,7 +11,7 @@ import SwiftData
 fileprivate let randomKeyword: String = "RANDOM"
 
 @Model
-class CollectionItemModel {
+class CollectionModel {
     // MARK: - PROPERTIES
     @Attribute(.unique) private(set) var collectionName: String
     private(set) var pageNumber: Int = 1

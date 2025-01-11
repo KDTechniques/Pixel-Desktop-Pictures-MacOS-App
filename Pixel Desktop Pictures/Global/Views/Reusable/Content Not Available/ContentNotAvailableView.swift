@@ -30,7 +30,7 @@ struct ContentNotAvailableView: View {
                     tabsVM.setTabSelection(.settings)
                 case .noInternetConnection, .updatingCollectionItemNotFound:
                     ()
-                case .apiAccessKeyError:
+                case .apiAccessKeyError, .rateLimited:
                     await apiAccessKeyManager.apiAccessKeyCheckup()
                 }
             }

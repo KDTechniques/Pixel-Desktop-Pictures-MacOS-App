@@ -9,25 +9,11 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - PROPERTIES
-    @Environment(NetworkManager.self) private var networkManager
     @Environment(MainTabViewModel.self) private var mainTabVM
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
-    @Environment(SwiftDataManager.self) private var swiftDataManager
     
     // MARK: - BODY
     var body: some View {
-        Group {
-            if networkManager.connectionStatus == .connected {
-                switch apiAccessKeyManager.apiAccessKeyStatus {
-                case .notFound, .validating, .failed: ContentNotAvailableView(type: .apiAccessKeyNotFound)
-                case .invalid: ContentNotAvailableView(type: .apiAccessKeyError)
-                case .connected : content
-                }
-            } else {
-                ContentNotAvailableView(type: .noInternetConnection)
-            }
-        }
-        .setTabContentHeightToTabsViewModelViewModifier(from: .main)
+        TabContentWithErrorView(tab: .main, content)
     }
 }
 
@@ -61,8 +47,8 @@ extension MainTabView {
         VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
-                thumbnailURLString: try! CollectionItemModel.getDefaultCollectionsArray().first!.getImageURLs().thumb,
-                imageURLString: try! CollectionItemModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
+                thumbnailURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().thumb,
+                imageURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
             

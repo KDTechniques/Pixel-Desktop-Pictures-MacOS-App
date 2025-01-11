@@ -33,6 +33,6 @@ struct AddNewCollectionView: View {
 #Preview("Add New Collection View") {
     AddNewCollectionView()
         .frame(width: TabItemsModel.allWindowWidth)
-        .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
+        .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
         .previewModifier
 }

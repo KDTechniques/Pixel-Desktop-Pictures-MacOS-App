@@ -10,14 +10,14 @@ import SDWebImageSwiftUI
 
 struct UpdateCollectionPreviewImageView: View {
     //MARK: - INJECTED PROPERTIES
-    let item: CollectionItemModel
+    let item: CollectionModel
     
     // MARK: - ASSIGNED PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
     let vGridValues = VGridValuesModel.self
     
     // MARK: - INITIALIZER
-    init(item: CollectionItemModel) {
+    init(item: CollectionModel) {
         self.item = item
     }
     

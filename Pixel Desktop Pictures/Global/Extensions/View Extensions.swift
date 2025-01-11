@@ -31,11 +31,13 @@ extension View {
             .background(Color.windowBackground)
             .environment(TabsViewModel())
             .environment(MainTabViewModel())
-            .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
+            .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
             .environment(RecentsTabViewModel())
             .environment(SettingsTabViewModel(appEnvironment: .mock))
             .environment(APIAccessKeyManager())
-            .environment(try! SwiftDataManager(appEnvironment: .mock))
+            .environment(try! ImageQueryURLModelSwiftDataManager(appEnvironment: .mock))
+            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .mock))
+            .environment(try! CollectionModelSwiftDataManager(appEnvironment: .mock))
     }
     
     // MARK: - Get Bottom Popover Geometry Height

@@ -12,6 +12,7 @@ enum ContentNotAvailableModel: CaseIterable {
     case noInternetConnection
     case apiAccessKeyError
     case updatingCollectionItemNotFound
+    case rateLimited
     
     var title: String {
         switch self {
@@ -21,21 +22,23 @@ enum ContentNotAvailableModel: CaseIterable {
             return "Failed to Fetch Content"
         case .updatingCollectionItemNotFound:
             return "You May Be Unable to Edit the Collection"
+        case .rateLimited:
+            return "Exceeded the Number of Image Changes"
         }
     }
     
-    @ViewBuilder
     func description(action: @escaping () async -> Void) -> some View {
-        switch self {
-        case .apiAccessKeyNotFound:
-            apiAccessKeyNotFoundView { await action() }
-        case .noInternetConnection:
-            noInternetConnectionView
-        case .apiAccessKeyError:
-            apiAccessKeyErrorView { await action() }
-        case .updatingCollectionItemNotFound:
-            unableToEditCollectionView
+        Group {
+            switch self {
+            case .apiAccessKeyNotFound: apiAccessKeyNotFoundView { await action() }
+            case .noInternetConnection: noInternetConnectionView
+            case .apiAccessKeyError: apiAccessKeyErrorView { await action() }
+            case .updatingCollectionItemNotFound: unableToEditCollectionView
+            case .rateLimited: rateLimitedView { await action() }
+            }
         }
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -72,10 +75,7 @@ fileprivate extension ContentNotAvailableModel {
     // MARK: - API Access Key Error View
     private func apiAccessKeyErrorView(_ action: @escaping () async -> Void) -> some View {
         VStack(spacing: 30) {
-            Text("Your API Access Key may be invalid, or you may have exceeded the allowed number of picture refreshes per hour. Please try again later.")
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-            
+            Text("Your API access key is invalid. Please retry or add a new API access key.")
             ButtonView(title: "Retry", type: .regular) { Task { await action() } }
         }
     }
@@ -84,5 +84,13 @@ fileprivate extension ContentNotAvailableModel {
     private var unableToEditCollectionView: some View {
         Text("Something went wrong! Please try again later.")
             .foregroundStyle(.secondary)
+    }
+    
+    // MARK: - Rate Limited View
+    private func rateLimitedView(_ action: @escaping () async -> Void) -> some View {
+        VStack(spacing: 30) {
+            Text("Too many changes in a short period. Please wait an hour before retrying.")
+            ButtonView(title: "Retry", type: .regular) { Task { await action() } }
+        }
     }
 }

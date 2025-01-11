@@ -18,8 +18,8 @@ final class UnsplashImageAPIService {
     
     // MARK: - INITIALIZER
     init(apiAccessKey: String) {
-        print("Unsplash API Service is Initialized.")
         self.apiAccessKey = apiAccessKey
+        print("Unsplash API Service has been Initialized.")
     }
     
     // MARK: FUNCTIONS
@@ -38,16 +38,8 @@ final class UnsplashImageAPIService {
         do {
             let _ = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImageModel.self)
         } catch {
-            guard let urlError = error as? URLError else {
-                throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
-            }
-            
-            switch urlError.code {
-            case .notConnectedToInternet:
-                throw error
-            default:
-                throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
-            }
+            print(UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error))
+            throw error
         }
     }
     
@@ -65,7 +57,8 @@ final class UnsplashImageAPIService {
             let randomImageModel: UnsplashRandomImageModel = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImageModel.self)
             return randomImageModel
         } catch {
-            throw UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed(error)
+            print(UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed(error))
+            throw error
         }
     }
     
@@ -85,13 +78,16 @@ final class UnsplashImageAPIService {
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
     func getQueryImageModel(queryText: String, pageNumber: Int, imagesPerPage: Int = 10) async throws -> UnsplashQueryImageModel {
+        // Construct the query URL string using the provided parameters.
         let queryURLString: String = constructQueryURLString(queryText: queryText, pageNumber: pageNumber, imagesPerPage: imagesPerPage)
         
         do {
+            // Fetch and decode the data into an `UnsplashQueryImageModel`.
             let model: UnsplashQueryImageModel = try await fetchDataNDecode(for: queryURLString, in: UnsplashQueryImageModel.self)
             return model
         } catch {
-            throw UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed(error)
+            print(UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed(error))
+            throw error
         }
     }
     
@@ -168,10 +164,10 @@ final class UnsplashImageAPIService {
             print("The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
             throw URLError(.badURL)
         case 401:
-            print("Invalid Access Token. Status code: 401 - Unauthorized")
+            print("Invalid Access Token. Status code: 401 - Unauthorized") // This occurs when the API Access Key is invalid
             throw URLError(.userAuthenticationRequired)
         case 403:
-            print("Missing permissions to perform request. Status code: 403 - Forbidden")
+            print("Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
             throw URLError(.clientCertificateRejected)
         case 404:
             print("Resource not found. Status code: 404")

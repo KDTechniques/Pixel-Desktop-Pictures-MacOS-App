@@ -30,7 +30,7 @@ actor DesktopPictureManager {
     
     // MARK: - Deinitializer
     deinit {
-        print("Desktop Picture Manager is Deinitialized!")
+        print("Desktop Picture Manager has been Deinitialized!")
         
         // Remove Observers from `NSWorkspace.shared.notificationCenter`
         workspace.notificationCenter.removeObserver(self, name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
@@ -110,7 +110,7 @@ actor DesktopPictureManager {
         await activeSpaceDidChangeNotificationObserver()
         await didWakeNotificationObserver()
         
-        print("Desktop Picture Manager is Initialized!")
+        print("Desktop Picture Manager has been Initialized!")
     }
     
     // MARK: - Notification Observers

@@ -38,8 +38,8 @@ struct CollectionsVGridPlusFrameButtonView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Plus Frame Button View") {
-    CollectionsVGridPlusFrameButtonView(collectionName: try! CollectionItemModel.getDefaultCollectionsArray().first!.collectionName)
-        .environment(CollectionsViewModel(swiftDataManager: try! .init(appEnvironment: .mock)))
+    CollectionsVGridPlusFrameButtonView(collectionName: try! CollectionModel.getDefaultCollectionsArray().first!.collectionName)
+        .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
 }
 
 // MARK: EXTENSIONS

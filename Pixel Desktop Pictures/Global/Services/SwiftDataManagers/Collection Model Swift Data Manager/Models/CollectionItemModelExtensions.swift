@@ -7,10 +7,10 @@
 
 import Foundation
 
-extension CollectionItemModel {
+extension CollectionModel {
     // MARK: - Get Default Collections Array
-    static func getDefaultCollectionsArray() throws -> [CollectionItemModel] {
-        let defaultCollectionsArray: [CollectionItemModel] = [
+    static func getDefaultCollectionsArray() throws -> [CollectionModel] {
+        let defaultCollectionsArray: [CollectionModel] = [
             try .init(
                 collectionName: randomKeywordString,
                 imageURLs: .init(full: "", regular: "", small: "", thumb: ""),

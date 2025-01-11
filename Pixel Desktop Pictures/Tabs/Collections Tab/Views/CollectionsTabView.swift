@@ -18,33 +18,39 @@ struct CollectionsTabView: View {
     
     // MARK: - BODY
     var body: some View {
-        ScrollView(.vertical) {
-            LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(collectionsVM.collectionItemsArray, id: \.self) { item in
-                    CollectionsVGridPlusFrameButtonView(collectionName: item.collectionName)
-                    CollectionsVGridImageView(item: item)
+        TabContentWithErrorView(tab: .collections) {
+            ScrollView(.vertical) {
+                LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
+                    ForEach(collectionsVM.collectionItemsArray, id: \.self) { item in
+                        CollectionsVGridPlusFrameButtonView(collectionName: item.collectionName)
+                        CollectionsVGridImageView(item: item)
+                    }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
-        }
-        .scrollPosition($scrollPosition)
-        .scrollDisabled(collectionsVM.collectionItemsArray.count <= nonScrollableItemsCount)
-        .frame(height: TabItemsModel.collections.contentHeight)
-        .padding(.bottom)
-        .overlay { CollectionsGridPopupBackgroundView() }
-        .overlay(alignment: .bottom) { collectionCreationPopOver }
-        .overlay(alignment: .bottom) { collectionUpdatePopOver }
-        .background(Color.windowBackground)
-        .setTabContentHeightToTabsViewModelViewModifier(from: .collections)
-        .onChange(of: collectionsVM.collectionItemsArray.count) {
-            collectionsVM.onCollectionItemsArrayChange(oldValue: $0, newValue: $1, scrollPosition: $scrollPosition)
+            .scrollPosition($scrollPosition)
+            .scrollDisabled(collectionsVM.collectionItemsArray.count <= nonScrollableItemsCount)
+            .frame(height: TabItemsModel.collections.contentHeight)
+            .padding(.bottom)
+            .overlay { CollectionsGridPopupBackgroundView() }
+            .overlay(alignment: .bottom) { collectionCreationPopOver }
+            .overlay(alignment: .bottom) { collectionUpdatePopOver }
+            .background(Color.windowBackground)
+            .onChange(of: collectionsVM.collectionItemsArray.count) {
+                collectionsVM.onCollectionItemsArrayChange(oldValue: $0, newValue: $1, scrollPosition: $scrollPosition)
+            }
         }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Collections Grid Tab View") {
+    @Previewable @State var networkManager: NetworkManager = .init()
     PreviewView { CollectionsTabView() }
+        .environment(networkManager)
+        .onFirstAppearViewModifier {
+            networkManager.initializeNetworkManager()
+        }
 }
 
 // MARK: EXTENSIONS
