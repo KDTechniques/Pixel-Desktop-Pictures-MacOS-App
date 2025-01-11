@@ -22,7 +22,11 @@ struct CollectionsGridPopupBackgroundView: View {
 // MARK: - PREVIEWS
 #Preview("Collections Grid Popup Background View") {
     CollectionsGridPopupBackgroundView()
-        .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
+        .environment(
+            CollectionsViewModel(
+                apiAccessKeyManager: .init(),
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)))
+        )
 }
 
 extension CollectionsGridPopupBackgroundView {

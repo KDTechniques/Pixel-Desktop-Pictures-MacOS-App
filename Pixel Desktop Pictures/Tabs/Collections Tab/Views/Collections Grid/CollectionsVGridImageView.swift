@@ -65,7 +65,11 @@ struct CollectionsVGridImageView: View {
     CollectionsVGridImageView(item: try! .getDefaultCollectionsArray()[3])
         .frame(width: 120)
         .padding()
-        .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
+        .environment(
+            CollectionsViewModel(
+                apiAccessKeyManager: .init(),
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)))
+        )
         .previewModifier
 }
 

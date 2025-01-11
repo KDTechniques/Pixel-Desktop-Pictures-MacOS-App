@@ -16,10 +16,6 @@ struct Pixel_Desktop_PicturesApp: App {
     // Services
     @State private var networkManager: NetworkManager = .init()
     @State private var apiAccessKeyManager: APIAccessKeyManager
-    @State private var swiftDataManager: SwiftDataManager
-    @State private var imageQueryURLModelSwiftDataManager: ImageQueryURLModelSwiftDataManager
-    @State private var recentImageURLModelSwiftDataManager: RecentImageURLModelSwiftDataManager
-    @State private var collectionModelSwiftDataManager: CollectionModelSwiftDataManager
     
     // Tabs
     @State private var tabsVM: TabsViewModel = .init()
@@ -33,18 +29,14 @@ struct Pixel_Desktop_PicturesApp: App {
         settingsTabVM = .init(appEnvironment: appEnvironment)
         
         do {
-            let tempCollectionModelSwiftDataManager: CollectionModelSwiftDataManager = try .init(appEnvironment: appEnvironment)
-            collectionModelSwiftDataManager = tempCollectionModelSwiftDataManager
-            
-            swiftDataManager = try .init(appEnvironment: appEnvironment)
-            imageQueryURLModelSwiftDataManager = try .init(appEnvironment: appEnvironment)
-            recentImageURLModelSwiftDataManager = try .init(appEnvironment: appEnvironment)
-           
-            
+            let tempSwiftDataManager: SwiftDataManager = try .init(appEnvironment: appEnvironment)
             let tempAPIAccessKeyManager: APIAccessKeyManager = .init()
             apiAccessKeyManager = tempAPIAccessKeyManager
             
-            collectionsTabVM = .init(apiAccessKeyManager: tempAPIAccessKeyManager, swiftDataManager: tempCollectionModelSwiftDataManager)
+            collectionsTabVM = .init(
+                apiAccessKeyManager: tempAPIAccessKeyManager,
+                swiftDataManager: .init(swiftDataManager: tempSwiftDataManager)
+            )
         } catch {
             print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
             // Fallback code goes here..

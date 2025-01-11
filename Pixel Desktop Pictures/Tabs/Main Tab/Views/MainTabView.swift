@@ -13,7 +13,7 @@ struct MainTabView: View {
     
     // MARK: - BODY
     var body: some View {
-        TabContentWithErrorView(tab: .main, content)
+        TabContentWithWindowErrorView(tab: .main, content)
     }
 }
 

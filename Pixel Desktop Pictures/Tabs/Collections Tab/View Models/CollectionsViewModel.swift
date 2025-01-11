@@ -58,14 +58,17 @@ import SwiftUICore
             
             // After the initial launch, SwiftData is available for use.
             collectionItemsArray = fetchedCollectionItemsArray
-            print("Collections View Model has been initialized!")
+            print("`Collections View Model` has been initialized!")
         } catch {
-            print("Error initializing Collections View Model: \(error.localizedDescription)")
+            print("Error: Failed to initialize `Collections View Model`: \(error.localizedDescription)")
+            
+            do {
+                collectionItemsArray = try CollectionModel.getDefaultCollectionsArray()
+            } catch {
+                collectionItemsArray = []
+            }
         }
     }
-    
-    
-    
     
     // MARK: - Create Collection
     /// Creates a new collection with the name provided in `collectionNameTextfieldText`.
@@ -125,7 +128,6 @@ import SwiftUICore
             }
         }
     }
-    
     
     // MARK: - Update Collection Name
     /// Updates the name of an existing collection.

@@ -33,7 +33,7 @@ import Foundation
     /// - Throws: An error if fetching the access key status from UserDefaults fails.
     func initializeAPIAccessKeyManager() async throws {
         try await getNAssignAPIAccessKeyStatusFromUserDefaults()
-        print("API Access Key Manager has been initialized!")
+        print("`API Access Key Manager` has been initialized!")
     }
     
     // MARK: - getAPIAccessKeyFromUserDefaults

@@ -9,7 +9,15 @@ import Foundation
 import SwiftData
 
 @MainActor
-final class CollectionModelSwiftDataManager: SwiftDataManager {
+final class CollectionModelSwiftDataManager {
+    // MARK: - PROPERTIES
+    let swiftDataManager: SwiftDataManager
+    
+    // MARK: - INITIALIZER
+    init(swiftDataManager: SwiftDataManager) {
+        self.swiftDataManager = swiftDataManager
+    }
+    
     // MARK: FUNCTIONS
     
     // MARK: - Create Operations
@@ -19,10 +27,10 @@ final class CollectionModelSwiftDataManager: SwiftDataManager {
     /// - Parameter object: The CollectionModel instance to be added.
     /// - Throws: Throws an error if saving the model to context fails.
     func addCollectionItemModel(_ object: CollectionModel) throws {
-        container.mainContext.insert(object)
+        swiftDataManager.container.mainContext.insert(object)
         
         do {
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelCreationFailed(error).localizedDescription)
             throw error
@@ -32,12 +40,12 @@ final class CollectionModelSwiftDataManager: SwiftDataManager {
     // MARK: - Read Operations
     
     // MARK: Fetch Collection Item Models Array
-    /// Fetches an array of CollectionModel from the container.
+    /// Fetches an array of CollectionModel from the swiftDataManager.container.
     /// - Returns: An array of CollectionModel.
     /// - Throws: Throws an error if fetching the models from the context fails.
     func fetchCollectionItemModelsArray() throws -> [CollectionModel] {
         do {
-            let collectionItemModelsArray: [CollectionModel] = try container.mainContext.fetch(FetchDescriptor<CollectionModel>())
+            let collectionItemModelsArray: [CollectionModel] = try swiftDataManager.container.mainContext.fetch(FetchDescriptor<CollectionModel>())
             return collectionItemModelsArray
         } catch {
             print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelsArrayFetchFailed(error).localizedDescription)
@@ -57,7 +65,7 @@ final class CollectionModelSwiftDataManager: SwiftDataManager {
     func updateCollectionName(_ collectionItem: CollectionModel, newCollectionName: String, imageAPIServiceReference: UnsplashImageAPIService) async throws {
         do {
             try await collectionItem.renameCollectionName(newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIServiceReference)
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelUpdateFailed(error).localizedDescription)
             throw error
@@ -74,7 +82,7 @@ final class CollectionModelSwiftDataManager: SwiftDataManager {
         collectionItem.updateIsSelected(isSelected)
         
         do {
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelUpdateFailed(error).localizedDescription)
             throw error
@@ -90,7 +98,7 @@ final class CollectionModelSwiftDataManager: SwiftDataManager {
     func updateCollectionImageURLString(_ collectionItem: CollectionModel, imageAPIServiceReference: UnsplashImageAPIService) async throws {
         do {
             try await collectionItem.updateImageURLString(imageAPIServiceReference: imageAPIServiceReference)
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print( CollectionModelSwiftDataManagerErrorModel.collectionItemModelUpdateFailed(error).localizedDescription)
             throw error
@@ -104,9 +112,9 @@ final class CollectionModelSwiftDataManager: SwiftDataManager {
     /// - Parameter collectionItem: The CollectionModel instance to be deleted.
     /// - Throws: Throws an error if deleting the model or saving changes to context fails.
     func deleteCollectionItemModel(_ collectionItem: CollectionModel) throws {
-        container.mainContext.delete(collectionItem)
+        swiftDataManager.container.mainContext.delete(collectionItem)
         do {
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelDeletionFailed(error).localizedDescription)
             throw error

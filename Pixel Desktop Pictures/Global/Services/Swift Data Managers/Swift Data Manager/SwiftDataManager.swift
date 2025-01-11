@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @MainActor
-class SwiftDataManager {
+final class SwiftDataManager {
     // MARK: - PROPERTIES
     private(set) var container: ModelContainer
     

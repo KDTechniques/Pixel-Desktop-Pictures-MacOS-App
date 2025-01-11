@@ -31,13 +31,17 @@ extension View {
             .background(Color.windowBackground)
             .environment(TabsViewModel())
             .environment(MainTabViewModel())
-            .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
+            .environment(
+                CollectionsViewModel(
+                    apiAccessKeyManager: .init(),
+                    swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)))
+            )
             .environment(RecentsTabViewModel())
             .environment(SettingsTabViewModel(appEnvironment: .mock))
             .environment(APIAccessKeyManager())
-//            .environment(try! ImageQueryURLModelSwiftDataManager(appEnvironment: .production))
-//            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .production))
-//            .environment(try! CollectionModelSwiftDataManager(appEnvironment: .production))
+        //            .environment(try! ImageQueryURLModelSwiftDataManager(appEnvironment: .production))
+        //            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .production))
+        //            .environment(try! CollectionModelSwiftDataManager(appEnvironment: .production))
     }
     
     // MARK: - Get Bottom Popover Geometry Height

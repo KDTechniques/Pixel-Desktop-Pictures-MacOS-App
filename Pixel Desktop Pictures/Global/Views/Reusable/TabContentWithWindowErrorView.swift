@@ -1,5 +1,5 @@
 //
-//  TabContentWithErrorView.swift
+//  TabContentWithWindowErrorView.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-10.
@@ -7,13 +7,14 @@
 
 import SwiftUI
 
-struct TabContentWithErrorView<T: View>: View {
+struct TabContentWithWindowErrorView<T: View>: View {
     // MARK: - PROPERTIES
     @Environment(NetworkManager.self) private var networkManager
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
-    
     let tab: TabItemsModel
     let content: T
+    
+    let errorModel = GlobalWindowErrorModel.self
     
     // MARK: - INITIALIZERS
     init(tab: TabItemsModel, @ViewBuilder _ content: () -> T) {
@@ -32,16 +33,16 @@ struct TabContentWithErrorView<T: View>: View {
             if networkManager.connectionStatus == .connected {
                 switch apiAccessKeyManager.apiAccessKeyStatus {
                 case .notFound, .validating, .failed:
-                    ContentNotAvailableView(type: .apiAccessKeyNotFound)
+                    WindowErrorView(model: errorModel.apiAccessKeyNotFound)
                 case .invalid:
-                    ContentNotAvailableView(type: .apiAccessKeyError)
+                    WindowErrorView(model: errorModel.apiAccessKeyInvalid)
                 case .rateLimited:
-                    ContentNotAvailableView(type: .rateLimited)
+                    WindowErrorView(model: errorModel.apiAccessRateLimited)
                 case .connected :
                     content
                 }
             } else {
-                ContentNotAvailableView(type: .noInternetConnection)
+                WindowErrorView(model: errorModel.notConnectedToInternet)
             }
         }
         .setTabContentHeightToTabsViewModelViewModifier(from: tab)
@@ -50,7 +51,7 @@ struct TabContentWithErrorView<T: View>: View {
 
 // MARK: - PREVIEWS
 #Preview("Tab Content with Error View") {
-    TabContentWithErrorView(tab: .random(), Color.debug)
+    TabContentWithWindowErrorView(tab: .random(), Color.debug)
         .environment(NetworkManager())
         .previewModifier
 }

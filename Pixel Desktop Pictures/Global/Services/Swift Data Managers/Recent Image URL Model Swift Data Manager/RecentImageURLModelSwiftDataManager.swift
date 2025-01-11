@@ -9,7 +9,15 @@ import Foundation
 import SwiftData
 
 @MainActor
-final class RecentImageURLModelSwiftDataManager: SwiftDataManager {
+final class RecentImageURLModelSwiftDataManager {
+    // MARK: - PROPERTIES
+    let swiftDataManager: SwiftDataManager
+    
+    // MARK: - INITIALIZER
+    init(swiftDataManager: SwiftDataManager) {
+        self.swiftDataManager = swiftDataManager
+    }
+    
     // MARK: FUNCTIONS
     
     // MARK: - Create Operations
@@ -19,10 +27,10 @@ final class RecentImageURLModelSwiftDataManager: SwiftDataManager {
     /// - Parameter object: The RecentImageURLModel instance to be added.
     /// - Throws: Throws an error if saving the model to context fails.
     func addRecentImageURLModel(_ object: RecentImageURLModel) throws {
-        container.mainContext.insert(object)
+        swiftDataManager.container.mainContext.insert(object)
         
         do {
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(RecentImageURLModelSwiftDataManagerErrorModel.recentImageURLModelCreationFailed(error).localizedDescription)
             throw error
@@ -32,12 +40,12 @@ final class RecentImageURLModelSwiftDataManager: SwiftDataManager {
     // MARK: - Read Operations
     
     // MARK: Fetch Recent Image URL Models Array
-    /// Fetches an array of RecentImageURLModel from the container.
+    /// Fetches an array of RecentImageURLModel from the swiftDataManager.container.
     /// - Returns: An array of RecentImageURLModel.
     /// - Throws: Throws an error if fetching the models from the context fails.
     func fetchRecentImageURLModelsArray() throws -> [RecentImageURLModel] {
         do {
-            let recentImageURLModelsArray: [RecentImageURLModel] = try container.mainContext.fetch(FetchDescriptor<RecentImageURLModel>())
+            let recentImageURLModelsArray: [RecentImageURLModel] = try swiftDataManager.container.mainContext.fetch(FetchDescriptor<RecentImageURLModel>())
             return recentImageURLModelsArray
         } catch {
             print(RecentImageURLModelSwiftDataManagerErrorModel.recentImageURLModelsArrayFetchFailed(error).localizedDescription)
@@ -58,7 +66,7 @@ final class RecentImageURLModelSwiftDataManager: SwiftDataManager {
         recentImage.imageURLString = newValues.imageURLString
         
         do {
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(RecentImageURLModelSwiftDataManagerErrorModel.recentImageURLModelUpdateFailed(error).localizedDescription)
             throw error
@@ -72,9 +80,9 @@ final class RecentImageURLModelSwiftDataManager: SwiftDataManager {
     /// - Parameter recentImage: The RecentImageURLModel instance to be deleted.
     /// - Throws: Throws an error if deleting the model or saving changes to context fails.
     func deleteRecentImageURLModel(_ recentImage: RecentImageURLModel) throws {
-        container.mainContext.delete(recentImage)
+        swiftDataManager.container.mainContext.delete(recentImage)
         do {
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(RecentImageURLModelSwiftDataManagerErrorModel.recentImageURLModelDeletionFailed(error))
             throw error

@@ -9,7 +9,15 @@ import Foundation
 import SwiftData
 
 @MainActor
-final class ImageQueryURLModelSwiftDataManager: SwiftDataManager {
+final class ImageQueryURLModelSwiftDataManager {
+    // MARK: - PROPERTIES
+    let swiftDataManager: SwiftDataManager
+    
+    // MARK: - INITIALIZER
+    init(swiftDataManager: SwiftDataManager) {
+        self.swiftDataManager = swiftDataManager
+    }
+    
     // MARK: FUNCTIONS
     
     // MARK: - Create Operations
@@ -25,8 +33,8 @@ final class ImageQueryURLModelSwiftDataManager: SwiftDataManager {
             let imageData: Data = try JSONEncoder().encode(imageDataArray)
             let newObject: ImageQueryURLModel = .init(queryText: queryText, pageNumber: pageNumber, imageDataArray: imageData)
             
-            container.mainContext.insert(newObject)
-            try saveContext()
+            swiftDataManager.container.mainContext.insert(newObject)
+            try swiftDataManager.saveContext()
         } catch {
             print(ImageQueryURLModelSwiftDataManagerErrorModel.imageQueryURLModelCreationFailed(error).localizedDescription)
             throw error
@@ -37,12 +45,12 @@ final class ImageQueryURLModelSwiftDataManager: SwiftDataManager {
     // MARK: - Read Operations
     
     // MARK: Fetch Image Query URL Models Array
-    /// Fetches an array of ImageQueryURLModel from the container.
+    /// Fetches an array of ImageQueryURLModel from the swiftDataManager.container.
     /// - Returns: An array of ImageQueryURLModel.
     /// - Throws: Throws an error if fetching the models from the context fails.
     func fetchImageQueryURLModelsArray() throws -> [ImageQueryURLModel] {
         do {
-            let imageQueryURLModelsArray: [ImageQueryURLModel] = try container.mainContext.fetch(FetchDescriptor<ImageQueryURLModel>())
+            let imageQueryURLModelsArray: [ImageQueryURLModel] = try swiftDataManager.container.mainContext.fetch(FetchDescriptor<ImageQueryURLModel>())
             return imageQueryURLModelsArray
         } catch {
             print(ImageQueryURLModelSwiftDataManagerErrorModel.imageQueryURLModelsArrayFetchFailed(error).localizedDescription)
@@ -66,7 +74,7 @@ final class ImageQueryURLModelSwiftDataManager: SwiftDataManager {
             imageQuery.queryText = newQueryText
             imageQuery.pageNumber = newPageNumber
             imageQuery.imageDataArray = imageDataArray
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(ImageQueryURLModelSwiftDataManagerErrorModel.imageQueryURLModelUpdateFailed(error).localizedDescription)
             throw error
@@ -80,9 +88,9 @@ final class ImageQueryURLModelSwiftDataManager: SwiftDataManager {
     /// - Parameter imageQuery: The ImageQueryURLModel instance to be deleted.
     /// - Throws: Throws an error if deleting the model or saving changes to context fails.
     func deleteImageQueryURLModel(_ imageQuery: ImageQueryURLModel) throws {
-        container.mainContext.delete(imageQuery)
+        swiftDataManager.container.mainContext.delete(imageQuery)
         do {
-            try saveContext()
+            try swiftDataManager.saveContext()
         } catch {
             print(ImageQueryURLModelSwiftDataManagerErrorModel.imageQueryURLModelDeletionFailed(error).localizedDescription)
             throw error

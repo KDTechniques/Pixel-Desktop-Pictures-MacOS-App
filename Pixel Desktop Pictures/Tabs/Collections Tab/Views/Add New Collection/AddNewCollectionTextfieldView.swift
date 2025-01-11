@@ -24,5 +24,9 @@ struct AddNewCollectionTextfieldView: View {
 #Preview("Add New Collection Textfield View") {
     AddNewCollectionTextfieldView()
         .padding()
-        .environment(CollectionsViewModel(apiAccessKeyManager: .init(), swiftDataManager: try! .init(appEnvironment: .mock)))
+        .environment(
+            CollectionsViewModel(
+                apiAccessKeyManager: .init(),
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)))
+        )
 }
