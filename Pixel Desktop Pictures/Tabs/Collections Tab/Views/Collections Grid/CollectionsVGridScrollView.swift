@@ -37,12 +37,28 @@ struct CollectionsVGridScrollView: View {
         .frame(height: TabItemsModel.collections.contentHeight)
         .padding(.bottom)
         .overlay { CollectionsGridPopupBackgroundView() }
-        .overlay(alignment: .bottom) { CollectionCreationBottomPopupView() }
-        .overlay(alignment: .bottom) { CollectionUpdateBottomPopupView() }
+        .overlay(alignment: .bottom) { bottomPopup }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Scroll View") {
     CollectionsVGridScrollView(scrollPosition: .constant(.init(edge: .top)))
+}
+
+// MARK: - EXTENSIONS
+extension CollectionsVGridScrollView {
+    // MARK: - bottomPopup
+    @ViewBuilder
+    private var bottomPopup: some View {
+        if collectionsVM.popOverItem == (true, .collectionCreationPopOver) {
+            AddNewCollectionView()
+                .transition(.move(edge: .bottom))
+        }
+        
+        if collectionsVM.popOverItem == (true, .collectionUpdatePopOver) {
+            UpdateCollectionView()
+                .transition(.move(edge: .bottom))
+        }
+    }
 }

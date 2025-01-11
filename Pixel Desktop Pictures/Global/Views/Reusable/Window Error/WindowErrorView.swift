@@ -22,17 +22,17 @@ struct WindowErrorView<T: WindowErrorModelProtocol>: View {
             Text(model.title)
                 .font(.headline)
             
-            model.message
+            model.messageView
         }
         .multilineTextAlignment(.center)
-        .fixedSize(horizontal: true, vertical: false)
+        .fixedSize(horizontal: false, vertical: true)
         .padding()
-        .padding(.bottom, 30)
+        .padding(.bottom, model.withBottomPadding ? 30 : 0)
     }
 }
 
 // MARK: - PREVIEWS
-#Preview("Content Not Available View") {
-    WindowErrorView(model: GlobalWindowErrorModel.apiAccessKeyInvalid)
+#Preview("Window Error View") {
+    WindowErrorView(model: GlobalWindowErrorModel.random())
         .previewModifier
 }

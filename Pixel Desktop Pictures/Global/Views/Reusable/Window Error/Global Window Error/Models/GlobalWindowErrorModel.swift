@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+/**
+ A model that represents error states at the window level in the application.
+ 
+ This model defines global error types that are not specific to any individual tabs in the application. These error states, such as API access issues or network connectivity problems, are used to present error messages at a global level  throughout the app.
+ */
 enum GlobalWindowErrorModel: CaseIterable, WindowErrorModelProtocol {
     case apiAccessKeyNotFound
     case apiAccessKeyInvalid
@@ -25,7 +30,7 @@ enum GlobalWindowErrorModel: CaseIterable, WindowErrorModelProtocol {
     }
     
     @ViewBuilder
-    var message: some View {
+    var messageView: some View {
         switch self {
         case .apiAccessKeyNotFound:
             APIAccessKeyNotFoundWindowErrorMessageView()
@@ -35,6 +40,15 @@ enum GlobalWindowErrorModel: CaseIterable, WindowErrorModelProtocol {
             APIAccessRateLimitedWindowErrorMessageView()
         case .notConnectedToInternet:
             NotConnectedToInternetWindowErrorMessageView()
+        }
+    }
+    
+    var withBottomPadding: Bool {
+        switch self {
+        case .apiAccessKeyNotFound, .notConnectedToInternet:
+            return true
+        case .apiAccessKeyInvalid, .apiAccessRateLimited:
+            return false
         }
     }
 }

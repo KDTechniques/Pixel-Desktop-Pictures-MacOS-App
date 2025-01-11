@@ -10,11 +10,12 @@ import SDWebImageSwiftUI
 
 struct UpdateCollectionPreviewImageView: View {
     //MARK: - INJECTED PROPERTIES
+    @Environment(CollectionsViewModel.self) private var collectionsVM
     let item: CollectionModel
     
     // MARK: - ASSIGNED PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
     let vGridValues = VGridValuesModel.self
+    @State private var showImage: Bool = false
     
     // MARK: - INITIALIZER
     init(item: CollectionModel) {
@@ -25,13 +26,18 @@ struct UpdateCollectionPreviewImageView: View {
     var body: some View {
         Group {
             if let imageURLString: String = try? item.getImageURLs().small {
-                WebImage(
-                    url: .init(string: imageURLString),
-                    options: [.retryFailed, .highPriority, .continueInBackground]
-                )
-                .placeholder { ProgressView().scaleEffect(0.3) }
-                .resizable()
-                .scaledToFill()
+                if showImage {
+                    WebImage(
+                        url: .init(string: imageURLString),
+                        options: [.retryFailed, .highPriority, .continueInBackground]
+                    )
+                    .placeholder { ProgressView().scaleEffect(0.3) }
+                    .resizable()
+                    .scaledToFill()
+                    .transition(.fade)
+                } else {
+                    ProgressView().scaleEffect(0.3)
+                }
             } else {
                 Color.clear
             }
@@ -40,6 +46,10 @@ struct UpdateCollectionPreviewImageView: View {
         .clipped()
         .overlay(Color.vGridItemOverlay)
         .overlay(CollectionNameOverlayView(collectionName: imageOverlayText()))
+        .onFirstTaskViewModifier {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            withAnimation { showImage = true }
+        }
     }
 }
 

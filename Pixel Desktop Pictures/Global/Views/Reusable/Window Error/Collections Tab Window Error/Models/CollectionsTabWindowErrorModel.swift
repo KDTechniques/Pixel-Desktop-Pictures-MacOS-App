@@ -20,10 +20,19 @@ enum CollectionsTabWindowErrorModel: CaseIterable, WindowErrorModelProtocol {
         }
     }
     
-    var message: some View {
+    var messageView: some View {
         switch self {
         case .collectionsViewModelInitializationFailed, .updatingCollectionNotFound:
             return SomethingWentWrongWindowErrorMessageView()
+        }
+    }
+    
+    var withBottomPadding: Bool {
+        switch self {
+        case .collectionsViewModelInitializationFailed:
+            return true
+        case .updatingCollectionNotFound:
+            return false
         }
     }
 }

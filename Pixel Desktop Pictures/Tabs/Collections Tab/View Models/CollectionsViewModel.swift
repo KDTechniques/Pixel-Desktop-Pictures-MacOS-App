@@ -259,7 +259,7 @@ import SwiftUICore
     ///   - isPresented: A Boolean value indicating whether the popup should be presented.
     ///   - type: The type of popup to present.
     func presentPopup(_ isPresented: Bool, for type: CollectionsViewPopOverModel) {
-        withAnimation(.smooth(duration: 0.3)) { popOverItem = (isPresented, type) }
+        withAnimation(.smooth(duration: 0.4)) { popOverItem = (isPresented, type) }
         guard !isPresented else { return }
         resetTextfieldTexts()
         Task {

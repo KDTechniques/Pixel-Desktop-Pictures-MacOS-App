@@ -37,5 +37,6 @@ struct APIAccessKeyNotFoundWindowErrorMessageView: View {
 // MARK: - PREVIEWS
 #Preview("APIAccessKeyNotFoundWindowErrorMessageView") {
     APIAccessKeyNotFoundWindowErrorMessageView()
+        .padding()
         .previewModifier
 }

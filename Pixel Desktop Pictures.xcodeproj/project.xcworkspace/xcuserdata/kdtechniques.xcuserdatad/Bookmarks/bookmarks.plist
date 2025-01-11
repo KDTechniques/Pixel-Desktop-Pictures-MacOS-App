@@ -100,13 +100,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>118</string>
+					<string>116</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>116</string>
+					<string>115</string>
 					<key>Timestamp</key>
-					<string>758212903.710578</string>
+					<string>758328466.601658</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -122,17 +122,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>    private func handleTap() {
-        collectionsVM.handleCollectionItemTap(item: item)
+				<string>    
 </string>
 				<key>leading</key>
-				<string>    
-    // MARK: - Handle Tap
+				<string>        .foregroundStyle(.white)
+    }
 </string>
 				<key>trailing</key>
-				<string>    }
+				<string>    // MARK: FUNCTIONS
     
-    // MARK: - Handle Hover
+    // MARK: - Handle Tap
 </string>
 			</dict>
 			<key>type</key>

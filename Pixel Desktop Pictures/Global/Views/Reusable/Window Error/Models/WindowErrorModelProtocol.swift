@@ -11,5 +11,6 @@ protocol WindowErrorModelProtocol {
     associatedtype T: View
     
     var title: String { get }
-    var message: T { get }
+    var messageView: T { get }
+    var withBottomPadding: Bool { get }
 }

@@ -89,7 +89,6 @@ extension CollectionsVGridImageView {
         Button {
             Task {
                 collectionsVM.updatingItem = item
-                try? await Task.sleep(nanoseconds: 50_000_000)
                 collectionsVM.presentPopup(true, for: .collectionUpdatePopOver)
             }
         } label: {
