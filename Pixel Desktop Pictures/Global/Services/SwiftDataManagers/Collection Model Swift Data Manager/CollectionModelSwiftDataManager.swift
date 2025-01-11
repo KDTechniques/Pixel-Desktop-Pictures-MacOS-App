@@ -9,31 +9,8 @@ import Foundation
 import SwiftData
 
 @MainActor
-@Observable
-final class CollectionModelSwiftDataManager {
-    // MARK: - PROPERTIES
-    private var container: ModelContainer
-    
-    // MARK: - INITIALIZER
-    /// Initializes the `CollectionModelSwiftDataManager` with the given app environment.
-    /// - Parameter appEnvironment: The environment of the app, used to determine whether the container is stored in memory only or persists on disk.
-    /// - Throws: Throws an error if the model container initialization fails.
-    init(appEnvironment: AppEnvironmentModel) throws {
-        do {
-            container = try ModelContainer(
-                for: CollectionModel.self,
-                configurations: .init(isStoredInMemoryOnly: appEnvironment == .mock)
-            )
-            print("`CollectionModelSwiftDataManager` has been initialized!")
-        } catch {
-            print(CollectionModelSwiftDataManagerErrorModel.modelContainerInitializationFailed(error).localizedDescription)
-            throw error
-        }
-    }
-    
+final class CollectionModelSwiftDataManager: SwiftDataManager {
     // MARK: FUNCTIONS
-    
-    // MARK: INTERNAL FUNCTIONS
     
     // MARK: - Create Operations
     
@@ -132,34 +109,6 @@ final class CollectionModelSwiftDataManager {
             try saveContext()
         } catch {
             print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelDeletionFailed(error).localizedDescription)
-            throw error
-        }
-    }
-    
-    // MARK: Erase All Data
-    /// Erases all data stored in the `CollectionModel` container.
-    /// - Throws: Throws an error if erasing data fails.
-    func eraseAllData() throws {
-        do {
-            try container.erase()
-        } catch {
-            print(CollectionModelSwiftDataManagerErrorModel.eraseAllDataFailed(error).localizedDescription)
-            throw error
-        }
-    }
-
-    // MARK: PRIVATE FUNCTIONS
-    
-    // MARK: - Save Context
-    /// Saves the current context to persist changes.
-    /// - Throws: Throws an error if saving the context fails.
-    private func saveContext() throws {
-        do {
-            try container.mainContext.save()
-        } catch {
-            // Rollback changes to the context if saving fails
-            container.mainContext.rollback() // Rollback any unsaved changes
-            print(CollectionModelSwiftDataManagerErrorModel.contextSaveFailed(error).localizedDescription)
             throw error
         }
     }

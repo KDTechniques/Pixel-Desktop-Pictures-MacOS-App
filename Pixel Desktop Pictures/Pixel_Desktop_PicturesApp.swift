@@ -16,6 +16,7 @@ struct Pixel_Desktop_PicturesApp: App {
     // Services
     @State private var networkManager: NetworkManager = .init()
     @State private var apiAccessKeyManager: APIAccessKeyManager
+    @State private var swiftDataManager: SwiftDataManager
     @State private var imageQueryURLModelSwiftDataManager: ImageQueryURLModelSwiftDataManager
     @State private var recentImageURLModelSwiftDataManager: RecentImageURLModelSwiftDataManager
     @State private var collectionModelSwiftDataManager: CollectionModelSwiftDataManager
@@ -33,11 +34,14 @@ struct Pixel_Desktop_PicturesApp: App {
         
         do {
             let tempCollectionModelSwiftDataManager: CollectionModelSwiftDataManager = try .init(appEnvironment: appEnvironment)
-            let tempAPIAccessKeyManager: APIAccessKeyManager = .init()
+            collectionModelSwiftDataManager = tempCollectionModelSwiftDataManager
             
+            swiftDataManager = try .init(appEnvironment: appEnvironment)
             imageQueryURLModelSwiftDataManager = try .init(appEnvironment: appEnvironment)
             recentImageURLModelSwiftDataManager = try .init(appEnvironment: appEnvironment)
-            collectionModelSwiftDataManager = tempCollectionModelSwiftDataManager
+           
+            
+            let tempAPIAccessKeyManager: APIAccessKeyManager = .init()
             apiAccessKeyManager = tempAPIAccessKeyManager
             
             collectionsTabVM = .init(apiAccessKeyManager: tempAPIAccessKeyManager, swiftDataManager: tempCollectionModelSwiftDataManager)
@@ -62,9 +66,6 @@ struct Pixel_Desktop_PicturesApp: App {
                 .environment(\.appEnvironment, appEnvironment)
                 .environment(networkManager)
                 .environment(apiAccessKeyManager)
-                .environment(imageQueryURLModelSwiftDataManager)
-                .environment(recentImageURLModelSwiftDataManager)
-                .environment(collectionModelSwiftDataManager)
             // Tabs Environment Values
                 .environment(tabsVM)
                 .environment(settingsTabVM)

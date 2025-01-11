@@ -9,31 +9,8 @@ import Foundation
 import SwiftData
 
 @MainActor
-@Observable
-final class ImageQueryURLModelSwiftDataManager {
-    // MARK: - PROPERTIES
-    private var container: ModelContainer
-    
-    // MARK: - INITIALIZER
-    /// Initializes the `ImageQueryURLModelSwiftDataManager` with the given app environment.
-    /// - Parameter appEnvironment: The environment of the app, used to determine whether the container is stored in memory only or persists on disk.
-    /// - Throws: Throws an error if the model container initialization fails.
-    init(appEnvironment: AppEnvironmentModel) throws {
-        do {
-            container = try ModelContainer(
-                for: ImageQueryURLModel.self,
-                configurations: .init(isStoredInMemoryOnly: appEnvironment == .mock)
-            )
-            print("`Image Query URL Model Swift Data Manager` has been initialized!")
-        } catch {
-            print(ImageQueryURLModelSwiftDataManagerErrorModel.modelContainerInitializationFailed(error).localizedDescription)
-            throw error
-        }
-    }
-    
+final class ImageQueryURLModelSwiftDataManager: SwiftDataManager {
     // MARK: FUNCTIONS
-    
-    // MARK: INTERNAL FUNCTIONS
     
     // MARK: - Create Operations
     
@@ -108,34 +85,6 @@ final class ImageQueryURLModelSwiftDataManager {
             try saveContext()
         } catch {
             print(ImageQueryURLModelSwiftDataManagerErrorModel.imageQueryURLModelDeletionFailed(error).localizedDescription)
-            throw error
-        }
-    }
-    
-    // MARK: Erase All Data
-    /// Erases all data stored in the `ImageQueryURLModel` container.
-    /// - Throws: Throws an error if erasing data fails.
-    func eraseAllData() throws {
-        do {
-            try container.erase()
-        } catch {
-            print(ImageQueryURLModelSwiftDataManagerErrorModel.eraseAllDataFailed(error).localizedDescription)
-            throw error
-        }
-    }
-    
-    // MARK: PRIVATE FUNCTIONS
-    
-    // MARK: - Save Context
-    /// Saves the current context to persist changes.
-    /// - Throws: Throws an error if saving the context fails.
-    private func saveContext() throws {
-        do {
-            try container.mainContext.save()
-        } catch {
-            // Rollback changes to the context if saving fails
-            container.mainContext.rollback() // Rollback any unsaved changes
-            print(ImageQueryURLModelSwiftDataManagerErrorModel.contextSaveFailed(error).localizedDescription)
             throw error
         }
     }
