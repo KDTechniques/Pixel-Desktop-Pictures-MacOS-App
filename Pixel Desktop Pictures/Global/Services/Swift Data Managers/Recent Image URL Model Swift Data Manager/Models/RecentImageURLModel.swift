@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class RecentImageURLModel {
+final class RecentImageURLModel {
     var downloadedDate: Date // Ex: 2025-01-01 11:12:54 AM +0000
     var imageURLString: String // Ex: "https://www.example.com/Nature/image5"
     

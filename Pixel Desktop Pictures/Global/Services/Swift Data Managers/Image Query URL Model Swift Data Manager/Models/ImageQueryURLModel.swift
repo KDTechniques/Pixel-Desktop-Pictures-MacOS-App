@@ -9,17 +9,33 @@ import Foundation
 import SwiftData
 
 @Model
-class ImageQueryURLModel {
-    @Attribute(.unique) var queryText: String // EX: nature
-    var pageNumber: Int // Ex: 3
-    var queryURLString: String { // Ex: "https://api.unsplash.com/search/photos?orientation=landscape&page=3&per_page=10&query=Nature"
-        return "https://api.unsplash.com/search/photos?orientation=landscape&page=\(pageNumber)&per_page=10&query=\(queryText.capitalized)"
-    }
-    var imageDataArray: Data
+final class ImageQueryURLModel {
+    // MARK: - PROPERTIES
+    @Attribute(.unique) private(set) var queryText: String // EX: Nature
+    var pageNumber: Int = 1 // Ex: 3
+    var queryResultsDataArray: Data
+    var currentImageDataIndex: Int = 0
     
-    init(queryText: String, pageNumber: Int, imageDataArray: Data) {
+    @Transient var queryResultsArray: UnsplashQueryImageModel?
+    
+    // MARK: - INITIALIZER
+    init(queryText: String, queryResultsArray: UnsplashQueryImageModel) throws {
+        self.queryResultsDataArray =  try JSONEncoder().encode(queryResultsArray)
         self.queryText = queryText
-        self.pageNumber = pageNumber
-        self.imageDataArray = imageDataArray
+    }
+    
+    // MARK: FUNCTIONS
+    
+    // MARK: - Get Query Results Array
+    func getQueryResultsArray() throws -> UnsplashQueryImageModel {
+        guard let queryResultsArray else {
+            let queryResultsArray: UnsplashQueryImageModel =  try JSONDecoder().decode(
+                UnsplashQueryImageModel.self,
+                from: queryResultsDataArray
+            )
+            return queryResultsArray
+        }
+        
+        return queryResultsArray
     }
 }

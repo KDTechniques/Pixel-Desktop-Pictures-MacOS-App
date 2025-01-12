@@ -10,6 +10,8 @@ import Foundation
 @MainActor
 @Observable final class MainTabViewModel {
     // MARK: - PROPERTIES
+    var centerItem: ImageContainerCenterItemsModel = .random() 
+    
     var imageURLString: String?
     
     // MARK: FUNCTIONS

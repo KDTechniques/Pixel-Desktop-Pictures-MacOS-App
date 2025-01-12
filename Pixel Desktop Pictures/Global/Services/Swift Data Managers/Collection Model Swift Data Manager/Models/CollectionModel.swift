@@ -11,7 +11,7 @@ import SwiftData
 fileprivate let randomKeyword: String = "RANDOM"
 
 @Model
-class CollectionModel {
+final class CollectionModel {
     // MARK: - PROPERTIES
     @Attribute(.unique) private(set) var collectionName: String
     private(set) var pageNumber: Int = 1

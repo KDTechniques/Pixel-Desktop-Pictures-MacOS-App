@@ -16,7 +16,6 @@ struct ImageContainerView: View {
     let location: String
     
     // MARK: - PRIVATE PROPERTIES
-    @State private var centerItem: ImageContainerCenterItemsModel = .random() // set to progress later as default value
     let imageHeight: CGFloat = 200
     
     // MARK: - INITIALIZER
@@ -38,6 +37,7 @@ struct ImageContainerView: View {
         .frame(maxWidth: .infinity)
         .frame(height: imageHeight)
         .clipped()
+        .background(Color.debug)
         .overlay { centerButton }
         .overlay(alignment: .bottomLeading) { locationText }
     }
@@ -50,17 +50,15 @@ struct ImageContainerView: View {
         imageURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
         location: "Playa Mixota, Spain"
     )
-    .frame(width: TabItemsModel.allWindowWidth)
-    .background(Color.windowBackground)
-    .environment(TabsViewModel())
+    .previewModifier
 }
 
 // MARK: EXTENSIONS
 extension ImageContainerView {
     // MARK: - Center Item
     private var centerButton: some View {
-        ImageContainerOverlayCenterView(centerItem: centerItem) {
-            guard centerItem == .retryIcon else { return }
+        ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) {
+            guard mainTabVM.centerItem == .retryIcon else { return }
             mainTabVM.nextImage()
         }
     }
@@ -71,14 +69,7 @@ extension ImageContainerView {
             url: .init(string: thumbnailURLString),
             options: [.retryFailed, .highPriority]
         )
-        .placeholder { thumbnailPlaceholder }
-    }
-    
-    // MARK: - Thumbnail Placeholder
-    private var thumbnailPlaceholder: some View {
-        Rectangle()
-            .fill(.clear)
-            .frame(height: imageHeight)
+        .placeholder { Color.clear }
     }
     
     // MARK: - Location Text

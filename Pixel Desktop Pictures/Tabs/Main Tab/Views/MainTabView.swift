@@ -21,14 +21,17 @@ struct MainTabView: View {
 #Preview("Main Tab View") {
     @Previewable @State var networkManager: NetworkManager = .init()
     @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
-    PreviewView { MainTabView()  }
-        .environment(networkManager)
-        .environment(apiAccessKeyManager)
-        .onFirstTaskViewModifier {
-            networkManager.initializeNetworkManager()
-            try? await apiAccessKeyManager.initializeAPIAccessKeyManager()
-            await apiAccessKeyManager.connectAPIAccessKey(key: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
-        }
+    
+    PreviewView {
+        MainTabView()
+            .frame(maxHeight: .infinity)
+            .environment(networkManager)
+            .environment(apiAccessKeyManager)
+            .onFirstTaskViewModifier {
+                networkManager.initializeNetworkManager()
+                apiAccessKeyManager.apiAccessKeyStatus = .connected
+            }
+    }
 }
 
 // MARK: EXTENSIONS
