@@ -12,6 +12,7 @@ import SwiftUICore
     // MARK: - INJECTED PROPERTIES
     let swiftDataManager: CollectionModelSwiftDataManager
     let apiAccessKeyManager: APIAccessKeyManager
+    let errorPopupVM: ErrorPopupViewModel
     
     // MARK: - ASSIGNED PROPERTIES
     let defaults: UserDefaultsManager = .shared
@@ -24,13 +25,15 @@ import SwiftUICore
     private(set) var popOverItem: (isPresented: Bool, type: CollectionsViewPopOverModel) = (false, .collectionCreationPopOver)
     var updatingItem: CollectionModel?
     private(set) var localAPIAccessKey: String?
+    let errorPopupModel = CollectionsTabErrorPopupModel.self
     
     // MARK: - INITIALIZER
     /// Initializes the CollectionsViewModel with a SwiftDataManager instance.
     /// - Parameter swiftDataManager: The instance of SwiftDataManager used for data management.
-    init(apiAccessKeyManager: APIAccessKeyManager, swiftDataManager: CollectionModelSwiftDataManager) {
+    init(apiAccessKeyManager: APIAccessKeyManager, swiftDataManager: CollectionModelSwiftDataManager, errorPopupVM: ErrorPopupViewModel) {
         self.apiAccessKeyManager = apiAccessKeyManager
         self.swiftDataManager = swiftDataManager
+        self.errorPopupVM = errorPopupVM
     }
     
     // MARK: FUNCTIONS
@@ -58,14 +61,14 @@ import SwiftUICore
             
             // After the initial launch, SwiftData is available for use.
             collectionItemsArray = fetchedCollectionItemsArray
-            print("`Collections View Model` has been initialized!")
+            print("`Collections Tab View Model` has been initialized!")
         } catch {
             print("Error: Failed to initialize `Collections View Model`: \(error.localizedDescription)")
             
             do {
                 collectionItemsArray = try CollectionModel.getDefaultCollectionsArray()
             } catch {
-                collectionItemsArray = []
+                collectionItemsArray = [] // Window error will be taken care of from view level
             }
         }
     }
@@ -80,19 +83,14 @@ import SwiftUICore
         
         // Early exit to avoid errors when creating a collection with an empty value.
         guard !collectionName.isEmpty else { return }
-        showCreateButtonProgress = true
         
         Task {
             do {
                 // Since the collection name must be unique in the SwiftData model, duplication must be avoided.
-                guard !checkCollectionNameDuplications(collectionName) else {
-                    print(CollectionsViewModelErrorModel.duplicateCollectionName)
-                    showCreateButtonProgress = false
-                    // show an error pop for duplicate name here...
-                    return
-                }
+                try await checkCollectionNameDuplications(collectionName)
+                showCreateButtonProgress = true
                 
-                // Get the API access key properly via `getAPIAccessKey()`
+                // Create image API service instance to fetch data for the new collection
                 let apiAccessKey: String = try await getAPIAccessKey()
                 let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
                 
@@ -120,11 +118,11 @@ import SwiftUICore
                 // Dismiss progress and popup after successful collection creation.
                 showCreateButtonProgress = false
                 presentPopup(false, for: .collectionCreationPopOver)
-                // Show success alert here...
             } catch {
                 showCreateButtonProgress = false
-                // Show an alert based on the thrown error here...
-                print(error.localizedDescription)
+                await errorPopupVM.addError(errorPopupModel.failedToCreateCollection)
+                handleURLError(error)
+                print("Error: Failed to create collection. \(error.localizedDescription)")
             }
         }
     }
@@ -133,32 +131,36 @@ import SwiftUICore
     /// Updates the name of an existing collection.
     /// - Uses `collectionRenameTextfieldText` for the new name and updates it in persistent storage.
     func updateCollectionName() {
-        let newCollectionName: String = collectionRenameTextfieldText
-        guard !newCollectionName.isEmpty,
-              let item: CollectionModel = updatingItem else {
-            return
-        }
-        
-        showRenameButtonProgress = true
-        
         Task {
+            // Check updating item before proceeding.
+            let newCollectionName: String = collectionRenameTextfieldText
+            guard !newCollectionName.isEmpty,
+                  let item: CollectionModel = updatingItem else {
+                await errorPopupVM.addError(errorPopupModel.somethingWentWrong)
+                print("Error: Either collection name or updating item is nil.")
+                return
+            }
+            
             do {
-                guard !checkCollectionNameDuplications(newCollectionName) else {
-                    throw CollectionsViewModelErrorModel.duplicateCollectionName
-                }
+                // To avoid updating collection names to already exist one.
+                try await checkCollectionNameDuplications(newCollectionName)
+                showRenameButtonProgress = true
                 
-                // Get the API access key from UserDefaults to ensure we always work with a valid API key, in case changes happen.
-                guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
-                    throw CollectionsViewModelErrorModel.apiAccessKeyNotFound
-                }
-                
+                // Create instance of image API service to fetch new data according to new collection name.
+                let apiAccessKey: String = try await getAPIAccessKey()
                 let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+                
+                // Update collection name in swift data
                 try await swiftDataManager.updateCollectionName(item, newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIService)
+                
+                // Handle success update
                 showRenameButtonProgress = false
                 resetTextfieldTexts()
             } catch {
                 showRenameButtonProgress = false
-                print(error.localizedDescription)
+                await errorPopupVM.addError(errorPopupModel.failedToUpdateCollectionName)
+                handleURLError(error)
+                print("Error: Failed to update collection name. \(error.localizedDescription)")
             }
         }
     }
@@ -168,69 +170,57 @@ import SwiftUICore
     /// - Parameter item: The collection item to update.
     func updateCollectionImageURLString(item: CollectionModel) async {
         showChangeThumbnailButtonProgress = true
+        
         do {
-            // Get the API access key from UserDefaults to ensure we always work with a valid API key, in case changes happen.
-            guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
-                throw CollectionsViewModelErrorModel.apiAccessKeyNotFound
-            }
-            
+            // Create an instance of image API service to fetch new image URLs for the desired collection.
+            let apiAccessKey: String = try await getAPIAccessKey()
             let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+            
+            // Save new image urls to swift data.
             try await swiftDataManager.updateCollectionImageURLString(item, imageAPIServiceReference: imageAPIService)
+            
+            // Handle success
             showChangeThumbnailButtonProgress = false
         } catch {
             showChangeThumbnailButtonProgress = false
-            if let urlError = error as? URLError {
-                switch urlError.code {
-                case .clientCertificateRejected:
-                    apiAccessKeyManager.apiAccessKeyStatus = .rateLimited
-                case .userAuthenticationRequired:
-                    apiAccessKeyManager.apiAccessKeyStatus = .invalid
-                default:
-                    print(urlError.localizedDescription)
-                }
-            }
-            
-            
-            
-            print("Error: Updating collection item's image url string. \(error.localizedDescription)")
+            await errorPopupVM.addError(errorPopupModel.failedToUpdateCollectionThumbnail)
+            handleURLError(error)
+            print("Error: Failed to update collection thumbnail. \(error.localizedDescription)")
         }
     }
     
-    // MARK: - Update Collection Selection Status
-    /// Updates the selection status of a specific collection item.
-    /// - Parameters:
-    ///   - item: The collection item to update.
-    ///   - isSelected: A Boolean value indicating the new selection state.
-    func updateCollectionSelectionStatus(item: CollectionModel, isSelected: Bool) {
-        do {
-            try swiftDataManager.updateCollectionSelectionState(item, isSelected: isSelected)
-        } catch {
-            print("Error: Updating collection selection status to `\(isSelected)`. \(error.localizedDescription)")
-        }
-    }
-    
-    // MARK: - Handle Collection Item Tap
+    // MARK: - Update Collection Selection
     /// Handles the tap action on a collection item.
     /// - Ensures appropriate selection and deselection of items, including the random collection item.
-    func handleCollectionItemTap(item: CollectionModel) {
+    func updateCollectionSelection(item: CollectionModel) {
         let randomCollectionName: String = CollectionModel.randomKeywordString
         
-        // Handle case where the tapped item is the random collection
-        guard item.collectionName != randomCollectionName else {
-            // Select the random collection and deselect others
-            collectionItemsArray.forEach { $0.updateIsSelected($0.collectionName == randomCollectionName) }
-            return
-        }
-        
-        // Deselect the random collection if tapped item is not the random collection
-        collectionItemsArray.first(where: { $0.collectionName == randomCollectionName })?.updateIsSelected(false)
-        
-        // Toggle the tapped item's selection state
-        item.updateIsSelected(!item.isSelected)
-        
-        // Ensure at least one item is selected, and reselect random collection if none are selected
-        if collectionItemsArray.first(where: { $0.isSelected }) == nil {
-            collectionItemsArray.first(where: { $0.collectionName == randomCollectionName })?.updateIsSelected(true)
+        do {
+            // Handle case where the tapped item is the random collection.
+            guard item.collectionName != randomCollectionName else {
+                // Select the random collection and deselect others.
+                try collectionItemsArray.forEach {
+                    try swiftDataManager.updateCollectionSelectionState($0, isSelected: $0.collectionName == randomCollectionName)
+                }
+                return
+            }
+            
+            // Toggle the tapped item's selection state.
+            try swiftDataManager.updateCollectionSelectionState(item, isSelected: !item.isSelected)
+            
+            // Deselect the random collection if tapped item is not the random collection.
+            guard let randomCollectionItem: CollectionModel = collectionItemsArray.first(where: { $0.collectionName == randomCollectionName }) else { return }
+            try swiftDataManager.updateCollectionSelectionState(randomCollectionItem, isSelected: false)
+            
+            // Ensure at least one item is selected
+            guard let _ = collectionItemsArray.first(where: { $0.isSelected }) else {
+                // If no item is selected, reselect the random collection.
+                try swiftDataManager.updateCollectionSelectionState(randomCollectionItem, isSelected: true)
+                return
+            }
+        } catch {
+            Task { await errorPopupVM.addError(errorPopupModel.failedToUpdateCollectionSelection) }
+            print("Error: Failed to update collection selection. \(error.localizedDescription)")
         }
     }
     
@@ -238,18 +228,19 @@ import SwiftUICore
     /// Deletes a specific collection.
     /// - Parameter item: The collection item to delete.
     /// - Throws: An error if the deletion fails.
-    func deleteCollection(item: CollectionModel) throws {
+    func deleteCollection(item: CollectionModel) {
         do {
-            showChangeThumbnailButtonProgress = true
+            // Remove collection from swift data
             try swiftDataManager.deleteCollectionItemModel(item)
+            
+            // Handle success deletion
             presentPopup(false, for: .collectionUpdatePopOver)
             withAnimation(.smooth(duration: 0.3)) {
                 collectionItemsArray.removeAll(where: { $0 == item })
             }
-            showChangeThumbnailButtonProgress = false
         } catch {
-            print(error.localizedDescription)
-            throw error
+            Task { await errorPopupVM.addError(errorPopupModel.failedToDeleteCollection) }
+            print("Error: Failed to delete collection. \(error.localizedDescription)")
         }
     }
     
@@ -281,7 +272,40 @@ import SwiftUICore
     
     // MARK: PRIVATE FUNCTIONS
     
+    // MARK: - handle URL Error
+    /// Handles URL-related errors and updates the API access key status based on the error type.
+    ///
+    /// This function processes a given `Error` to identify URL-specific issues, particularly handling `URLError` codes.
+    /// It updates the API access key status according to the error type. For example, it will mark the API key as rate-limited
+    /// or invalid depending on the specific error code.
+    ///
+    /// - Parameter error: An optional `Error` object that represents the URL-related error to be handled.
+    /// - If the error is a `URLError`, it checks for specific error codes and updates the `apiAccessKeyManager` accordingly:
+    ///   - `.clientCertificateRejected`: Sets the API access key status to `.rateLimited`.
+    ///   - `.userAuthenticationRequired`: Sets the API access key status to `.invalid`.
+    ///   - For other errors, it prints the error description.
+    private func handleURLError(_ error: Error?) {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .clientCertificateRejected:
+                apiAccessKeyManager.apiAccessKeyStatus = .rateLimited
+            case .userAuthenticationRequired:
+                apiAccessKeyManager.apiAccessKeyStatus = .invalid
+            default:
+                print(urlError.localizedDescription)
+            }
+        }
+    }
+    
     // MARK: - Get API Access Key
+    /// Retrieves the API access key, either from a local variable or user defaults.
+    ///
+    /// This function checks if a local API access key exists. If it does, the function returns it.
+    /// If not, it attempts to fetch the API access key from user defaults asynchronously. If the key is found,
+    /// it stores it in the local variable for future use. If the key is not available, it throws an error.
+    ///
+    /// - Throws: `CollectionsViewModelErrorModel.apiAccessKeyNotFound` if the API access key is not available in either the local variable or user defaults.
+    /// - Returns: The API access key as a `String`.
     private func getAPIAccessKey() async throws -> String {
         guard let localAPIAccessKey else {
             guard let tempAPIAccessKey: String = await apiAccessKeyManager.getAPIAccessKeyFromUserDefaults() else {
@@ -305,24 +329,28 @@ import SwiftUICore
         }
     }
     
-    // MARK: - getAPIAccessKeyFromUserDefaults
-    /// Retrieves the API access key stored in UserDefaults.
-    /// - Returns: The stored API access key as a `String`, or `nil` if not found.
-    private func getAPIAccessKeyFromUserDefaults() async -> String? {
-        guard let apiAccessKey: String = await defaults.get(key: .apiAccessKey) as? String else {
-            return nil
-        }
-        
-        return apiAccessKey
-    }
-    
     // MARK: - Check Collection Name Duplications
-    /// Checks if a collection name already exists in the `collectionItemsArray`.
-    /// - Parameter collectionName: The name of the collection to check.
-    /// - Returns: `true` if a collection with the same name exists, otherwise `false`.
-    private func checkCollectionNameDuplications(_ collectionName: String) -> Bool {
+    /// Checks if a collection name already exists in the collection items array.
+    ///
+    /// This function checks if the given collection name already exists in the `collectionItemsArray`,
+    /// ignoring case differences. If a duplicate is found, it updates the progress indicators and displays
+    /// an error message. It then throws a `CollectionsViewModelErrorModel.duplicateCollectionName` error.
+    ///
+    /// - Parameter collectionName: The name of the collection to check for duplication.
+    ///
+    /// - Throws: `CollectionsViewModelErrorModel.duplicateCollectionName` if the collection name is already in the collection items array.
+    ///
+    /// - Updates:
+    ///   - Sets `showCreateButtonProgress` and `showRenameButtonProgress` to `false` if a duplicate is found.
+    ///   - Adds an error to the error popup view model (`errorPopupVM`) to notify the user of the duplication.
+    private func checkCollectionNameDuplications(_ collectionName: String) async throws {
         let isExist: Bool = collectionItemsArray.contains(where: { $0.collectionName.lowercased() == collectionName.lowercased() })
-        return isExist
+        if isExist {
+            showCreateButtonProgress = false
+            showRenameButtonProgress = false
+            await errorPopupVM.addError(errorPopupModel.duplicateCollectionNameFound)
+            throw CollectionsViewModelErrorModel.duplicateCollectionName
+        }
     }
     
     // MARK: - Reset Collection Name Textfield Text

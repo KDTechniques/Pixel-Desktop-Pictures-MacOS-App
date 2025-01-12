@@ -68,7 +68,8 @@ struct CollectionsVGridImageView: View {
         .environment(
             CollectionsViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)))
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init())
         )
         .previewModifier
 }
@@ -118,7 +119,7 @@ extension CollectionsVGridImageView {
     
     // MARK: - Handle Tap
     private func handleTap() {
-        collectionsVM.handleCollectionItemTap(item: item)
+        collectionsVM.updateCollectionSelection(item: item)
     }
     
     // MARK: - Handle Hover

@@ -15,6 +15,7 @@ struct TabsView: View {
     var body: some View {
         VStack(spacing: 0) {
             HeaderView()
+                .background(alignment: .top) { ErrorPopupView() }
             
             TabView(selection: Binding(get: { tabsVM.tabSelection }, set: { _ in })) {
                 ForEach(TabItemsModel.allCases, id: \.self) { tab in
@@ -26,6 +27,7 @@ struct TabsView: View {
             }
             .frame(height: tabsVM.selectedTabContentHeight)
             .tabViewStyle(.grouped)
+            .zIndex(-1)
         }
         .frame(width: TabItemsModel.allWindowWidth)
         .background(Color.windowBackground)

@@ -38,6 +38,7 @@ enum TabItemsModel: String, CaseIterable {
     }
     
     static let allWindowWidth: CGFloat = 375
+    static let tabHeaderHeight: CGFloat = 54
     
     var contentHeight: CGFloat {
         switch self {

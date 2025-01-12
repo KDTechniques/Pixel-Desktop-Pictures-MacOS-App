@@ -34,7 +34,8 @@ struct CollectionsTabView: View {
 #Preview("Collections Grid Tab View") {
     @Previewable @State var collectionsVM: CollectionsViewModel = .init(
         apiAccessKeyManager: .init(),
-        swiftDataManager: try! .init(swiftDataManager: .init(appEnvironment: .mock))
+        swiftDataManager: try! .init(swiftDataManager: .init(appEnvironment: .mock)),
+        errorPopupVM: .init()
     )
     
     PreviewView {

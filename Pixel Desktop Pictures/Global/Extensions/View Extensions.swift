@@ -29,12 +29,15 @@ extension View {
         self
             .frame(width: TabItemsModel.allWindowWidth)
             .background(Color.windowBackground)
+            .environment(ErrorPopupViewModel())
             .environment(TabsViewModel())
             .environment(MainTabViewModel())
             .environment(
                 CollectionsViewModel(
                     apiAccessKeyManager: .init(),
-                    swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)))
+                    swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                    errorPopupVM: .init()
+                )
             )
             .environment(RecentsTabViewModel())
             .environment(SettingsTabViewModel(appEnvironment: .mock))
@@ -42,20 +45,6 @@ extension View {
         //            .environment(try! ImageQueryURLModelSwiftDataManager(appEnvironment: .production))
         //            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .production))
         //            .environment(try! CollectionModelSwiftDataManager(appEnvironment: .production))
-    }
-    
-    // MARK: - Get Bottom Popover Geometry Height
-    func getBottomPopoverGeometryHeight(_ height: Binding<CGFloat>) -> some View {
-        self
-            .background {
-                GeometryReader { geo in
-                    Color.clear
-                        .preference(key: BottomPopoverPreferenceKey.self, value: geo.frame(in: .local).height)
-                }
-                .onPreferenceChange(BottomPopoverPreferenceKey.self) { value in
-                    height.wrappedValue = value
-                }
-            }
     }
 }
 
@@ -131,15 +120,5 @@ fileprivate struct SetTabContentHeightToTabsViewModel: ViewModifier {
                         }
                 }
             }
-    }
-}
-
-// MARK: - PREFERENCE KEYS
-
-// MARK: Bottom Popover Preference Key
-struct BottomPopoverPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
     }
 }

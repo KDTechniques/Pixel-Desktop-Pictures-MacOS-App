@@ -18,6 +18,7 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var apiAccessKeyManager: APIAccessKeyManager
     
     // Tabs
+    @State private var errorPopupVM: ErrorPopupViewModel
     @State private var tabsVM: TabsViewModel = .init()
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel = .init()
@@ -31,11 +32,15 @@ struct Pixel_Desktop_PicturesApp: App {
         do {
             let tempSwiftDataManager: SwiftDataManager = try .init(appEnvironment: appEnvironment)
             let tempAPIAccessKeyManager: APIAccessKeyManager = .init()
+            let tempErrorPopupVM: ErrorPopupViewModel = .init()
+            
             apiAccessKeyManager = tempAPIAccessKeyManager
+            errorPopupVM = tempErrorPopupVM
             
             collectionsTabVM = .init(
                 apiAccessKeyManager: tempAPIAccessKeyManager,
-                swiftDataManager: .init(swiftDataManager: tempSwiftDataManager)
+                swiftDataManager: .init(swiftDataManager: tempSwiftDataManager),
+                errorPopupVM: tempErrorPopupVM
             )
         } catch {
             print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
@@ -59,6 +64,7 @@ struct Pixel_Desktop_PicturesApp: App {
                 .environment(networkManager)
                 .environment(apiAccessKeyManager)
             // Tabs Environment Values
+                .environment(errorPopupVM)
                 .environment(tabsVM)
                 .environment(settingsTabVM)
                 .environment(mainTabVM)

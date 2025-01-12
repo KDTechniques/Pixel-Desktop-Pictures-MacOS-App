@@ -25,7 +25,8 @@ struct CollectionsGridPopupBackgroundView: View {
         .environment(
             CollectionsViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)))
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init())
         )
 }
 
