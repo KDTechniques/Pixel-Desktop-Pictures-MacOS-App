@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+#warning("Remove this entire extension later... if not needed for recents tab...")
 extension WindowGroup {
     // MARK: - Get Model Containers Window Group Modifier
     func getModelContainersViewModifier(in environment: AppEnvironmentModel, for models: [any PersistentModel.Type]) -> some Scene {

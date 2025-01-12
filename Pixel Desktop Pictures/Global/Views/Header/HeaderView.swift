@@ -15,7 +15,9 @@ struct HeaderView: View {
             Spacer()
             TabItemsView()
         }
-        .padding()
+        .padding(.horizontal)
+        .frame(height: TabItemsModel.tabHeaderHeight)
+        .background(Color.windowBackground)
     }
 }
 

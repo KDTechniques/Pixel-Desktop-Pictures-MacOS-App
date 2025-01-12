@@ -10,8 +10,8 @@ import SwiftData
 
 extension View {
     // MARK: - Set Tab Content Height To Tabs ViewModel View Modifier
-    var setTabContentHeightToTabsViewModelViewModifier: some View {
-        return self.modifier(SetTabContentHeightToTabsViewModel())
+    func setTabContentHeightToTabsViewModelViewModifier(from tab: TabItemsModel) -> some View {
+        return self.modifier(SetTabContentHeightToTabsViewModel(from: tab))
     }
     
     // MARK: - On First Appear View Modifier
@@ -29,31 +29,41 @@ extension View {
         self
             .frame(width: TabItemsModel.allWindowWidth)
             .background(Color.windowBackground)
+            .environment(ErrorPopupViewModel())
             .environment(TabsViewModel())
             .environment(MainTabViewModel())
-            .environment(CollectionsViewModel())
+            .environment(
+                CollectionsViewModel(
+                    apiAccessKeyManager: .init(),
+                    swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                    errorPopupVM: .init()
+                )
+            )
             .environment(RecentsTabViewModel())
             .environment(SettingsTabViewModel(appEnvironment: .mock))
             .environment(APIAccessKeyManager())
+        //            .environment(try! ImageQueryURLModelSwiftDataManager(appEnvironment: .production))
+        //            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .production))
+        //            .environment(try! CollectionModelSwiftDataManager(appEnvironment: .production))
     }
 }
 
-// MARK: VIEW MODIFIER STRUCTS
+// MARK: - VIEW MODIFIER STRUCTS
 
-// MARK: - On First Appear
+// MARK: On First Appear
 fileprivate struct OnFirstAppear: ViewModifier {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: INJECTED PROPERTIES
     let action: () -> Void
     
-    // MARK: - ASSIGNED PROPERTIES
+    // MARK: ASSIGNED PROPERTIES
     @State private var didAppear: Bool = false
     
-    // MARK: - INITIALIZER
+    // MARK: INITIALIZER
     init(_ action: @escaping () -> Void) {
         self.action = action
     }
     
-    // MARK: - BODY
+    // MARK: BODY
     func body(content: Content) -> some View {
         content
             .onAppear {
@@ -64,20 +74,20 @@ fileprivate struct OnFirstAppear: ViewModifier {
     }
 }
 
-// MARK: - On First Task
+// MARK: On First Task
 fileprivate struct OnFirstTask: ViewModifier {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: INJECTED PROPERTIES
     let action: () async -> Void
     
-    // MARK: - ASSIGNED PROPERTIES
+    // MARK: ASSIGNED PROPERTIES
     @State private var didAppear: Bool = false
     
-    // MARK: - INITIALIZER
+    // MARK: INITIALIZER
     init(_ action: @escaping () async -> Void) {
         self.action = action
     }
     
-    // MARK: - BODY
+    // MARK: BODY
     func body(content: Content) -> some View {
         content
             .task {
@@ -88,17 +98,25 @@ fileprivate struct OnFirstTask: ViewModifier {
     }
 }
 
-// MARK: - Set Tab Content Height to Tabs ViewModel
+// MARK: Set Tab Content Height to Tabs ViewModel
 fileprivate struct SetTabContentHeightToTabsViewModel: ViewModifier {
+    // MARK: PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
+    let tab: TabItemsModel
     
+    // MARK: INITIALIZER
+    init(from tab: TabItemsModel) {
+        self.tab = tab
+    }
+    
+    // MARK: BODY
     func body(content: Content) -> some View {
         content
             .background {
                 GeometryReader { geo in
                     Color.clear
                         .onAppear {
-                            tabsVM.setTabContentHeight(geo.size.height)
+                            tabsVM.setTabContentHeight(height: geo.size.height, from: tab)
                         }
                 }
             }

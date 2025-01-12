@@ -35,11 +35,11 @@ import LaunchAtLogin
     }
     private(set) var isPresentedPopup: Bool = false
     var apiAccessKeyTextfieldText: String = ""
-    let defaults: UserDefaultsManager = .init()
+    let defaults: UserDefaultsManager = .shared
     
     // MARK: - INITIALIZER
     init(appEnvironment: AppEnvironmentModel) {
-        desktopPictureScheduler = .init(appEnvironmentType: appEnvironment)
+        desktopPictureScheduler = .shared(appEnvironmentType: appEnvironment)
     }
     
     // MARK: FUNCTIONS
@@ -55,6 +55,7 @@ import LaunchAtLogin
     /// - Throws: An error if retrieving settings from UserDefaults fails.
     func initializeSettingsTabVM() async throws {
         try await getSettingsFromUserDefaults()
+        print("`Settings Tab View Model` has been initialized!")
     }
     
     // MARK: - Present Popup
@@ -130,7 +131,6 @@ import LaunchAtLogin
     /// `true` enables the setting, while `false` disables it.
     private func saveLaunchAtLoginToUserDefaults(_ value: Bool) async {
         await defaults.save(key: .launchAtLoginKey, value: value)
-        print("Saved `launchAtLogin` to user defaults.")
     }
     
     // MARK: - Save Show on All Spaces to User Defaults
@@ -143,7 +143,6 @@ import LaunchAtLogin
     /// `true` enables the setting, while `false` disables it.
     private func saveShowOnAllSpacesToUserDefaults(_ value: Bool) async {
         await defaults.save(key: .showOnAllSpacesKey, value: value)
-        print("Saved `showOnAllSpaces` to user defaults.")
     }
     
     // MARK: - Save Update Interval to User Defaults
@@ -157,9 +156,8 @@ import LaunchAtLogin
     private func saveUpdateIntervalToUserDefaults(_ value: DesktopPictureSchedulerIntervalsModel) async {
         do {
             try await defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
-            print("Saved `updateIntervalSelection` to user defaults.")
         } catch {
-            print("Error: Saving update Interval to user defaults.")
+            print("Error: Failed to save update Interval to user defaults.")
         }
     }
     

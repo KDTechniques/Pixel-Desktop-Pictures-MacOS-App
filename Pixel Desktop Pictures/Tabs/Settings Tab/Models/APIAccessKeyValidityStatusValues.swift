@@ -15,7 +15,7 @@ extension APIAccessKeyValidityStatusModel {
                 .foregroundStyle(.secondary)
         case .validating:
             return Text("Validating")
-        case .connected:
+        case .connected, .rateLimited:
             return Text("Connected")
                 .foregroundStyle(.green)
         case .invalid:
@@ -37,7 +37,7 @@ extension APIAccessKeyValidityStatusModel {
         case .validating:
             Image(systemName: "progress.indicator")
                 .symbolEffect(.variableColor.iterative.hideInactiveLayers)
-        case .connected:
+        case .connected, .rateLimited:
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.green)
         case .invalid:
@@ -54,7 +54,7 @@ extension APIAccessKeyValidityStatusModel {
         switch self {
         case .notFound, .failed:
             return "Add Your API Access Key"
-        case .validating, .connected:
+        case .validating, .connected, .rateLimited:
             return "API Access Key"
         case .invalid:
             return "Replace Your API Access Key"

@@ -7,18 +7,19 @@
 
 import Foundation
 
-actor UnsplashImageAPIService {
+/**
+ The `UnsplashImageAPIService` class provides an interface for interacting with the Unsplash API. This class is responsible for fetching random images or query-based images from Unsplash and validating the API access key. It handles constructing the necessary network requests, parsing the responses, and decoding the JSON data into the appropriate model objects.
+ */
+final class UnsplashImageAPIService {
     // MARK: - PROPERTIES
     let apiAccessKey: String
     private let timeout: TimeInterval = 10
-    private let imagesPerPage: Int = 10
     private let randomImageURLString = "https://api.unsplash.com/photos/random?orientation=landscape"
-
     
     // MARK: - INITIALIZER
     init(apiAccessKey: String) {
-        print("Unsplash API Service is Initialized.")
         self.apiAccessKey = apiAccessKey
+        print("Unsplash API Service has been Initialized.")
     }
     
     // MARK: FUNCTIONS
@@ -37,16 +38,8 @@ actor UnsplashImageAPIService {
         do {
             let _ = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImageModel.self)
         } catch {
-            guard let urlError = error as? URLError else {
-                throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
-            }
-            
-            switch urlError.code {
-            case .notConnectedToInternet:
-                throw error
-            default:
-                throw UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error)
-            }
+            print(UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed(error))
+            throw error
         }
     }
     
@@ -64,7 +57,8 @@ actor UnsplashImageAPIService {
             let randomImageModel: UnsplashRandomImageModel = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImageModel.self)
             return randomImageModel
         } catch {
-            throw UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed(error)
+            print(UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed(error))
+            throw error
         }
     }
     
@@ -83,14 +77,17 @@ actor UnsplashImageAPIService {
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
-    func getQueryImageModel(queryText: String, pageNumber: Int) async throws -> UnsplashQueryImageModel {
-        let queryURLString: String = await constructQueryURLString(queryText: queryText, pageNumber: pageNumber)
+    func getQueryImageModel(queryText: String, pageNumber: Int, imagesPerPage: Int = 10) async throws -> UnsplashQueryImageModel {
+        // Construct the query URL string using the provided parameters.
+        let queryURLString: String = constructQueryURLString(queryText: queryText, pageNumber: pageNumber, imagesPerPage: imagesPerPage)
         
         do {
+            // Fetch and decode the data into an `UnsplashQueryImageModel`.
             let model: UnsplashQueryImageModel = try await fetchDataNDecode(for: queryURLString, in: UnsplashQueryImageModel.self)
             return model
         } catch {
-            throw UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed(error)
+            print(UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed(error))
+            throw error
         }
     }
     
@@ -104,7 +101,7 @@ actor UnsplashImageAPIService {
     ///   - pageNumber: An `Int` specifying the page number for paginated results.
     ///
     /// - Returns: A `String` containing the constructed query URL.
-    private func constructQueryURLString(queryText: String, pageNumber: Int) async -> String {
+    private func constructQueryURLString(queryText: String, pageNumber: Int, imagesPerPage: Int) -> String {
         let capitalizedQueryText: String = queryText.capitalized
         let queryURLString: String = "https://api.unsplash.com/search/photos?orientation=landscape&page=\(pageNumber)&per_page=\(imagesPerPage)&query=\(capitalizedQueryText)"
         
@@ -142,7 +139,7 @@ actor UnsplashImageAPIService {
         }
         
         // Handle Different Status Codes of the Response
-        try await parseHTTPResponseStatusCode(httpResponse)
+        try parseHTTPResponseStatusCode(httpResponse)
         
         // Decode JSON Data into Desired Model
         let model: T = try JSONDecoder().decode(T.self, from: data)
@@ -159,7 +156,7 @@ actor UnsplashImageAPIService {
     /// - Throws: `URLError.userAuthenticationRequired`: If the status code is 401 (Unauthorized).
     /// `URLError.fileDoesNotExist`: If the status code is 404 (Not Found).
     /// `URLError.badServerResponse`: For all other non-200 status codes.
-    private func parseHTTPResponseStatusCode(_ response: HTTPURLResponse) async throws {
+    private func parseHTTPResponseStatusCode(_ response: HTTPURLResponse) throws {
         switch response.statusCode {
         case 200:
             print("Everything worked as expected. Status code: 200 - OK")
@@ -167,10 +164,10 @@ actor UnsplashImageAPIService {
             print("The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
             throw URLError(.badURL)
         case 401:
-            print("Invalid Access Token. Status code: 401 - Unauthorized")
+            print("Invalid Access Token. Status code: 401 - Unauthorized") // This occurs when the API Access Key is invalid
             throw URLError(.userAuthenticationRequired)
         case 403:
-            print("Missing permissions to perform request. Status code: 403 - Forbidden")
+            print("Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
             throw URLError(.clientCertificateRejected)
         case 404:
             print("Resource not found. Status code: 404")

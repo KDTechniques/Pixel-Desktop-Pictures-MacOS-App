@@ -7,77 +7,42 @@
 
 import SwiftUI
 
-fileprivate struct PopOverPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 struct CollectionsTabView: View {
     // MARK: - PROPERTIES
-    @State var collectionsVM: CollectionsViewModel = .init()
-    @State private var popOverHeight: CGFloat = 0
-    let vGridValues = VGridValuesModel.self
+    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @State private var scrollPosition: ScrollPosition = .init()
     
     // MARK: - BODY
     var body: some View {
-        ScrollView(.vertical) {
-            LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(collectionsVM.collectionVGridItemsArray, id: \.self) { item in
-                    CollectionsVGridImageView(item: item)
-                    CollectionsVGridPlusFrameButtonView(id: item.id)
+        TabContentWithWindowErrorView(tab: .collections) {
+            Group {
+                if !collectionsVM.collectionItemsArray.isEmpty {
+                    CollectionsVGridScrollView(scrollPosition: $scrollPosition)
+                } else {
+                    WindowErrorView(model: CollectionsTabWindowErrorModel.collectionsViewModelInitializationFailed)
                 }
             }
-            .padding(.horizontal)
+            .background(Color.windowBackground)
+            .onChange(of: collectionsVM.collectionItemsArray.count) {
+                collectionsVM.onCollectionItemsArrayChange(oldValue: $0, newValue: $1, scrollPosition: $scrollPosition)
+            }
         }
-        .scrollDisabled(collectionsVM.collectionVGridItemsArray.count <= 8)
-        .frame(height: TabItemsModel.collections.contentHeight)
-        .padding(.bottom)
-        .overlay { CollectionsGridPopupBackgroundView() }
-        .overlay(alignment: .bottom) { popup }
-        .background(Color.windowBackground)
-        .setTabContentHeightToTabsViewModelViewModifier
-        .onTapGesture { handleTap() }
-        .environment(collectionsVM)
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Collections Grid Tab View") {
-    PreviewView { CollectionsTabView() }
-}
-
-// MARK: - EXTENSIONS
-extension CollectionsTabView {
-    // MARK: - popup
-    private var popup: some View {
-        AddNewCollectionView()
-            .getGeometryHeight($popOverHeight)
-            .offset(y: collectionsVM.isPresentedPopup ? 0 : popOverHeight)
-            .animation(collectionsVM.popOverAnimation.0, value: collectionsVM.popOverAnimation.1)
-    }
+    @Previewable @State var collectionsVM: CollectionsViewModel = .init(
+        apiAccessKeyManager: .init(),
+        swiftDataManager: try! .init(swiftDataManager: .init(appEnvironment: .mock)),
+        errorPopupVM: .init()
+    )
     
-    // MARK: FUNCTIONS
-    
-    // MARK: - Handle Tap
-    private func handleTap() {
-        collectionsVM.presentPopup(false)
-    }
-}
-
-fileprivate extension View {
-    // MARK: - Get Geometry Height
-    func getGeometryHeight(_ height: Binding<CGFloat>) -> some View {
-        self
-            .background {
-                GeometryReader { geo in
-                    Color.clear
-                        .preference(key: PopOverPreferenceKey.self, value: geo.frame(in: .local).height)
-                }
-                .onPreferenceChange(PopOverPreferenceKey.self) { value in
-                    height.wrappedValue = value
-                }
+    PreviewView {
+        CollectionsVGridScrollView(scrollPosition: .constant(.init(edge: .top)))
+            .environment(collectionsVM)
+            .onFirstAppearViewModifier {
+                collectionsVM.collectionItemsArray = try! CollectionModel.getDefaultCollectionsArray()
             }
     }
 }

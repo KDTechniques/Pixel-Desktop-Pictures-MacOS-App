@@ -14,6 +14,7 @@ enum ButtonTypes: CaseIterable {
 struct ButtonView: View {
     // MARK: - PROPERTIES
     let title: String
+    let showProgress: Bool
     let type: ButtonTypes
     let action: () -> Void
     
@@ -23,7 +24,7 @@ struct ButtonView: View {
         case .regular:
             return .buttonForeground
         case .popup:
-            return .popupButtonForeground
+            return .bottomPopupButtonForeground
         }
     }
     
@@ -32,13 +33,14 @@ struct ButtonView: View {
         case .regular:
             return .buttonBackground
         case .popup:
-            return .popupButtonBackground
+            return .bottomPopupButtonBackground
         }
     }
     
     // MARK: - INITIALIZER
-    init(title: String, type: ButtonTypes, action: @escaping () -> Void) {
+    init(title: String, showProgress: Bool = false, type: ButtonTypes, action: @escaping () -> Void) {
         self.title = title
+        self.showProgress = showProgress
         self.type = type
         self.action = action
     }
@@ -49,6 +51,13 @@ struct ButtonView: View {
             action()
         } label: {
             Text(title)
+                .overlay(alignment: .trailing) {
+                    if showProgress {
+                        ProgressView()
+                            .scaleEffect(0.4)
+                            .offset(x: 30)
+                    }
+                }
                 .foregroundStyle(foregroundColor)
                 .fontWeight(.medium)
                 .frame(maxWidth: .infinity)
@@ -56,12 +65,15 @@ struct ButtonView: View {
                 .background(backgroundColor, in: .rect(cornerRadius: 5))
         }
         .buttonStyle(.plain)
+        .disabled(showProgress)
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Button View") {
-    ButtonView(title: "Done", type: .random()) {
+    ButtonView(title: "Done", showProgress: .random(), type: .random()) {
         print("Action triggered!")
     }
+    .padding()
+    .previewModifier
 }

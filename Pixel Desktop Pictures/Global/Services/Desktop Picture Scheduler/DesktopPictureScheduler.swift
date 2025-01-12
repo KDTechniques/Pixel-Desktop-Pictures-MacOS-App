@@ -7,13 +7,20 @@
 
 import SwiftUICore
 
-actor DesktopPictureScheduler {
+/**
+ The `DesktopPictureScheduler` class is responsible for managing the scheduling of desktop picture updates. It allows for configuring the time intervals for when desktop pictures should be changed and ensures the task is performed in the background using `NSBackgroundActivityScheduler`.
+ */
+@MainActor
+final class DesktopPictureScheduler {
+    // MARK: - SINGLETON
+    private static var singleton: DesktopPictureScheduler?
+    
     // MARK: - INJECTED PROPERTIES
     private let appEnvironmentType: AppEnvironmentModel
     private var timeIntervalSelection: TimeInterval
     
     // MARK: - ASSIGNED PROPERTIES
-    private let defaults: UserDefaultsManager = .init()
+    private let defaults: UserDefaultsManager = .shared
     private let timeIntervalKey: UserDefaultKeys = .timeIntervalDoubleKey
     private let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
@@ -23,14 +30,38 @@ actor DesktopPictureScheduler {
     }
     
     // MARK: - INITIALIZER
-    init(appEnvironmentType: AppEnvironmentModel) {
+    private init(appEnvironmentType: AppEnvironmentModel) {
         self.appEnvironmentType = appEnvironmentType
         timeIntervalSelection = DesktopPictureSchedulerIntervalsModel.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
+        
+        Task { await initializeScheduler() }
     }
     
     // MARK: FUNCTIONS
     
     // MARK: INTERNAL FUNCTIONS
+    
+    // MARK: - Shared
+    /// Returns the shared singleton instance of `DesktopPictureScheduler`.
+    ///
+    /// This function ensures that only one instance of `DesktopPictureScheduler` is created.
+    /// If the singleton instance is already created, it is returned.
+    /// Otherwise, a new instance is created, stored, and then returned. This ensures that the app
+    /// uses a single instance for managing the desktop picture scheduling process.
+    ///
+    /// - Parameter appEnvironmentType: The type of the app's environment, which is passed to the
+    ///   `DesktopPictureScheduler` initializer to configure the scheduler for the correct environment.
+    ///
+    /// - Returns: The shared `DesktopPictureScheduler` instance.
+    static func shared(appEnvironmentType: AppEnvironmentModel) -> DesktopPictureScheduler {
+        guard singleton == nil else {
+            return singleton!
+        }
+        
+        let newInstance: DesktopPictureScheduler = .init(appEnvironmentType: appEnvironmentType)
+        singleton = newInstance
+        return newInstance
+    }
     
     // MARK: - on Change Of Time Interval Selection
     /// Handles changes to the time interval selection.
@@ -49,7 +80,7 @@ actor DesktopPictureScheduler {
     
     // MARK: - Initialize Scheduler
     /// Initializes the scheduler by setting the time interval and scheduling the background task.
-    func initializeScheduler() async {
+    private func initializeScheduler() async {
         // Assign Time Interval Selection Value to A Property to Avoid Using User Defaults Most of the Time
         let timeIntervalSelection: TimeInterval = await getTimeIntervalSelectionFromUserDefaults()
         self.timeIntervalSelection = timeIntervalSelection
@@ -62,7 +93,7 @@ actor DesktopPictureScheduler {
             print("\(String(describing: DesktopPictureSchedulerErrorModel.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
         }
         
-        print("`DesktopPictureScheduler` is initialized.")
+        print("`Desktop Picture Scheduler` has been initialized.")
     }
     
     // MARK: - Calculate Schedule Save Execution Time Interval Since 1970
@@ -71,7 +102,7 @@ actor DesktopPictureScheduler {
     /// - Parameter timeIntervalSelection: The selected time interval.
     private func calculateScheduleSaveExecutionTimeIntervalSince1970(with timeIntervalSelection: TimeInterval) async {
         // Calculate Execution Time Interval Since 1970 from New Time Interval Selection Value
-        let executionTimeIntervalSince1970: TimeInterval = await calculateExecutionTimeIntervalSince1970(from: timeIntervalSelection)
+        let executionTimeIntervalSince1970: TimeInterval = calculateExecutionTimeIntervalSince1970(from: timeIntervalSelection)
         
         do {
             // Schedule Background Task by Time Interval Selection Value
@@ -89,7 +120,7 @@ actor DesktopPictureScheduler {
     ///
     /// - Parameter timeIntervalSelection: The selected time interval.
     /// - Returns: The execution time interval since 1970.
-    private func calculateExecutionTimeIntervalSince1970(from timeIntervalSelection: TimeInterval) async -> TimeInterval {
+    private func calculateExecutionTimeIntervalSince1970(from timeIntervalSelection: TimeInterval) -> TimeInterval {
         // Add Time Interval Selection Value to Current Date to get the Execution Time in the Future
         let executionTimeIntervalSince1970: TimeInterval = Date().addingTimeInterval(timeIntervalSelection).timeIntervalSince1970
         return executionTimeIntervalSince1970
@@ -142,7 +173,7 @@ actor DesktopPictureScheduler {
         // Try to get Saved Execution Time Interval Since 1970 from User Defaults
         guard let savedExecutionTimeIntervalSince1970: TimeInterval = await defaults.get(key: executionTimeKey) as? TimeInterval else {
             // Create New Execution Time Interval Since 1970 on User Defaults Failure
-            let newExecutionTimeIntervalSince1970: TimeInterval = await calculateExecutionTimeIntervalSince1970(from: timeIntervalSelection)
+            let newExecutionTimeIntervalSince1970: TimeInterval = calculateExecutionTimeIntervalSince1970(from: timeIntervalSelection)
             
             // Save New Execution Time Interval Since 1970 to User Defaults
             await saveExecutionTimeSince1970ToUserDefaults(from: newExecutionTimeIntervalSince1970)
@@ -215,15 +246,10 @@ actor DesktopPictureScheduler {
         scheduler = activity
     }
     
-    // MARK: - Background Task
-    private func backgroundTask() async {
-        // Background task goes here...
-    }
-    
     // MARK: - Perform Background Task
     /// Performs the background task.
     private func performBackgroundTask() async {
         print("Progress: Performing background task.")
-        await backgroundTask()
+        // Background task goes here...
     }
 }

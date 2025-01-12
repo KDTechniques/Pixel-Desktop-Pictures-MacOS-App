@@ -7,16 +7,30 @@
 
 import AppKit
 
+/**
+ An actor responsible for managing desktop pictures across all screens (monitors).
+ 
+ The `DesktopPictureManager` provides functionality to:
+ - Set the desktop picture for all connected monitors.
+ - Handle active space changes and system wake events to update desktop pictures accordingly.
+ - Persist the currently set desktop picture's file URL in `UserDefaults`.
+ 
+ This actor ensures thread-safe operations while interacting with macOS APIs and `UserDefaults`.
+ */
 actor DesktopPictureManager {
     // MARK: - PROPERTIES
+    static let shared: DesktopPictureManager = .init()
     private let workspace = NSWorkspace.shared
-    private let defaults: UserDefaultsManager = .init()
+    private let defaults: UserDefaultsManager = .shared
     private let currentDesktopPictureFileURLStringKey: UserDefaultKeys = .currentDesktopPictureFileURLStringKey
     private var currentDesktopPictureFileURLString: String?
     
+    // MARK: - INITIALIZER
+    private init() { Task { await initializeDesktopPictureManager() } }
+    
     // MARK: - Deinitializer
     deinit {
-        print("Desktop Picture Manager is Deinitialized!")
+        print("Desktop Picture Manager has been Deinitialized!")
         
         // Remove Observers from `NSWorkspace.shared.notificationCenter`
         workspace.notificationCenter.removeObserver(self, name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
@@ -26,28 +40,6 @@ actor DesktopPictureManager {
     // MARK: FUNCTIONS
     
     // MARK: INTERNAL FUNCTIONS
-    
-    // MARK: - Initialize Desktop Picture Manager
-    /// Initializes the desktop picture manager.
-    ///
-    /// This function sets up the desktop picture manager by performing the following:
-    /// 1. Initializes the desktop picture settings.
-    /// 2. Adds observers for active space changes and wake-from-sleep notifications.
-    ///
-    /// Once the initialization is complete, it prints a confirmation message indicating
-    /// that the desktop picture manager has been successfully initialized.
-    ///
-    /// - Note: This function ensures that necessary system notifications and observers are
-    /// in place to handle desktop picture management seamlessly.
-    func initializeDesktopPictureManager() async {
-        await initializeDesktopPicture()
-        
-        // Add Observers
-        await activeSpaceDidChangeNotificationObserver()
-        await didWakeNotificationObserver()
-        
-        print("Desktop Picture Manager is Initialized!")
-    }
     
     // MARK: - Set Desktop Picture
     /// Sets the desktop picture for all screens (monitors).
@@ -98,6 +90,28 @@ actor DesktopPictureManager {
     }
     
     // MARK: PRIVATE FUNCTIONS
+    
+    // MARK: - Initialize Desktop Picture Manager
+    /// Initializes the desktop picture manager.
+    ///
+    /// This function sets up the desktop picture manager by performing the following:
+    /// 1. Initializes the desktop picture settings.
+    /// 2. Adds observers for active space changes and wake-from-sleep notifications.
+    ///
+    /// Once the initialization is complete, it prints a confirmation message indicating
+    /// that the desktop picture manager has been successfully initialized.
+    ///
+    /// - Note: This function ensures that necessary system notifications and observers are
+    /// in place to handle desktop picture management seamlessly.
+    private func initializeDesktopPictureManager() async {
+        await initializeDesktopPicture()
+        
+        // Add Observers
+        await activeSpaceDidChangeNotificationObserver()
+        await didWakeNotificationObserver()
+        
+        print("Desktop Picture Manager has been Initialized!")
+    }
     
     // MARK: - Notification Observers
     

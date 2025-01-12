@@ -13,4 +13,5 @@ enum APIAccessKeyValidityStatusModel: CaseIterable, Codable {
     case connected
     case invalid
     case failed
+    case rateLimited
 }

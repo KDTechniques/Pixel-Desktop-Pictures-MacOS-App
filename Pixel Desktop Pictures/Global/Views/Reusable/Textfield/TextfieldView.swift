@@ -44,7 +44,7 @@ struct TextfieldView: View {
     .padding()
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension TextfieldView {
     // MARK: - Clear Button
     @ViewBuilder

@@ -10,14 +10,9 @@ import Foundation
 @MainActor
 @Observable final class MainTabViewModel {
     // MARK: - PROPERTIES
-    var imageURLString: String = CollectionVGridItemModel.defaultItemsArray.first!.imageURLString // set this to `""` later..
+    var imageURLString: String?
     
     // MARK: FUNCTIONS
-    
-    // MARK: - Retry
-    func retryConnection() {
-        
-    }
     
     // MARK: - Next Image
     func nextImage() {

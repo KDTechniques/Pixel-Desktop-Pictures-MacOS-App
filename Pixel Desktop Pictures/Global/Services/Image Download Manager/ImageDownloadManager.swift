@@ -7,7 +7,16 @@
 
 import Foundation
 
+/**
+ The `ImageDownloadManager` actor is responsible for downloading images from a given URL and saving them to a specified directory. This class ensures that the image download process is thread-safe and efficient by using the actor model.
+ */
 actor ImageDownloadManager {
+    // MARK: - PROPERTIES
+    static let shared: ImageDownloadManager = .init()
+    
+    // MARK: - INITIALIZER
+    private init() {}
+    
     // MARK: FUNCTIONS
     
     // MARK: - Download Image
@@ -22,7 +31,7 @@ actor ImageDownloadManager {
     ///
     /// - Returns:
     ///   A `URL` object representing the location where the image file has been saved.
-    func downloadImage(url: String, to directory: UnsplashImageDirectoryModel) async throws -> String {
+    func downloadImage(url: String, to directory: UnsplashImageDirectoryModelProtocol) async throws -> String {
         // Safe Unwrapping of URL String to URL
         guard let url: URL = URL(string: url) else {
             throw URLError(.badURL)

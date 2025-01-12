@@ -9,52 +9,29 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - PROPERTIES
-    @Environment(NetworkManager.self) private var networkManager
-    @State private var mainTabVM: MainTabViewModel = .init()
+    @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - BODY
     var body: some View {
-        Group {
-            if networkManager.connectionStatus == .connected {
-//                VStack(spacing: 0) {
-//                    // Image Preview
-//                    ImageContainerView(
-//                        thumbnailURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-//                        imageURLString: CollectionVGridItemModel.defaultItemsArray.first!.imageURLString,
-//                        location: "Colombo, Sri Lanka"
-//                    ) // change this later with a view model property model
-//                    
-//                    VStack {
-//                        // Set Desktop Picture Button
-//                        ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
-//                        
-//                        // Author and Download Button
-//                        footer
-//                    }
-//                    .padding()
-//                }
-                
-                ContentNotAvailableView(type: .apiAccessKeyError)
-            } else {
-                ContentNotAvailableView(type: .noInternetConnection)
-            }
-        }
-        .setTabContentHeightToTabsViewModelViewModifier
-        .environment(mainTabVM)
+        TabContentWithWindowErrorView(tab: .main, content)
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Main Tab View") {
     @Previewable @State var networkManager: NetworkManager = .init()
+    @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
     PreviewView { MainTabView()  }
         .environment(networkManager)
+        .environment(apiAccessKeyManager)
         .onFirstTaskViewModifier {
             networkManager.initializeNetworkManager()
+            try? await apiAccessKeyManager.initializeAPIAccessKeyManager()
+            await apiAccessKeyManager.connectAPIAccessKey(key: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
         }
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension MainTabView {
     // MARK: - Footer
     private var footer: some View {
@@ -64,5 +41,25 @@ extension MainTabView {
             DownloadButtonView()
         }
         .padding(.top)
+    }
+    
+    private var content: some View {
+        VStack(spacing: 0) {
+            // Image Preview
+            ImageContainerView(
+                thumbnailURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().thumb,
+                imageURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
+                location: "Colombo, Sri Lanka"
+            ) // change this later with a view model property model
+            
+            VStack {
+                // Set Desktop Picture Button
+                ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
+                
+                // Author and Download Button
+                footer
+            }
+            .padding()
+        }
     }
 }

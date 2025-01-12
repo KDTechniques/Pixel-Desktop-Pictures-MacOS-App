@@ -17,12 +17,15 @@ struct VGridItemWidthPreferenceKey: PreferenceKey {
 }
 
 struct CollectionsVGridImageView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
+    let item: CollectionModel
+    
+    // MARK: - ASSIGNED PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
-    let item: CollectionVGridItemModel
+    @State private var showEditButton: Bool = false
     
     // MARK: - INITIALIZER
-    init(item: CollectionVGridItemModel) {
+    init(item: CollectionModel) {
         self.item = item
     }
     
@@ -31,51 +34,83 @@ struct CollectionsVGridImageView: View {
     
     // MARK: - BODY
     var body: some View {
-        WebImage(
-            url: .init(string: item.imageURLString),
-            options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
-        )
-        .placeholder { Color.vGridItemPlaceholder }
-        .resizable()
-        .frame(height: vGridValues.height)
+        Group {
+            if let imageURLString: String = try? item.getImageURLs().small {
+                WebImage(
+                    url: .init(string: imageURLString),
+                    options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
+                )
+                .placeholder {
+                    if item.collectionName != CollectionModel.randomKeywordString {
+                        ProgressView().scaleEffect(0.3)
+                    }
+                }
+                .resizable()
+                .scaledToFill()
+            } else {
+                Color.clear
+            }
+        }
+        .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
-        .overlay { Color.black.opacity(0.4) }
+        .overlay(Color.vGridItemOverlay)
         .overlay { overlay }
+        .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Image View") {
-    CollectionsVGridImageView(item: .defaultItemsArray.first!)
+    CollectionsVGridImageView(item: try! .getDefaultCollectionsArray()[3])
         .frame(width: 120)
         .padding()
-        .environment(CollectionsViewModel())
+        .environment(
+            CollectionsViewModel(
+                apiAccessKeyManager: .init(),
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init())
+        )
+        .previewModifier
 }
 
+// MARK: EXTENSIONS
 extension CollectionsVGridImageView {
-    // MARK: - checkmark
+    // MARK: - Checkmark
     private var checkmark: some View {
         Image(systemName: "checkmark")
-            .font(.subheadline)
-            .fontWeight(.bold)
+            .font(.subheadline.bold())
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(6)
-            .opacity(collectionsVM.selectedCollectionsArray.contains(where: { $0.id == item.id }) ? 1 : 0)
+            .opacity(item.isSelected ? 1 : 0)
     }
     
-    // MARK: - Collection Name Text
-    private var collectionName: some View {
-        Text(item.collectionName)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-            .padding(8)
+    // MARK: - Edit Button
+    private var editButton: some View {
+        Button {
+            Task {
+                collectionsVM.updatingItem = item
+                collectionsVM.presentPopup(true, for: .collectionUpdatePopOver)
+            }
+        } label: {
+            Image(systemName: "applepencil.gen1")
+                .font(.subheadline)
+                .fontWeight(.black)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(6)
+        }
+        .opacity(item.isEditable ? 1 : 0)
+        .opacity(showEditButton ? 1 : 0)
+        .buttonStyle(.plain)
+        .disabled(!item.isEditable)
     }
     
-    // MARK: - overlay
+    // MARK: - Overlay
     private var overlay: some View {
         Group {
             checkmark
-            collectionName
+            CollectionNameOverlayView(collectionName: item.collectionName)
+            editButton
         }
         .foregroundStyle(.white)
     }
@@ -84,6 +119,13 @@ extension CollectionsVGridImageView {
     
     // MARK: - Handle Tap
     private func handleTap() {
-        collectionsVM.setSelectedCollection(item)
+        collectionsVM.updateCollectionSelection(item: item)
+    }
+    
+    // MARK: - Handle Hover
+    private func handleHover(_ isHovering: Bool) {
+        withAnimation(.smooth(duration: 0.3)) {
+            showEditButton = isHovering
+        }
     }
 }

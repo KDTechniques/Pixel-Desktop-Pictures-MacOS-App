@@ -14,13 +14,25 @@ struct CollectionsGridPopupBackgroundView: View {
     // MARK: - BODY
     var body: some View {
         Color.windowBackground
-            .opacity(collectionsVM.isPresentedPopup ? 0.8 : 0)
-            .animation(collectionsVM.popOverAnimation.0, value: collectionsVM.popOverAnimation.1)
+            .opacity(collectionsVM.popOverItem.isPresented ? 0.8 : 0)
+            .onTapGesture { handleTap() }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Collections Grid Popup Background View") {
     CollectionsGridPopupBackgroundView()
-        .environment(CollectionsViewModel())
+        .environment(
+            CollectionsViewModel(
+                apiAccessKeyManager: .init(),
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init())
+        )
+}
+
+extension CollectionsGridPopupBackgroundView {
+    // MARK: - Handle Tap
+    private func handleTap() {
+        collectionsVM.presentPopup(false, for: collectionsVM.popOverItem.type)
+    }
 }

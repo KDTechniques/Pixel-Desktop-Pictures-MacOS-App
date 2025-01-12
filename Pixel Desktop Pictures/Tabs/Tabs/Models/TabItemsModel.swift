@@ -7,7 +7,7 @@
 
 import SwiftUICore
 
-enum TabItemsModel: CaseIterable {
+enum TabItemsModel: String, CaseIterable {
     case main, recents, collections, settings
     
     @ViewBuilder
@@ -38,6 +38,7 @@ enum TabItemsModel: CaseIterable {
     }
     
     static let allWindowWidth: CGFloat = 375
+    static let tabHeaderHeight: CGFloat = 54
     
     var contentHeight: CGFloat {
         switch self {

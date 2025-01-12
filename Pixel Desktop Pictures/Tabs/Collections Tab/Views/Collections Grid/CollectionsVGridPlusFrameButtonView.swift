@@ -10,11 +10,11 @@ import SwiftUI
 struct CollectionsVGridPlusFrameButtonView: View {
     // MARK: - PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
-    let id: String
+    let collectionName: String
     
     // MARK: - INITIALIZER
-    init(id: String) {
-        self.id = id
+    init(collectionName: String) {
+        self.collectionName = collectionName
     }
     
     // MARK: - PRIVATE PROPERTIES
@@ -24,7 +24,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
     var body: some View {
         if canShowPlusButton() {
             Button {
-                collectionsVM.presentPopup(true)
+                collectionsVM.presentPopup(true, for: .collectionCreationPopOver)
             } label: {
                 Rectangle()
                     .fill(Color.collectionPlusFrameBackground)
@@ -38,11 +38,16 @@ struct CollectionsVGridPlusFrameButtonView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Plus Frame Button View") {
-    CollectionsVGridPlusFrameButtonView(id: CollectionVGridItemModel.defaultItemsArray.first!.id)
-        .environment(CollectionsViewModel())
+    CollectionsVGridPlusFrameButtonView(collectionName: try! CollectionModel.getDefaultCollectionsArray().first!.collectionName)
+        .environment(
+            CollectionsViewModel(
+                apiAccessKeyManager: .init(),
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init())
+        )
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension CollectionsVGridPlusFrameButtonView {
     // MARK: - overlay
     private var overlay: some View {
@@ -55,9 +60,9 @@ extension CollectionsVGridPlusFrameButtonView {
     
     // MARK: - Can Show Plus Button
     private func canShowPlusButton() -> Bool {
-        let lastItemIdMatch: Bool = id == collectionsVM.collectionVGridItemsArray.last?.id
-        let isEmptyItemsArray: Bool = collectionsVM.collectionVGridItemsArray.isEmpty
+        let firstItemCollectionNameMatch: Bool = collectionName == collectionsVM.collectionItemsArray.first?.collectionName
+        let isEmptyItemsArray: Bool = collectionsVM.collectionItemsArray.isEmpty
         
-        return lastItemIdMatch || isEmptyItemsArray
+        return firstItemCollectionNameMatch || isEmptyItemsArray
     }
 }

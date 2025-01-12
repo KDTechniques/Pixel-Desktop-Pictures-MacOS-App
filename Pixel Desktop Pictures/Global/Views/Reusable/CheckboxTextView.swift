@@ -32,7 +32,7 @@ struct CheckboxTextView: View {
     }
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension CheckboxTextView {
     // MARK: - checkBox
     private var checkBox: some View {

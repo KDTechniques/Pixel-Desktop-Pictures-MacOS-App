@@ -10,7 +10,13 @@ import SwiftUI
 struct AddNewCollectionTextfieldHeaderView: View {
     // MARK: - BODY
     var body: some View {
-        Text("Enter a keyword for a custom collection:")
+        VStack(alignment: .leading) {
+            Text("Enter a keyword for a custom collection:")
+            
+            Text("Tip: Use a singular noun for correct results.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
     }
 }
 
@@ -18,4 +24,5 @@ struct AddNewCollectionTextfieldHeaderView: View {
 #Preview("Add New Collection Textfield Header View") {
     AddNewCollectionTextfieldHeaderView()
         .padding()
+        .previewModifier
 }

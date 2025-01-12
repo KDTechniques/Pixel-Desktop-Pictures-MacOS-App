@@ -10,7 +10,7 @@ import Foundation
 @MainActor
 @Observable final class TabsViewModel {
     // MARK: - PROPERTIES
-    private(set) var tabSelection: TabItemsModel = .main
+    private(set) var tabSelection: TabItemsModel = .collections
     private(set) var selectedTabContentHeight: CGFloat = .infinity
     
     // MARK: FUNCTIONS
@@ -21,7 +21,8 @@ import Foundation
     }
     
     // MARK: - Set Tab Content Height
-    func setTabContentHeight(_ height: CGFloat) {
+    func setTabContentHeight(height: CGFloat, from tab: TabItemsModel) {
+        guard tab == tabSelection else { return }
         selectedTabContentHeight = height
     }
 }

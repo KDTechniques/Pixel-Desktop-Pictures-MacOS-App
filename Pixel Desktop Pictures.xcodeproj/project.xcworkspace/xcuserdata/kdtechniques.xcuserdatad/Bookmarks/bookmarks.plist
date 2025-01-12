@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>43</string>
+					<string>47</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>43</string>
+					<string>46</string>
 					<key>Timestamp</key>
-					<string>757357534.713598</string>
+					<string>758379503.956778</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -27,23 +27,25 @@
 					<key>payload</key>
 					<dict>
 						<key>relative-path</key>
-						<string>Pixel Desktop Pictures/Global/Services/Alerts Manager/AlertsManager.swift</string>
+						<string>Pixel Desktop Pictures/Pixel_Desktop_PicturesApp.swift</string>
 					</dict>
 				</dict>
 			</dict>
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string></string>
+				<string>            // Fallback code goes here..
+</string>
 				<key>leading</key>
-				<string>}
-
+				<string>        } catch {
+            print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
 </string>
 				<key>trailing</key>
-				<string></string>
+				<string>#if DEBUG
+            fatalError()
+#endif
+</string>
 			</dict>
-			<key>title</key>
-			<string>Take care of this alert manager later....</string>
 			<key>type</key>
 			<string>bookmark</string>
 		</dict>

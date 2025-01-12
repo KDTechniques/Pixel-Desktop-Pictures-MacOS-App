@@ -32,7 +32,7 @@ struct SettingsFooterView: View {
         .previewModifier
 }
 
-// MARK: - EXTENSIONS
+// MARK: EXTENSIONS
 extension SettingsFooterView {
     // MARK: - Restore to Defaults Button
     private var restoreToDefaultButton: some View {

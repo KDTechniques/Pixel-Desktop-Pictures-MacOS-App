@@ -25,7 +25,7 @@ struct RecentsTabView: View {
             .padding([.horizontal, .bottom])
         }
         .frame(height: TabItemsModel.recents.contentHeight)
-        .setTabContentHeightToTabsViewModelViewModifier
+        .setTabContentHeightToTabsViewModelViewModifier(from: .recents)
         .environment(recentsTabVM)
     }
 }

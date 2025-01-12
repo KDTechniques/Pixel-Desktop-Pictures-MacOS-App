@@ -14,7 +14,7 @@ struct AddNewCollectionPopupDismissButtonView: View {
     // MARK: - BODY
     var body: some View {
         Button {
-            collectionsVM.presentPopup(false)
+            collectionsVM.presentPopup(false, for: .collectionCreationPopOver)
         } label: {
             Image(systemName: "xmark.circle.fill")
                 .foregroundStyle(.secondary)
@@ -30,5 +30,11 @@ struct AddNewCollectionPopupDismissButtonView: View {
 #Preview("Add New Collection Textfield Reset Button View") {
     AddNewCollectionPopupDismissButtonView()
         .padding()
-        .environment(CollectionsViewModel())
+        .environment(
+            CollectionsViewModel(
+                apiAccessKeyManager: .init(),
+                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init()
+            )
+        )
 }
