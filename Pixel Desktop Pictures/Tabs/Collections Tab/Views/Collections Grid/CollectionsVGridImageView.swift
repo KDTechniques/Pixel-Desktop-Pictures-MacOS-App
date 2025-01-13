@@ -21,7 +21,7 @@ struct CollectionsVGridImageView: View {
     let item: CollectionModel
     
     // MARK: - ASSIGNED PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @State private var showEditButton: Bool = false
     @State private var imageURLString: String?
     let collectionModelManager: CollectionModelManager = .shared
@@ -60,10 +60,12 @@ struct CollectionsVGridImageView: View {
         .frame(width: 120)
         .padding()
         .environment(
-            CollectionsViewModel(
+            CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init())
+                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init()
+            )
         )
         .previewModifier
 }
@@ -91,8 +93,8 @@ extension CollectionsVGridImageView {
     private var editButton: some View {
         Button {
             Task {
-                collectionsVM.updatingItem = item
-                collectionsVM.presentPopup(true, for: .collectionUpdatePopOver)
+                collectionsTabVM.updatingItem = item
+                collectionsTabVM.presentPopup(true, for: .collectionUpdatePopOver)
             }
         } label: {
             Image(systemName: "applepencil.gen1")
@@ -121,7 +123,7 @@ extension CollectionsVGridImageView {
     
     // MARK: - Handle Tap
     private func handleTap() {
-        collectionsVM.updateCollectionSelection(item: item)
+        collectionsTabVM.updateCollectionSelection(item: item)
     }
     
     // MARK: - Handle Hover

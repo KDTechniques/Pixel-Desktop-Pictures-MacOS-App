@@ -57,7 +57,7 @@ extension CollectionModel {
                 imageURLsData: try encoder.encode(UnsplashImageURLsModel(
                     full: "",
                     regular: "",
-                    small: "",
+                    small: "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2ODg0NDh8MHwxfHNlYXJjaHwxNnx8Rm9vZCUyMEFuZCUyMERyaW5rfGVufDB8MHx8fDE3MzYzNTA0MDR8MA&ixlib=rb-4.0.3&q=80&w=400",
                     thumb: ""
                 )),
                 isSelected: false,

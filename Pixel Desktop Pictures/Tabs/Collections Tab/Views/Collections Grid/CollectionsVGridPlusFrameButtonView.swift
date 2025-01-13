@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CollectionsVGridPlusFrameButtonView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let collectionName: String
     
     // MARK: - INITIALIZER
@@ -24,7 +24,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
     var body: some View {
         if canShowPlusButton() {
             Button {
-                collectionsVM.presentPopup(true, for: .collectionCreationPopOver)
+                collectionsTabVM.presentPopup(true, for: .collectionCreationPopOver)
             } label: {
                 Rectangle()
                     .fill(Color.collectionPlusFrameBackground)
@@ -40,10 +40,12 @@ struct CollectionsVGridPlusFrameButtonView: View {
 #Preview("Collections VGrid Plus Frame Button View") {
     CollectionsVGridPlusFrameButtonView(collectionName: try! CollectionModel.getDefaultCollectionsArray().first!.collectionName)
         .environment(
-            CollectionsViewModel(
+            CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init())
+                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                errorPopupVM: .init()
+            )
         )
 }
 
@@ -60,8 +62,8 @@ extension CollectionsVGridPlusFrameButtonView {
     
     // MARK: - Can Show Plus Button
     private func canShowPlusButton() -> Bool {
-        let firstItemCollectionNameMatch: Bool = collectionName == collectionsVM.collectionItemsArray.first?.collectionName
-        let isEmptyItemsArray: Bool = collectionsVM.collectionItemsArray.isEmpty
+        let firstItemCollectionNameMatch: Bool = collectionName == collectionsTabVM.collectionItemsArray.first?.collectionName
+        let isEmptyItemsArray: Bool = collectionsTabVM.collectionItemsArray.isEmpty
         
         return firstItemCollectionNameMatch || isEmptyItemsArray
     }

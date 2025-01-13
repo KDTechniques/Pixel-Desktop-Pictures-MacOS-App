@@ -15,6 +15,7 @@ final class UnsplashImageAPIService {
     let apiAccessKey: String
     private let timeout: TimeInterval = 10
     private let randomImageURLString = "https://api.unsplash.com/photos/random?orientation=landscape"
+    static let imagesPerPage: Int = 10
     
     // MARK: - INITIALIZER
     init(apiAccessKey: String) {
@@ -77,7 +78,7 @@ final class UnsplashImageAPIService {
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
-    func getQueryImageModel(queryText: String, pageNumber: Int, imagesPerPage: Int = 10) async throws -> UnsplashQueryImageModel {
+    func getQueryImageModel(queryText: String, pageNumber: Int, imagesPerPage: Int = imagesPerPage) async throws -> UnsplashQueryImageModel {
         // Construct the query URL string using the provided parameters.
         let queryURLString: String = constructQueryURLString(queryText: queryText, pageNumber: pageNumber, imagesPerPage: imagesPerPage)
         

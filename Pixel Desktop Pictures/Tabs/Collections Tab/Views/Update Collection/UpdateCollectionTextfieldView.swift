@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UpdateCollectionTextfieldView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let collectionName: String
     
     // MARK: - INITIAIZER
@@ -20,9 +20,9 @@ struct UpdateCollectionTextfieldView: View {
     // MARK: - BODY
     var body: some View {
         TextfieldView(
-            textfieldText: collectionsVM.binding(\.collectionRenameTextfieldText),
+            textfieldText: collectionsTabVM.binding(\.collectionRenameTextfieldText),
             localizedKey: "Update Collection Textfield",
-            prompt: collectionName) { collectionsVM.updateCollectionName() }
+            prompt: collectionName) { collectionsTabVM.updateCollectionName() }
     }
 }
 

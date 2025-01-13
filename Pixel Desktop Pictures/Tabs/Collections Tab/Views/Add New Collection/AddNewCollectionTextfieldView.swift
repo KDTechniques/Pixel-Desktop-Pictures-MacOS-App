@@ -9,15 +9,15 @@ import SwiftUI
 
 struct AddNewCollectionTextfieldView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @FocusState private var isFocused: Bool
     
     // MARK: - BODY
     var body: some View {
         TextfieldView(
-            textfieldText: collectionsVM.binding(\.collectionNameTextfieldText),
+            textfieldText: collectionsTabVM.binding(\.collectionNameTextfieldText),
             localizedKey: "Add New Collection Textfield",
-            prompt: "Ex: Super Car") { collectionsVM.createCollection() }
+            prompt: "Ex: Super Car") { collectionsTabVM.createCollection() }
             .focused($isFocused)
             .onAppear { handleOnAppear() }
     }
@@ -28,9 +28,10 @@ struct AddNewCollectionTextfieldView: View {
     AddNewCollectionTextfieldView()
         .padding()
         .environment(
-            CollectionsViewModel(
+            CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
                 errorPopupVM: .init())
         )
 }

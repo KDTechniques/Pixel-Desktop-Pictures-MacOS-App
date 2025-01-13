@@ -10,21 +10,21 @@ import SDWebImageSwiftUI
 
 struct UpdateCollectionView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let vGridValues = VGridValuesModel.self
     
     // MARK: - BODY
     var body: some View {
         Group {
-            if let item: CollectionModel = collectionsVM.updatingItem {
+            if let item: CollectionModel = collectionsTabVM.updatingItem {
                 VStack(alignment: .leading) {
                     UpdateCollectionTextfieldHeaderView()
                     UpdateCollectionTextfieldView(collectionName: item.collectionName)
                     
-                    ButtonView(title: "Rename", showProgress: collectionsVM.showRenameButtonProgress, type: .popup) {
-                        collectionsVM.updateCollectionName()
+                    ButtonView(title: "Rename", showProgress: collectionsTabVM.showRenameButtonProgress, type: .popup) {
+                        collectionsTabVM.updateCollectionName()
                     }
-                    .disabled(collectionsVM.collectionRenameTextfieldText.isEmpty)
+                    .disabled(collectionsTabVM.collectionRenameTextfieldText.isEmpty)
                     
                     VStack(alignment: .leading) {
                         HStack {
@@ -71,9 +71,9 @@ extension UpdateCollectionView {
             title: "Change Thumbnail",
             systemImageName: "arrow.trianglehead.clockwise.rotate.90",
             foregroundColor: Color.textfieldBackground,
-            showProgress: collectionsVM.showChangeThumbnailButtonProgress) {
+            showProgress: collectionsTabVM.showChangeThumbnailButtonProgress) {
                 Task {
-                    await collectionsVM.updateCollectionImageURLString(item: item)
+                    await collectionsTabVM.updateCollectionImageURLString(item: item)
                 }
             }
     }
@@ -85,7 +85,7 @@ extension UpdateCollectionView {
             systemImageName: "trash",
             foregroundColor: Color.red) {
                 do {
-                    try collectionsVM.deleteCollection(item: item)
+                    try collectionsTabVM.deleteCollection(item: item)
                 } catch {
                     print("Error: Failed to delete collection: \(item.collectionName).")
                     // show an alert here for deletion error...

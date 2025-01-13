@@ -33,9 +33,10 @@ extension View {
             .environment(TabsViewModel())
             .environment(MainTabViewModel())
             .environment(
-                CollectionsViewModel(
+                CollectionsTabViewModel(
                     apiAccessKeyManager: .init(),
-                    swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                    collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                    imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
                     errorPopupVM: .init()
                 )
             )

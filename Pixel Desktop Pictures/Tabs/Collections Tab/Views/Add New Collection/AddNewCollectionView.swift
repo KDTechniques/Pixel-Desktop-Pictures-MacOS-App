@@ -9,17 +9,17 @@ import SwiftUI
 
 struct AddNewCollectionView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
     // MARK: - BODY
     var body: some View {
         VStack(alignment: .leading) {
             AddNewCollectionTextfieldHeaderView()
             AddNewCollectionTextfieldView()
-            ButtonView(title: "Create", showProgress: collectionsVM.showCreateButtonProgress, type: .popup) {
-                collectionsVM.createCollection()
+            ButtonView(title: "Create", showProgress: collectionsTabVM.showCreateButtonProgress, type: .popup) {
+                collectionsTabVM.createCollection()
             }
-            .disabled(collectionsVM.collectionNameTextfieldText.isEmpty)
+            .disabled(collectionsTabVM.collectionNameTextfieldText.isEmpty)
         }
         .padding()
         .background(Color.bottomPopupBackground)
@@ -34,9 +34,10 @@ struct AddNewCollectionView: View {
     AddNewCollectionView()
         .frame(width: TabItemsModel.allWindowWidth)
         .environment(
-            CollectionsViewModel(
+            CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
+                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
                 errorPopupVM: .init())
         )
         .previewModifier

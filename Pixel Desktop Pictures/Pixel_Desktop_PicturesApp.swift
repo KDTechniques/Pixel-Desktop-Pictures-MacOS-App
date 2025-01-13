@@ -23,7 +23,7 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel = .init()
     @State private var recentsTabVM: RecentsTabViewModel = .init()
-    @State private var collectionsTabVM: CollectionsViewModel
+    @State private var collectionsTabVM: CollectionsTabViewModel
     
     // MARK: - INITIALIZER
     init() {
@@ -39,7 +39,8 @@ struct Pixel_Desktop_PicturesApp: App {
             
             collectionsTabVM = .init(
                 apiAccessKeyManager: tempAPIAccessKeyManager,
-                swiftDataManager: .init(swiftDataManager: tempSwiftDataManager),
+                collectionModelSwiftDataManager: .init(swiftDataManager: tempSwiftDataManager),
+                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: tempSwiftDataManager),
                 errorPopupVM: tempErrorPopupVM
             )
         } catch {

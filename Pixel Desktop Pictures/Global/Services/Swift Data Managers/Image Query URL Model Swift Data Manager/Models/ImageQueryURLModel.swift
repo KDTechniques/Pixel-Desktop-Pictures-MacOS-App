@@ -13,14 +13,14 @@ final class ImageQueryURLModel {
     // MARK: - PROPERTIES
     @Attribute(.unique) private(set) var queryText: String // Ex: Nature
     var pageNumber: Int = 1 // Ex: 3
-    var queryResultsDataArray: Data
+    var queryResultsDataArray: Data // Encoded `UnsplashQueryImageModel`
     var currentImageDataIndex: Int = 0
     
     @Transient var queryResultsArray: UnsplashQueryImageModel?
     
     // MARK: - INITIALIZER
-    init(queryText: String, queryResultsDataArray: Data) throws {
+    init(queryText: String, queryResultsDataArray: Data) {
         self.queryResultsDataArray = queryResultsDataArray
-        self.queryText = queryText
+        self.queryText = queryText.capitalized
     }
 }

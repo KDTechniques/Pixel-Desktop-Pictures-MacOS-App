@@ -10,6 +10,7 @@ import SwiftUI
 struct MainTabView: View {
     // MARK: - PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
     // MARK: - BODY
     var body: some View {
@@ -58,13 +59,38 @@ extension MainTabView {
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
             .task {
-                thumbImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).thumb
-                regularImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).regular
+                
             }
             
             VStack {
                 // Set Desktop Picture Button
-                ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
+                ButtonView(title: "Set Desktop Picture", type: .regular) {
+                    //                    mainTabVM.setDesktopPicture()
+                    
+                    guard let imageQueryURLModel: ImageQueryURLModel = collectionsTabVM.imageQueryURLModelsArray.first else { return }
+                    
+                    let apiAccessKey: String = "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ"
+                    let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+                    
+                    Task {
+                        do {
+                            let queryResults: UnsplashQueryImageSubModel = try await ImageQueryURLModelManager.shared.getImageData(
+                                item: imageQueryURLModel,
+                                imageAPIReference: imageAPIService,
+                                swiftDataManager: .init(appEnvironment: .production)
+                            )
+                            print(queryResults.user.firstNLastName)
+                            regularImageURLString = queryResults.imageQualityURLStrings.regular
+                            thumbImageURLString = queryResults.imageQualityURLStrings.thumb
+                            
+                            print(regularImageURLString.description)
+                            print(thumbImageURLString)
+                        } catch {
+                            print("Error: getting UnsplashQueryImageSubModel ❌❌❌❌")
+                        }
+                    }
+                    
+                }
                 
                 // Author and Download Button
                 footer

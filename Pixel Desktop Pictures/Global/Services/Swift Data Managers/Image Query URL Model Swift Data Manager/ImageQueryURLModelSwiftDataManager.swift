@@ -23,9 +23,12 @@ final class ImageQueryURLModelSwiftDataManager {
     // MARK: - Create Operations
     
     // MARK:  Add Image Query URL Model
-    func addImageQueryURLModel(_ newObject: ImageQueryURLModel) throws {
+    func addImageQueryURLModel(_ newObjects: [ImageQueryURLModel]) throws {
         do {
-            swiftDataManager.container.mainContext.insert(newObject)
+            for object in newObjects {
+                swiftDataManager.container.mainContext.insert(object)
+            }
+            
             try swiftDataManager.saveContext()
         } catch {
             print(ImageQueryURLModelSwiftDataManagerErrorModel.imageQueryURLModelCreationFailed(error).localizedDescription)

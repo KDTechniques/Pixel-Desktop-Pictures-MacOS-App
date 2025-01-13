@@ -1,5 +1,5 @@
 //
-//  CollectionsViewModel.swift
+//  CollectionsTabViewModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-23.
@@ -8,9 +8,10 @@
 import SwiftUICore
 
 @MainActor
-@Observable final class CollectionsViewModel {
+@Observable final class CollectionsTabViewModel {
     // MARK: - INJECTED PROPERTIES
-    let swiftDataManager: CollectionModelSwiftDataManager
+    let collectionModelSwiftDataManager: CollectionModelSwiftDataManager
+    let imageQueryURLModelSwiftDataManager: ImageQueryURLModelSwiftDataManager
     let apiAccessKeyManager: APIAccessKeyManager
     let errorPopupVM: ErrorPopupViewModel
     
@@ -18,7 +19,7 @@ import SwiftUICore
     let defaults: UserDefaultsManager = .shared
     var collectionNameTextfieldText: String = ""
     var collectionRenameTextfieldText: String = ""
-    var collectionItemsArray: [CollectionModel] = []
+    var collectionItemsArray: [CollectionModel] = [] { didSet { getNSetImageQueryModelsArray() } }
     var showCreateButtonProgress: Bool = false
     var showRenameButtonProgress: Bool = false
     var showChangeThumbnailButtonProgress: Bool = false
@@ -26,13 +27,24 @@ import SwiftUICore
     var updatingItem: CollectionModel?
     private(set) var localAPIAccessKey: String?
     let errorPopupModel = CollectionsTabErrorPopupModel.self
+    let encoder: JSONEncoder = .init()
+    let decoder: JSONDecoder = .init()
+    
+    /// get a random index object and pass it to model manager to get an image
+    var imageQueryURLModelsArray: [ImageQueryURLModel] = []
     
     // MARK: - INITIALIZER
-    /// Initializes the CollectionsViewModel with a SwiftDataManager instance.
-    /// - Parameter swiftDataManager: The instance of SwiftDataManager used for data management.
-    init(apiAccessKeyManager: APIAccessKeyManager, swiftDataManager: CollectionModelSwiftDataManager, errorPopupVM: ErrorPopupViewModel) {
+    /// Initializes the CollectionsTabViewModel with a SwiftDataManager instance.
+    /// - Parameter collectionModelSwiftDataManager: The instance of SwiftDataManager used for data management.
+    init(
+        apiAccessKeyManager: APIAccessKeyManager,
+        collectionModelSwiftDataManager: CollectionModelSwiftDataManager,
+        imageQueryURLModelSwiftDataManager: ImageQueryURLModelSwiftDataManager,
+        errorPopupVM: ErrorPopupViewModel
+    ) {
         self.apiAccessKeyManager = apiAccessKeyManager
-        self.swiftDataManager = swiftDataManager
+        self.collectionModelSwiftDataManager = collectionModelSwiftDataManager
+        self.imageQueryURLModelSwiftDataManager = imageQueryURLModelSwiftDataManager
         self.errorPopupVM = errorPopupVM
     }
     
@@ -47,13 +59,22 @@ import SwiftUICore
         
         do {
             // Try to fetch collection items from SwiftData, if available.
-            let fetchedCollectionItemsArray: [CollectionModel] = try swiftDataManager.fetchCollectionItemModelsArray()
+            let fetchedCollectionItemsArray: [CollectionModel] = try collectionModelSwiftDataManager.fetchCollectionItemModelsArray()
             
             // Handle the case where no data is found in SwiftData.
             guard !fetchedCollectionItemsArray.isEmpty else {
                 // Use the default values as the initial data or fallback option.
-                // Prepare the `collectionItemsArray` and save it to SwiftData.
                 let defaultCollectionItemsArray: [CollectionModel] = try CollectionModel.getDefaultCollectionsArray()
+                
+                // Filter Non `RANDOM` collection models and get only collection names for processing
+                let collectionNamesArray: [String] = defaultCollectionItemsArray
+                    .filter { $0.collectionName != CollectionModel.randomKeywordString }
+                    .map({ $0.collectionName })
+                
+                // Fetch and Add Initial `ImageQueryURLModel`s to swift data
+                try await fetchNAddImageQueryURLModel(with: collectionNamesArray)
+                
+                // Prepare the `collectionItemsArray` and save it to SwiftData.
                 collectionItemsArray = defaultCollectionItemsArray
                 try addInitialCollectionsArrayToSwiftData(defaultCollectionItemsArray)
                 return
@@ -79,7 +100,7 @@ import SwiftUICore
     ///   and saves the collection to persistent storage.
     func createCollection() {
         // Assign the collection name to a temporary property in case it changes before this function finishes.
-        let collectionName: String = collectionNameTextfieldText
+        let collectionName: String = collectionNameTextfieldText.capitalized
         
         // Early exit to avoid errors when creating a collection with an empty value.
         guard !collectionName.isEmpty else { return }
@@ -94,24 +115,36 @@ import SwiftUICore
                 let apiAccessKey: String = try await getAPIAccessKey()
                 let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
                 
-                // Collection creation requires one image URL model to work with.
+                // Check whether the image query url model exist or not to avoid updating existing data with initial values.
+                let isImageQueryURLModelExist: Bool = try !imageQueryURLModelSwiftDataManager.fetchImageQueryURLModelsArray(for: [collectionName]).isEmpty
+                
+                // Collection creation requires only one image URL model to work with.
                 let model: UnsplashQueryImageModel = try await imageAPIService.getQueryImageModel(
                     queryText: collectionName,
                     pageNumber: 1,
-                    imagesPerPage: 1
+                    imagesPerPage: isImageQueryURLModelExist ? 1 : UnsplashImageAPIService.imagesPerPage
                 )
                 
-                // Get the first result, as there's only one result (images per page is set to 1 above).
+                // Get the first result, as there are more results.
                 guard let imageURLs: UnsplashImageURLsModel = model.results.first?.imageQualityURLStrings else {
                     throw URLError(.badServerResponse)
                 }
                 
-                // Create the collection model object.
-                let imageURLsData: Data = try JSONEncoder().encode(imageURLs)
+                // Create the `CollectionModel` object.
+                let imageURLsData: Data = try encoder.encode(imageURLs)
                 let object: CollectionModel = .init(collectionName: collectionName, imageURLsData: imageURLsData)
                 
+                if !isImageQueryURLModelExist {
+                    // Create the `ImageQueryURLModel` object relevant to the collection name.
+                    let queryResultsDataArray: Data = try encoder.encode(model.results)
+                    let imageQueryURLObject: ImageQueryURLModel = .init(queryText: collectionName, queryResultsDataArray: queryResultsDataArray)
+                    
+                    // Save the `ImageQueryURLModel` object to swift data
+                    try imageQueryURLModelSwiftDataManager.addImageQueryURLModel([imageQueryURLObject])
+                }
+                
                 // First, add the new object to SwiftData for better UX.
-                try swiftDataManager.addCollectionItemModel(object)
+                try collectionModelSwiftDataManager.addCollectionItemModel(object)
                 
                 // Then, add the object to the collections array for the user to interact with.
                 collectionItemsArray.append(object)
@@ -134,7 +167,7 @@ import SwiftUICore
     func updateCollectionName() {
         Task {
             // Check updating item before proceeding.
-            let newCollectionName: String = collectionRenameTextfieldText
+            let newCollectionName: String = collectionRenameTextfieldText.capitalized
             guard !newCollectionName.isEmpty,
                   let item: CollectionModel = updatingItem else {
                 await errorPopupVM.addError(errorPopupModel.somethingWentWrong)
@@ -151,8 +184,18 @@ import SwiftUICore
                 let apiAccessKey: String = try await getAPIAccessKey()
                 let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
                 
+                if try imageQueryURLModelSwiftDataManager.fetchImageQueryURLModelsArray(for: [newCollectionName]).isEmpty {
+                    // Fetch query image data from Unsplash and encode it
+                    let queryResults: UnsplashQueryImageModel = try await imageAPIService.getQueryImageModel(queryText: newCollectionName, pageNumber: 1)
+                    let queryResultsDataArray: Data = try encoder.encode(queryResults.results)
+                    
+                    // Create new image query url model object and save to swift data.
+                    let imageQueryURLObject: ImageQueryURLModel = .init(queryText: newCollectionName, queryResultsDataArray: queryResultsDataArray)
+                    try imageQueryURLModelSwiftDataManager.addImageQueryURLModel([imageQueryURLObject])
+                }
+                
                 // Update collection name in swift data
-                try await swiftDataManager.updateCollectionName(in: item, newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIService)
+                try await collectionModelSwiftDataManager.updateCollectionName(in: item, newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIService)
                 
                 // Handle success update
                 showRenameButtonProgress = false
@@ -178,7 +221,7 @@ import SwiftUICore
             let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
             
             // Save new image urls to swift data.
-            try await swiftDataManager.updateCollectionImageURLString(in: item, imageAPIServiceReference: imageAPIService)
+            try await collectionModelSwiftDataManager.updateCollectionImageURLString(in: item, imageAPIServiceReference: imageAPIService)
             
             // Handle success
             showChangeThumbnailButtonProgress = false
@@ -201,24 +244,31 @@ import SwiftUICore
             guard item.collectionName != randomCollectionName else {
                 // Select the random collection and deselect others.
                 collectionItemsArray.forEach { $0.isSelected = $0.collectionName == randomCollectionName }
-                try swiftDataManager.swiftDataManager.saveContext()
+                
+                // Remove previously selected collections related image query url models from it's array
+                resetImageQueryURLModelsArray()
+                
+                try collectionModelSwiftDataManager.swiftDataManager.saveContext()
                 return
             }
             
             // Toggle the tapped item's selection state.
             item.isSelected = !item.isSelected
-            try swiftDataManager.swiftDataManager.saveContext()
+            try collectionModelSwiftDataManager.swiftDataManager.saveContext()
+            
+            // Add collection item to image query url model array if the collection is selected otherwise remove it
+            item.isSelected ? getNSetImageQueryModelsArray() : removeImageQueryURLModelFromArray(collectionName: item.collectionName)
             
             // Deselect the random collection if tapped item is not the random collection.
             guard let randomCollectionItem: CollectionModel = collectionItemsArray.first(where: { $0.collectionName == randomCollectionName }) else { return }
             randomCollectionItem.isSelected = false
-            try swiftDataManager.swiftDataManager.saveContext()
+            try collectionModelSwiftDataManager.swiftDataManager.saveContext()
             
             // Ensure at least one item is selected
             guard let _ = collectionItemsArray.first(where: { $0.isSelected }) else {
                 // If no item is selected, reselect the random collection.
                 randomCollectionItem.isSelected = true
-                try swiftDataManager.swiftDataManager.saveContext()
+                try collectionModelSwiftDataManager.swiftDataManager.saveContext()
                 return
             }
         } catch {
@@ -234,7 +284,7 @@ import SwiftUICore
     func deleteCollection(item: CollectionModel) {
         do {
             // Remove collection from swift data
-            try swiftDataManager.deleteCollectionItemModel(at: item)
+            try collectionModelSwiftDataManager.deleteCollectionItemModel(at: item)
             
             // Handle success deletion
             presentPopup(false, for: .collectionUpdatePopOver)
@@ -328,7 +378,7 @@ import SwiftUICore
     /// - Throws: An error if any item fails to be added to persistent storage.
     private func addInitialCollectionsArrayToSwiftData(_ array: [CollectionModel]) throws {
         for item in array {
-            try swiftDataManager.addCollectionItemModel(item)
+            try collectionModelSwiftDataManager.addCollectionItemModel(item)
         }
     }
     
@@ -367,5 +417,84 @@ import SwiftUICore
     /// Resets the `updatingItem` property to `nil`.
     private func resetUpdatingItem() {
         updatingItem = nil
+    }
+    
+    // MARK: - Fetch and Add Image Query URL Model
+    private func fetchNAddImageQueryURLModel(with collectionNamesArray: [String]) async throws {
+        // Create image API service instance to fetch data for each `ImageQueryURLModel` on collection name
+        let apiAccessKey: String = try await getAPIAccessKey()
+        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        
+        // Using withTaskGroup for concurrency
+        let queryResultsArray: [(String, UnsplashQueryImageModel)] = try await withThrowingTaskGroup(of: (String, UnsplashQueryImageModel).self) { taskGroup in
+            for collectionName in collectionNamesArray {
+                taskGroup.addTask {
+                    // Fetch data for each collection name
+                    do {
+                        print("Fetching data for \(collectionName)...")
+                        let queryResults: UnsplashQueryImageModel = try await imageAPIService.getQueryImageModel(queryText: collectionName, pageNumber: 1)
+                        print("Successfully fetched data for \(collectionName).")
+                        return (collectionName, queryResults)
+                    } catch {
+                        print("Error: Failed fetch data for \(collectionName). \(error)")
+                        throw error
+                    }
+                }
+            }
+            
+            // Collect results
+            var tempQueryResultsArray: [(String, UnsplashQueryImageModel)] = []
+            for try await result in taskGroup {
+                tempQueryResultsArray.append(result)
+            }
+            
+            return tempQueryResultsArray
+        }
+        
+        print("All tasks completed. Query results: \(queryResultsArray)")
+        
+        // Create `ImageQueryURLModel` objects once all tasks are complete
+        var imageQueryURLsArray: [ImageQueryURLModel] = []
+        let encoder: JSONEncoder = .init()
+        
+        for queryResult in queryResultsArray {
+            do {
+                let queryResultsDataArray: Data = try encoder.encode(queryResult.1)
+                let imageQueryURLObject: ImageQueryURLModel = .init(queryText: queryResult.0, queryResultsDataArray: queryResultsDataArray)
+                imageQueryURLsArray.append(imageQueryURLObject)
+            } catch {
+                print("Error: Failed to encode data for \(queryResult.0). \(error)")
+                throw error
+            }
+        }
+        
+        // Save created `ImageQueryURLModel` objects to swift data
+        print("All tasks completed. Saving \(imageQueryURLsArray.count) `ImageQueryURLModel`s to SwiftData...")
+        try imageQueryURLModelSwiftDataManager.addImageQueryURLModel(imageQueryURLsArray)
+    }
+    
+    // MARK: - Get and Set Image Query Models Array
+    private func getNSetImageQueryModelsArray() {
+        /// Filter the selected ones and get their names.
+        /// Then pass them to the SwiftDataManager class to fetch an array of [ImageQueryURLModel].
+        /// Finally, assign the result to imageQueryURLModelsArray.
+        let selectedCollectionNamesArray: [String] = collectionItemsArray.filter({ $0.isSelected }).map({ $0.collectionName })
+        
+        do {
+            let imageQueryModelsArray: [ImageQueryURLModel] = try imageQueryURLModelSwiftDataManager.fetchImageQueryURLModelsArray(for: selectedCollectionNamesArray)
+            self.imageQueryURLModelsArray = imageQueryModelsArray
+        } catch {
+            print("Error: Failed to set `ImageQueryURLModels` to an array. \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - Reset Image Query URL Models Array
+    private func resetImageQueryURLModelsArray() {
+        imageQueryURLModelsArray = []
+    }
+    
+    // MARK: - Remove Image Query URL Model from Array
+    private func removeImageQueryURLModelFromArray(collectionName: String) {
+        imageQueryURLModelsArray.removeAll(where: { $0.queryText == collectionName })
     }
 }

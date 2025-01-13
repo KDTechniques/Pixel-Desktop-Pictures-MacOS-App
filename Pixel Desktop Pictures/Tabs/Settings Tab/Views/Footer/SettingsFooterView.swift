@@ -14,7 +14,11 @@ struct SettingsFooterView: View {
     // MARK: - BODY
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
-            restoreToDefaultButton
+            HStack {
+                eraseAllDataButton
+                Spacer()
+                restoreToDefaultButton
+            }
             
             HStack(alignment: .bottom) {
                 appVersionNAuthorText
@@ -72,4 +76,17 @@ extension SettingsFooterView {
         }
         .buttonStyle(.plain)
     }
+    
+#if DEBUG
+    // MARK: - Erase All Data Button
+    private var eraseAllDataButton: some View {
+        Button("Erase All Swift Data") {
+            do {
+                try SwiftDataManager(appEnvironment: .production).eraseAllData()
+            } catch {
+                print("Error: Failed to erase all data from swift data. \(error.localizedDescription)")
+            }
+        }
+    }
+#endif
 }

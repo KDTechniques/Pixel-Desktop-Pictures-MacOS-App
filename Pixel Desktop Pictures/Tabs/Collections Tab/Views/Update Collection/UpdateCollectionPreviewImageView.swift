@@ -10,7 +10,7 @@ import SDWebImageSwiftUI
 
 struct UpdateCollectionPreviewImageView: View {
     //MARK: - INJECTED PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let item: CollectionModel
     
     // MARK: - ASSIGNED PROPERTIES
@@ -60,9 +60,9 @@ struct UpdateCollectionPreviewImageView: View {
 extension UpdateCollectionPreviewImageView {
     // MARK: - Image Overlay Text
     private func imageOverlayText() -> String {
-        return collectionsVM.collectionRenameTextfieldText.isEmpty
+        return collectionsTabVM.collectionRenameTextfieldText.isEmpty
         ? item.collectionName
-        : collectionsVM.collectionRenameTextfieldText.capitalized
+        : collectionsTabVM.collectionRenameTextfieldText.capitalized
     }
     
     // MARK: FUNCTIONS

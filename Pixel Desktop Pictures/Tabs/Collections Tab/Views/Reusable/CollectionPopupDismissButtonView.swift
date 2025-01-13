@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CollectionPopupDismissButtonView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let popOverType: CollectionsViewPopOverModel
     
     // MARK: - INITIALIZER
@@ -20,7 +20,7 @@ struct CollectionPopupDismissButtonView: View {
     // MARK: - BODY
     var body: some View {
         Button {
-            collectionsVM.presentPopup(false, for: popOverType)
+            collectionsTabVM.presentPopup(false, for: popOverType)
         } label: {
             Image(systemName: "xmark.circle.fill")
                 .foregroundStyle(.secondary)
