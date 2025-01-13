@@ -45,11 +45,18 @@ struct ImageContainerView: View {
 
 // MARK: - PREVIEWS
 #Preview("Image Preview Image Container View") {
+    @Previewable @State var thumbImageURLString: String = ""
+    @Previewable @State var regularImageURLString: String = ""
+    
     ImageContainerView(
-        thumbnailURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().small,
-        imageURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
-        location: "Playa Mixota, Spain"
-    )
+        thumbnailURLString: thumbImageURLString,
+        imageURLString: regularImageURLString,
+        location: "Colombo, Sri Lanka"
+    ) // change this later with a view model property model
+    .task {
+        thumbImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).thumb
+        regularImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).regular
+    }
     .previewModifier
 }
 

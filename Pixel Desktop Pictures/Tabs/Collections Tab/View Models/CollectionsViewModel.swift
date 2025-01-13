@@ -107,7 +107,8 @@ import SwiftUICore
                 }
                 
                 // Create the collection model object.
-                let object: CollectionModel = try .init(collectionName: collectionName, imageURLs: imageURLs)
+                let imageURLsData: Data = try JSONEncoder().encode(imageURLs)
+                let object: CollectionModel = .init(collectionName: collectionName, imageURLsData: imageURLsData)
                 
                 // First, add the new object to SwiftData for better UX.
                 try swiftDataManager.addCollectionItemModel(object)
@@ -151,7 +152,7 @@ import SwiftUICore
                 let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
                 
                 // Update collection name in swift data
-                try await swiftDataManager.updateCollectionName(item, newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIService)
+                try await swiftDataManager.updateCollectionName(in: item, newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIService)
                 
                 // Handle success update
                 showRenameButtonProgress = false
@@ -177,7 +178,7 @@ import SwiftUICore
             let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
             
             // Save new image urls to swift data.
-            try await swiftDataManager.updateCollectionImageURLString(item, imageAPIServiceReference: imageAPIService)
+            try await swiftDataManager.updateCollectionImageURLString(in: item, imageAPIServiceReference: imageAPIService)
             
             // Handle success
             showChangeThumbnailButtonProgress = false
@@ -199,23 +200,25 @@ import SwiftUICore
             // Handle case where the tapped item is the random collection.
             guard item.collectionName != randomCollectionName else {
                 // Select the random collection and deselect others.
-                try collectionItemsArray.forEach {
-                    try swiftDataManager.updateCollectionSelectionState($0, isSelected: $0.collectionName == randomCollectionName)
-                }
+                collectionItemsArray.forEach { $0.isSelected = $0.collectionName == randomCollectionName }
+                try swiftDataManager.swiftDataManager.saveContext()
                 return
             }
             
             // Toggle the tapped item's selection state.
-            try swiftDataManager.updateCollectionSelectionState(item, isSelected: !item.isSelected)
+            item.isSelected = !item.isSelected
+            try swiftDataManager.swiftDataManager.saveContext()
             
             // Deselect the random collection if tapped item is not the random collection.
             guard let randomCollectionItem: CollectionModel = collectionItemsArray.first(where: { $0.collectionName == randomCollectionName }) else { return }
-            try swiftDataManager.updateCollectionSelectionState(randomCollectionItem, isSelected: false)
+            randomCollectionItem.isSelected = false
+            try swiftDataManager.swiftDataManager.saveContext()
             
             // Ensure at least one item is selected
             guard let _ = collectionItemsArray.first(where: { $0.isSelected }) else {
                 // If no item is selected, reselect the random collection.
-                try swiftDataManager.updateCollectionSelectionState(randomCollectionItem, isSelected: true)
+                randomCollectionItem.isSelected = true
+                try swiftDataManager.swiftDataManager.saveContext()
                 return
             }
         } catch {
@@ -231,7 +234,7 @@ import SwiftUICore
     func deleteCollection(item: CollectionModel) {
         do {
             // Remove collection from swift data
-            try swiftDataManager.deleteCollectionItemModel(item)
+            try swiftDataManager.deleteCollectionItemModel(at: item)
             
             // Handle success deletion
             presentPopup(false, for: .collectionUpdatePopOver)

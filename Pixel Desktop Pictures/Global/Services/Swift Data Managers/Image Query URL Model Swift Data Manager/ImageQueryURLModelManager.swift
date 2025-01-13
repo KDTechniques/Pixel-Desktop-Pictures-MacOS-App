@@ -17,13 +17,18 @@ actor ImageQueryURLModelManager {
     // MARK: INTERNAL FUNCTIONS
     
     // MARK: - Get Image Data
-    func getImageData(item: ImageQueryURLModel, imageAPIReference: UnsplashImageAPIService) async throws -> UnsplashQueryImageSubModel {
+    func getImageData(
+        item: ImageQueryURLModel,
+        imageAPIReference: UnsplashImageAPIService,
+        swiftDataManager: SwiftDataManager
+    ) async throws -> UnsplashQueryImageSubModel {
         let nextImageDataIndex: Int = item.currentImageDataIndex == 0 ? 0 : item.currentImageDataIndex + 1
         
         let nextImageData: UnsplashQueryImageSubModel = try await checkNFetchNextQueryResultsSet(
             item: item,
             index: nextImageDataIndex,
-            imageAPIReference: imageAPIReference
+            imageAPIReference: imageAPIReference,
+            swiftDataManager: swiftDataManager
         )
         
         return nextImageData
@@ -31,9 +36,27 @@ actor ImageQueryURLModelManager {
     
     // MARK: PRIVATE FUNCTIONS
     
+    // MARK: - Get Query Results Array
+    private func getQueryResultsArray(item: ImageQueryURLModel) async throws -> UnsplashQueryImageModel {
+        guard let queryResultsArray: UnsplashQueryImageModel = item.queryResultsArray else {
+            let queryResultsArray: UnsplashQueryImageModel =  try JSONDecoder().decode(
+                UnsplashQueryImageModel.self,
+                from: item.queryResultsDataArray
+            )
+            return queryResultsArray
+        }
+        
+        return queryResultsArray
+    }
+    
     // MARK: - Check and Fetch Next Query Results Set
-    private func checkNFetchNextQueryResultsSet(item: ImageQueryURLModel, index: Int, imageAPIReference: UnsplashImageAPIService) async throws -> UnsplashQueryImageSubModel {
-        let queryResultsArray: UnsplashQueryImageModel = try item.getQueryResultsArray()
+    private func checkNFetchNextQueryResultsSet(
+        item: ImageQueryURLModel,
+        index: Int,
+        imageAPIReference: UnsplashImageAPIService,
+        swiftDataManager: SwiftDataManager
+    ) async throws -> UnsplashQueryImageSubModel {
+        let queryResultsArray: UnsplashQueryImageModel = try await getQueryResultsArray(item: item)
         
         guard !queryResultsArray.results.indices.contains(index) else {
             let nextImageData: UnsplashQueryImageSubModel = queryResultsArray.results[index]
@@ -41,7 +64,10 @@ actor ImageQueryURLModelManager {
         }
         
         let newPageNumber: Int = item.pageNumber + 1
-        let newQueryResultsArray: UnsplashQueryImageModel = try await imageAPIReference.getQueryImageModel(queryText: item.queryText, pageNumber: newPageNumber)
+        let newQueryResultsArray: UnsplashQueryImageModel = try await imageAPIReference.getQueryImageModel(
+            queryText: item.queryText,
+            pageNumber: newPageNumber
+        )
         let newQueryResultsDataArray: Data = try JSONEncoder().encode(newQueryResultsArray)
         
         item.queryResultsArray = newQueryResultsArray
@@ -49,7 +75,14 @@ actor ImageQueryURLModelManager {
         item.pageNumber = newPageNumber
         item.currentImageDataIndex = 0
         
-        let nextImageData: UnsplashQueryImageSubModel = try await checkNFetchNextQueryResultsSet(item: item, index: 0, imageAPIReference: imageAPIReference)
+        let nextImageData: UnsplashQueryImageSubModel = try await checkNFetchNextQueryResultsSet(
+            item: item,
+            index: 0,
+            imageAPIReference: imageAPIReference,
+            swiftDataManager: swiftDataManager
+        )
+        
+        try await swiftDataManager.saveContext()
         
         return nextImageData
     }

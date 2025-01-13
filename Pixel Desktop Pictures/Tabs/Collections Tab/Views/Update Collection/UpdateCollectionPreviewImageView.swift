@@ -15,6 +15,8 @@ struct UpdateCollectionPreviewImageView: View {
     
     // MARK: - ASSIGNED PROPERTIES
     let vGridValues = VGridValuesModel.self
+    let collectionModelManager: CollectionModelManager = .shared
+    @State private var imageURLString: String?
     @State private var showImage: Bool = false
     
     // MARK: - INITIALIZER
@@ -25,31 +27,25 @@ struct UpdateCollectionPreviewImageView: View {
     // MARK: - BODY
     var body: some View {
         Group {
-            if let imageURLString: String = try? item.getImageURLs().small {
-                if showImage {
-                    WebImage(
-                        url: .init(string: imageURLString),
-                        options: [.retryFailed, .highPriority, .continueInBackground]
-                    )
-                    .placeholder { ProgressView().scaleEffect(0.3) }
-                    .resizable()
-                    .scaledToFill()
-                    .transition(.fade)
-                } else {
-                    ProgressView().scaleEffect(0.3)
-                }
+            if showImage {
+                WebImage(
+                    url: .init(string: imageURLString ?? ""),
+                    options: [.retryFailed, .highPriority, .continueInBackground]
+                )
+                .placeholder { ProgressView().scaleEffect(0.3) }
+                .resizable()
+                .scaledToFill()
+                .transition(.fade)
             } else {
-                Color.clear
+                ProgressView().scaleEffect(0.3)
             }
         }
         .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
         .overlay(Color.vGridItemOverlay)
         .overlay(CollectionNameOverlayView(collectionName: imageOverlayText()))
-        .onFirstTaskViewModifier {
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            withAnimation { showImage = true }
-        }
+        .onChange(of: item.imageURLsData) { _, _ in handleImageURLsDataChange() }
+        .task { await handleTask() }
     }
 }
 
@@ -67,5 +63,21 @@ extension UpdateCollectionPreviewImageView {
         return collectionsVM.collectionRenameTextfieldText.isEmpty
         ? item.collectionName
         : collectionsVM.collectionRenameTextfieldText.capitalized
+    }
+    
+    // MARK: FUNCTIONS
+    
+    // MARK: - Handle `imageURLsData` Change
+    private func handleImageURLsDataChange() {
+        Task {
+            imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
+        }
+    }
+    
+    // MARK: - Handle Task
+    private func handleTask() async {
+        imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        withAnimation { showImage = true }
     }
 }

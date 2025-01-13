@@ -47,13 +47,20 @@ extension MainTabView {
     }
     
     private var content: some View {
-        VStack(spacing: 0) {
+        @State var thumbImageURLString: String = ""
+        @State var regularImageURLString: String = ""
+        
+        return VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
-                thumbnailURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().thumb,
-                imageURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
+                thumbnailURLString: thumbImageURLString,
+                imageURLString: regularImageURLString,
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
+            .task {
+                thumbImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).thumb
+                regularImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).regular
+            }
             
             VStack {
                 // Set Desktop Picture Button

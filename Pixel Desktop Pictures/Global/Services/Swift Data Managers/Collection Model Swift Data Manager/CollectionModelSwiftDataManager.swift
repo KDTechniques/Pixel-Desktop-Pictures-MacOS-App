@@ -10,13 +10,16 @@ import SwiftData
 
 @MainActor
 final class CollectionModelSwiftDataManager {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     let swiftDataManager: SwiftDataManager
     
     // MARK: - INITIALIZER
     init(swiftDataManager: SwiftDataManager) {
         self.swiftDataManager = swiftDataManager
     }
+    
+    // MARK: - ASSIGNED PROPERTIES
+    private let collectionModelManager: CollectionModelManager = .shared
     
     // MARK: FUNCTIONS
     
@@ -58,30 +61,13 @@ final class CollectionModelSwiftDataManager {
     // MARK: Update Collection Item Model
     /// Updates the collection name for a given CollectionModel, and saves the changes to context.
     /// - Parameters:
-    ///   - collectionItem: The CollectionModel instance whose collection name is to be updated.
+    ///   - item: The CollectionModel instance whose collection name is to be updated.
     ///   - newCollectionName: The new collection name to be set.
     ///   - imageAPIServiceReference: The UnsplashImageAPIService reference used for image-related operations.
     /// - Throws: Throws an error if updating the collection name or saving changes to context fails.
-    func updateCollectionName(_ collectionItem: CollectionModel, newCollectionName: String, imageAPIServiceReference: UnsplashImageAPIService) async throws {
+    func updateCollectionName(in item: CollectionModel, newCollectionName: String, imageAPIServiceReference: UnsplashImageAPIService) async throws {
         do {
-            try await collectionItem.renameCollectionName(newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIServiceReference)
-            try swiftDataManager.saveContext()
-        } catch {
-            print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelUpdateFailed(error).localizedDescription)
-            throw error
-        }
-    }
-    
-    // MARK: Update Collection Selection State
-    /// Updates the selection state of a given CollectionModel, and saves the changes to context.
-    /// - Parameters:
-    ///   - collectionItem: The CollectionModel instance whose selection state is to be updated.
-    ///   - isSelected: A boolean indicating whether the collection item is selected or not.
-    /// - Throws: Throws an error if updating the selection state or saving changes to context fails.
-    func updateCollectionSelectionState(_ collectionItem: CollectionModel, isSelected: Bool) throws {
-        collectionItem.updateIsSelected(isSelected)
-        
-        do {
+            try await collectionModelManager.renameCollectionName(for: item, newCollectionName: newCollectionName, imageAPIServiceReference: imageAPIServiceReference)
             try swiftDataManager.saveContext()
         } catch {
             print(CollectionModelSwiftDataManagerErrorModel.collectionItemModelUpdateFailed(error).localizedDescription)
@@ -92,12 +78,12 @@ final class CollectionModelSwiftDataManager {
     // MARK: Update Collection Image URL String
     /// Updates the image URL string of a given CollectionModel, and saves the changes to context.
     /// - Parameters:
-    ///   - collectionItem: The CollectionModel instance whose image URL is to be updated.
+    ///   - item: The CollectionModel instance whose image URL is to be updated.
     ///   - imageAPIServiceReference: The UnsplashImageAPIService reference used for image-related operations.
     /// - Throws: Throws an error if updating the image URL or saving changes to context fails.
-    func updateCollectionImageURLString(_ collectionItem: CollectionModel, imageAPIServiceReference: UnsplashImageAPIService) async throws {
+    func updateCollectionImageURLString(in item: CollectionModel, imageAPIServiceReference: UnsplashImageAPIService) async throws {
         do {
-            try await collectionItem.updateImageURLString(imageAPIServiceReference: imageAPIServiceReference)
+            try await collectionModelManager.updateImageURLString(in: item, imageAPIServiceReference: imageAPIServiceReference)
             try swiftDataManager.saveContext()
         } catch {
             print( CollectionModelSwiftDataManagerErrorModel.collectionItemModelUpdateFailed(error).localizedDescription)
@@ -109,10 +95,10 @@ final class CollectionModelSwiftDataManager {
     
     // MARK: Delete Recent Image URL Model
     /// Deletes an existing CollectionModel from the container and saves the changes to context.
-    /// - Parameter collectionItem: The CollectionModel instance to be deleted.
+    /// - Parameter item: The CollectionModel instance to be deleted.
     /// - Throws: Throws an error if deleting the model or saving changes to context fails.
-    func deleteCollectionItemModel(_ collectionItem: CollectionModel) throws {
-        swiftDataManager.container.mainContext.delete(collectionItem)
+    func deleteCollectionItemModel(at item: CollectionModel) throws {
+        swiftDataManager.container.mainContext.delete(item)
         do {
             try swiftDataManager.saveContext()
         } catch {

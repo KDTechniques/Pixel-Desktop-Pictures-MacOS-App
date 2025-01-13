@@ -23,6 +23,8 @@ struct CollectionsVGridImageView: View {
     // MARK: - ASSIGNED PROPERTIES
     @Environment(CollectionsViewModel.self) private var collectionsVM
     @State private var showEditButton: Bool = false
+    @State private var imageURLString: String?
+    let collectionModelManager: CollectionModelManager = .shared
     
     // MARK: - INITIALIZER
     init(item: CollectionModel) {
@@ -34,29 +36,21 @@ struct CollectionsVGridImageView: View {
     
     // MARK: - BODY
     var body: some View {
-        Group {
-            if let imageURLString: String = try? item.getImageURLs().small {
-                WebImage(
-                    url: .init(string: imageURLString),
-                    options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
-                )
-                .placeholder {
-                    if item.collectionName != CollectionModel.randomKeywordString {
-                        ProgressView().scaleEffect(0.3)
-                    }
-                }
-                .resizable()
-                .scaledToFill()
-            } else {
-                Color.clear
-            }
-        }
+        WebImage(
+            url: .init(string: imageURLString ?? ""),
+            options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
+        )
+        .placeholder { placeholder }
+        .resizable()
+        .scaledToFill()
         .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
         .overlay(Color.vGridItemOverlay)
         .overlay { overlay }
         .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
+        .onChange(of: item.imageURLsData) { _, _ in handleImageURLsDataChange() }
+        .task { await handleTask() }
     }
 }
 
@@ -76,6 +70,14 @@ struct CollectionsVGridImageView: View {
 
 // MARK: EXTENSIONS
 extension CollectionsVGridImageView {
+    // MARK: - Placeholder
+    @ViewBuilder
+    private var placeholder: some View {
+        if item.collectionName != CollectionModel.randomKeywordString {
+            ProgressView().scaleEffect(0.3)
+        }
+    }
+    
     // MARK: - Checkmark
     private var checkmark: some View {
         Image(systemName: "checkmark")
@@ -127,5 +129,15 @@ extension CollectionsVGridImageView {
         withAnimation(.smooth(duration: 0.3)) {
             showEditButton = isHovering
         }
+    }
+    
+    // MARK: - Handle `imageURLsData` Change
+    private func handleImageURLsDataChange() {
+        Task { await handleTask() }
+    }
+    
+    // MARK: - Handle Task
+    private func handleTask() async {
+        imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
     }
 }
