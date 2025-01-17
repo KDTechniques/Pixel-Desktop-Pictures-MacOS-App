@@ -16,15 +16,15 @@ struct UpdateCollectionView: View {
     // MARK: - BODY
     var body: some View {
         Group {
-            if let item: CollectionModel = collectionsTabVM.updatingItem {
+            if let item: Collection = collectionsTabVM.updatingItem {
                 VStack(alignment: .leading) {
                     UpdateCollectionTextfieldHeaderView()
-                    UpdateCollectionTextfieldView(collectionName: item.collectionName)
+                    UpdateCollectionTextfieldView(collectionName: item.name)
                     
                     ButtonView(title: "Rename", showProgress: collectionsTabVM.showRenameButtonProgress, type: .popup) {
                         collectionsTabVM.updateCollectionName()
                     }
-                    .disabled(collectionsTabVM.collectionRenameTextfieldText.isEmpty)
+                    .disabled(collectionsTabVM.renameTextfieldText.isEmpty)
                     
                     VStack(alignment: .leading) {
                         HStack {
@@ -61,12 +61,12 @@ struct UpdateCollectionView: View {
 // MARK: EXTENSIONS
 extension UpdateCollectionView {
     // MARK: - Preview Image
-    private func previewImage(item: CollectionModel) -> some View {
+    private func previewImage(item: Collection) -> some View {
         UpdateCollectionPreviewImageView(item: item)
     }
     
     // MARK: - Change Thumbnail Button
-    private func changeThumbnailButton(item: CollectionModel) -> some View {
+    private func changeThumbnailButton(item: Collection) -> some View {
         CollectionPopOverSecondaryButtonView(
             title: "Change Thumbnail",
             systemImageName: "arrow.trianglehead.clockwise.rotate.90",
@@ -79,16 +79,13 @@ extension UpdateCollectionView {
     }
     
     // MARK: - Delete Button
-    private func deleteButton(item: CollectionModel) -> some View {
+    private func deleteButton(item: Collection) -> some View {
         CollectionPopOverSecondaryButtonView(
             title: "Delete",
             systemImageName: "trash",
             foregroundColor: Color.red) {
-                do {
-                    try collectionsTabVM.deleteCollection(item: item)
-                } catch {
-                    print("Error: Failed to delete collection: \(item.collectionName).")
-                    // show an alert here for deletion error...
+                Task {
+                    await collectionsTabVM.deleteCollection(at: item)
                 }
             }
     }

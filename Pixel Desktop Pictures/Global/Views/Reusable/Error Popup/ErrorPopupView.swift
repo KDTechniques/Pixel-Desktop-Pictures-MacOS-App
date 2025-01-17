@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ErrorPopupView: View {
     // MARK: - PROPERTIES
-    @Environment(ErrorPopupViewModel.self) private var errorPopupVM
+    let errorPopupVM: ErrorPopupViewModel = .shared
     
     // MARK: - BODY
     var body: some View {
@@ -32,7 +32,7 @@ struct ErrorPopupView: View {
 
 // MARK: - PREVIEWS
 #Preview("Error Popup View") {
-    @Previewable @State var errorPopupVM: ErrorPopupViewModel = .init()
+    let errorPopupVM: ErrorPopupViewModel = .shared
     
     Color.debug
         .overlay(alignment: .top) { ErrorPopupView() }

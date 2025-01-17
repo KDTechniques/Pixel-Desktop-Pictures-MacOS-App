@@ -20,7 +20,7 @@ struct UpdateCollectionTextfieldView: View {
     // MARK: - BODY
     var body: some View {
         TextfieldView(
-            textfieldText: collectionsTabVM.binding(\.collectionRenameTextfieldText),
+            textfieldText: Binding(get: { collectionsTabVM.renameTextfieldText }, set: { collectionsTabVM.setRenameTextfieldText($0) }),
             localizedKey: "Update Collection Textfield",
             prompt: collectionName) { collectionsTabVM.updateCollectionName() }
     }

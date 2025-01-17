@@ -1,5 +1,5 @@
 //
-//  UnsplashRandomImageModel.swift
+//  UnsplashRandomImage.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-03.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct UnsplashRandomImageModel: Codable {
-    let imageQualityURLStrings: UnsplashImageURLsModel
-    let links: UnsplashImageDownloadModel
-    let user: UnsplashImageUserModel
-    let location: UnsplashImageLocationModel
+struct UnsplashRandomImage: Codable {
+    let imageQualityURLStrings: UnsplashImage
+    let links: UnsplashImageLink
+    let user: UnsplashImageUser
+    let location: UnsplashImageLocation
     
     enum CodingKeys: String, CodingKey {
         case imageQualityURLStrings = "urls"
@@ -21,18 +21,16 @@ struct UnsplashRandomImageModel: Codable {
     }
 }
 
-// MARK: SUB MODELS
+// MARK: - SUB MODELS
 
-// MARK: - URLs Model
-struct UnsplashImageURLsModel: Codable {
+struct UnsplashImage: Codable {
     let full: String // 2MB
     let regular: String // Ex: 241KB
     let small: String // Ex: 38KB
     var thumb: String // Ex: 11KB
 }
 
-// MARK: - User Model
-struct UnsplashImageUserModel: Codable {
+struct UnsplashImageUser: Codable {
     let firstNLastName: String
     
     enum CodingKeys: String, CodingKey {
@@ -40,13 +38,11 @@ struct UnsplashImageUserModel: Codable {
     }
 }
 
-// MARK: - Location Model
-struct UnsplashImageLocationModel: Codable {
+struct UnsplashImageLocation: Codable {
     let name: String?
 }
 
-// MARK: - Download Model
-struct UnsplashImageDownloadModel: Codable {
+struct UnsplashImageLink: Codable {
     let downloadURL: String
     
     enum CodingKeys: String, CodingKey {

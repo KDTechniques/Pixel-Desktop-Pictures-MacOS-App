@@ -81,10 +81,12 @@ extension SettingsFooterView {
     // MARK: - Erase All Data Button
     private var eraseAllDataButton: some View {
         Button("Erase All Swift Data") {
-            do {
-                try SwiftDataManager(appEnvironment: .production).eraseAllData()
-            } catch {
-                print("Error: Failed to erase all data from swift data. \(error.localizedDescription)")
+            Task {
+                do {
+                    try await LocalDatabaseManager(appEnvironment: .production).eraseAllData()
+                } catch {
+                    print("Error: Failed to erase all data from swift data. \(error.localizedDescription)")
+                }
             }
         }
     }

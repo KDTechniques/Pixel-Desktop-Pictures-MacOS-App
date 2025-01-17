@@ -12,6 +12,9 @@ struct MainTabView: View {
     @Environment(MainTabViewModel.self) private var mainTabVM
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
+    @State var thumbImageURLString: String = ""
+    @State var regularImageURLString: String = ""
+    
     // MARK: - BODY
     var body: some View {
         TabContentWithWindowErrorView(tab: .main, content)
@@ -48,10 +51,7 @@ extension MainTabView {
     }
     
     private var content: some View {
-        @State var thumbImageURLString: String = ""
-        @State var regularImageURLString: String = ""
-        
-        return VStack(spacing: 0) {
+        VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
                 thumbnailURLString: thumbImageURLString,
@@ -59,43 +59,45 @@ extension MainTabView {
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
             .task {
-                
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                handleGetImage(currentImage: true)
             }
             
             VStack {
                 // Set Desktop Picture Button
                 ButtonView(title: "Set Desktop Picture", type: .regular) {
-                    //                    mainTabVM.setDesktopPicture()
-                    
-                    guard let imageQueryURLModel: ImageQueryURLModel = collectionsTabVM.imageQueryURLModelsArray.first else { return }
-                    
-                    let apiAccessKey: String = "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ"
-                    let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
-                    
-                    Task {
-                        do {
-                            let queryResults: UnsplashQueryImageSubModel = try await ImageQueryURLModelManager.shared.getImageData(
-                                item: imageQueryURLModel,
-                                imageAPIReference: imageAPIService,
-                                swiftDataManager: .init(appEnvironment: .production)
-                            )
-                            print(queryResults.user.firstNLastName)
-                            regularImageURLString = queryResults.imageQualityURLStrings.regular
-                            thumbImageURLString = queryResults.imageQualityURLStrings.thumb
-                            
-                            print(regularImageURLString.description)
-                            print(thumbImageURLString)
-                        } catch {
-                            print("Error: getting UnsplashQueryImageSubModel ❌❌❌❌")
-                        }
-                    }
-                    
+                    mainTabVM.setDesktopPicture()
+                    handleGetImage(currentImage: false)
                 }
                 
                 // Author and Download Button
                 footer
             }
             .padding()
+        }
+    }
+}
+
+extension MainTabView {
+    func handleGetImage(currentImage: Bool) {
+        guard let queryImage: QueryImage = collectionsTabVM.queryImagesArray.first else { return }
+        
+        let apiAccessKey: String = "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ"
+        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        
+        Task {
+            do {
+                let queryImageItem: UnsplashQueryImage = try await QueryImageManager.shared(localDatabaseManager: .init(localDatabaseManager: try .init(appEnvironment: .production))).getQueryImage(
+                    item: queryImage,
+                    isCurrentImage: currentImage,
+                    imageAPIService: imageAPIService
+                )
+                
+                regularImageURLString = queryImageItem.imageQualityURLStrings.regular
+                thumbImageURLString = queryImageItem.imageQualityURLStrings.thumb
+            } catch {
+                print("Error: getting UnsplashQueryImage ❌❌❌❌")
+            }
         }
     }
 }

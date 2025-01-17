@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>48</string>
+					<string>50</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>47</string>
+					<string>49</string>
 					<key>Timestamp</key>
-					<string>758484291.604489</string>
+					<string>758793627.384425</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -90,6 +90,53 @@
     // MARK: - INITIALIZER
 </string>
 			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
+					<key>EndingLineNumber</key>
+					<string>37</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
+					<key>StartingLineNumber</key>
+					<string>36</string>
+					<key>Timestamp</key>
+					<string>758707497.992924</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Global/Services/Swift Data Managers/Collection Model Swift Data Manager/CollectionsManager.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string>        let updatedThumbURL: String = imageURLs.thumb.replacingOccurrences( // Note: If this 50 width has no impact on UX, remove this line
+</string>
+				<key>leading</key>
+				<string>    func getImageURLs(from item: Collection) async throws -&gt; UnsplashImage {
+        var imageURLs: UnsplashImage = try JSONDecoder().decode(UnsplashImage.self, from: item.imageURLsData)
+</string>
+				<key>trailing</key>
+				<string>            of: "(?&lt;=\\b)w=200(?=&amp;|$)",
+            with: "w=50",
+            options: .regularExpression
+</string>
+			</dict>
+			<key>title</key>
+			<string>Note: If this 50 width has no impact on UX, remove this line</string>
 			<key>type</key>
 			<string>bookmark</string>
 		</dict>

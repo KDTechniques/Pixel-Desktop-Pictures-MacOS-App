@@ -33,9 +33,8 @@ struct AddNewCollectionPopupDismissButtonView: View {
         .environment(
             CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init()
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
             )
         )
 }

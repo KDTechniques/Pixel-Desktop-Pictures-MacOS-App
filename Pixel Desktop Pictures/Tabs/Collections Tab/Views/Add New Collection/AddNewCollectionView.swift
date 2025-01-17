@@ -19,7 +19,7 @@ struct AddNewCollectionView: View {
             ButtonView(title: "Create", showProgress: collectionsTabVM.showCreateButtonProgress, type: .popup) {
                 collectionsTabVM.createCollection()
             }
-            .disabled(collectionsTabVM.collectionNameTextfieldText.isEmpty)
+            .disabled(collectionsTabVM.nameTextfieldText.isEmpty)
         }
         .padding()
         .background(Color.bottomPopupBackground)
@@ -36,9 +36,9 @@ struct AddNewCollectionView: View {
         .environment(
             CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init())
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
+            )
         )
         .previewModifier
 }

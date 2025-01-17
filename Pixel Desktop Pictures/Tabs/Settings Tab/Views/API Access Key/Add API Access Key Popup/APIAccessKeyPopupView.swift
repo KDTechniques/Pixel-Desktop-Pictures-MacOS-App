@@ -35,7 +35,7 @@ struct APIAccessKeyPopupView: View {
                     Task {
                         let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText
                         settingsTabVM.dismissPopUp()
-                        await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
+                        try await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
                     }
                 }
                 .disabled(settingsTabVM.apiAccessKeyTextfieldText.isEmpty ? true : false)

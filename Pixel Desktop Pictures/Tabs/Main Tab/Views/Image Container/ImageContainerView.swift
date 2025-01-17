@@ -27,19 +27,23 @@ struct ImageContainerView: View {
     
     // MARK: - BODY
     var body: some View {
-        WebImage(
-            url: .init(string: imageURLString),
-            options: [.retryFailed, .continueInBackground, .lowPriority, .scaleDownLargeImages]
-        )
-        .placeholder { thumbnail }
-        .resizable()
-        .scaledToFill()
-        .frame(maxWidth: .infinity)
-        .frame(height: imageHeight)
-        .clipped()
-        .background(Color.debug)
-        .overlay { centerButton }
-        .overlay(alignment: .bottomLeading) { locationText }
+        ZStack {
+            WebImage(
+                url: .init(string: imageURLString),
+                options: [.retryFailed, .continueInBackground, .lowPriority, .scaleDownLargeImages]
+            )
+            .placeholder { thumbnail }
+            .resizable()
+            .scaledToFill()
+            .frame(maxWidth: .infinity)
+            .frame(height: imageHeight)
+            .clipped()
+            .id(imageURLString)
+            .transition(.opacity.animation(.default))
+            
+            centerButton
+            locationText
+        }
     }
 }
 
@@ -54,8 +58,8 @@ struct ImageContainerView: View {
         location: "Colombo, Sri Lanka"
     ) // change this later with a view model property model
     .task {
-        thumbImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).thumb
-        regularImageURLString = try! await CollectionModelManager.shared.getImageURLs(from: CollectionModel.getDefaultCollectionsArray().first!).regular
+        thumbImageURLString = "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2ODg0NDh8MHwxfHNlYXJjaHw5Mnx8TmF0dXJlfGVufDB8MHx8fDE3MzYzNDk4MjJ8MA&ixlib=rb-4.0.3&q=80&w=400"
+        regularImageURLString = "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2ODg0NDh8MHwxfHNlYXJjaHw5Mnx8TmF0dXJlfGVufDB8MHx8fDE3MzYzNDk4MjJ8MA&ixlib=rb-4.0.3&q=80&w=400"
     }
     .previewModifier
 }
@@ -77,6 +81,12 @@ extension ImageContainerView {
             options: [.retryFailed, .highPriority]
         )
         .placeholder { Color.clear }
+        .resizable()
+        .scaledToFill()
+        .frame(maxWidth: .infinity)
+        .frame(height: imageHeight)
+        .overlay(.ultraThinMaterial)
+        .clipped()
     }
     
     // MARK: - Location Text
@@ -85,5 +95,6 @@ extension ImageContainerView {
             .foregroundStyle(.white)
             .font(.subheadline)
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
     }
 }

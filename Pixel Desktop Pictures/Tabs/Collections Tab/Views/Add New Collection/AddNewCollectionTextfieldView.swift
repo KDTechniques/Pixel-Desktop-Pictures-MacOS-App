@@ -15,7 +15,7 @@ struct AddNewCollectionTextfieldView: View {
     // MARK: - BODY
     var body: some View {
         TextfieldView(
-            textfieldText: collectionsTabVM.binding(\.collectionNameTextfieldText),
+            textfieldText: Binding(get: { collectionsTabVM.nameTextfieldText }, set: { collectionsTabVM.setNameTextfieldText($0) }),
             localizedKey: "Add New Collection Textfield",
             prompt: "Ex: Super Car") { collectionsTabVM.createCollection() }
             .focused($isFocused)
@@ -30,9 +30,9 @@ struct AddNewCollectionTextfieldView: View {
         .environment(
             CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init())
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
+            )
         )
 }
 

@@ -38,13 +38,12 @@ struct CollectionsVGridPlusFrameButtonView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Plus Frame Button View") {
-    CollectionsVGridPlusFrameButtonView(collectionName: try! CollectionModel.getDefaultCollectionsArray().first!.collectionName)
+    CollectionsVGridPlusFrameButtonView(collectionName: "Nature")
         .environment(
             CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init()
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
             )
         )
 }
@@ -62,8 +61,8 @@ extension CollectionsVGridPlusFrameButtonView {
     
     // MARK: - Can Show Plus Button
     private func canShowPlusButton() -> Bool {
-        let firstItemCollectionNameMatch: Bool = collectionName == collectionsTabVM.collectionItemsArray.first?.collectionName
-        let isEmptyItemsArray: Bool = collectionsTabVM.collectionItemsArray.isEmpty
+        let firstItemCollectionNameMatch: Bool = collectionName == collectionsTabVM.collectionsArray.first?.name
+        let isEmptyItemsArray: Bool = collectionsTabVM.collectionsArray.isEmpty
         
         return firstItemCollectionNameMatch || isEmptyItemsArray
     }

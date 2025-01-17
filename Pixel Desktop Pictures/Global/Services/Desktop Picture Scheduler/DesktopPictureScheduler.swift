@@ -25,9 +25,7 @@ final class DesktopPictureScheduler {
     private let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
     private var scheduler: NSBackgroundActivityScheduler?
-    private var currentTimeIntervalSince1970: TimeInterval {
-        return Date().timeIntervalSince1970
-    }
+    private var currentTimeIntervalSince1970: TimeInterval { return Date().timeIntervalSince1970 }
     
     // MARK: - INITIALIZER
     private init(appEnvironmentType: AppEnvironmentModel) {

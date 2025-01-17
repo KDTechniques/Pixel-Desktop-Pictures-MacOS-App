@@ -8,18 +8,18 @@
 import Foundation
 
 enum UnsplashImageAPIServiceErrorModel: LocalizedError {
-    case apiAccessKeyValidationFailed(_ error: Error)
-    case randomImageModelFetchFailed(_ error: Error)
-    case queryImageModelFetchFailed(_ error: Error)
+    case failedToFetchAPIAccessKey(_ error: Error)
+    case failedToFetchRandomImage(_ error: Error)
+    case failedToFetchQueryImages(_ error: Error)
     
     var errorDescription: String? {
         switch self {
-        case .apiAccessKeyValidationFailed(let error):
+        case .failedToFetchAPIAccessKey(let error):
             return "Error: Validating api access key. \(error.localizedDescription)"
-        case .randomImageModelFetchFailed(let error):
-            return "Error: Failed to fetch a random image model. \(error.localizedDescription)"
-        case .queryImageModelFetchFailed(let error):
-            return "Error: Failed to fetch a query image model. \(error.localizedDescription)"
+        case .failedToFetchRandomImage(let error):
+            return "Error: Failed to fetch a random image. \(error.localizedDescription)"
+        case .failedToFetchQueryImages(let error):
+            return "Error: Failed to fetch a query images. \(error.localizedDescription)"
         }
     }
 }

@@ -8,26 +8,17 @@
 import SwiftUI
 import SDWebImageSwiftUI
 
-
-struct VGridItemWidthPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 struct CollectionsVGridImageView: View {
     // MARK: - INJECTED PROPERTIES
-    let item: CollectionModel
+    let item: Collection
     
     // MARK: - ASSIGNED PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @State private var showEditButton: Bool = false
     @State private var imageURLString: String?
-    let collectionModelManager: CollectionModelManager = .shared
     
     // MARK: - INITIALIZER
-    init(item: CollectionModel) {
+    init(item: Collection) {
         self.item = item
     }
     
@@ -49,7 +40,7 @@ struct CollectionsVGridImageView: View {
         .overlay { overlay }
         .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
-        .onChange(of: item.imageURLsData) { _, _ in handleImageURLsDataChange() }
+        .onChange(of: item.imageQualityURLStringsEncoded) { _, _ in handleImageURLsDataChange() }
         .task { await handleTask() }
     }
 }
@@ -62,9 +53,8 @@ struct CollectionsVGridImageView: View {
         .environment(
             CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                collectionModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                imageQueryURLModelSwiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init()
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
             )
         )
         .previewModifier
@@ -75,7 +65,7 @@ extension CollectionsVGridImageView {
     // MARK: - Placeholder
     @ViewBuilder
     private var placeholder: some View {
-        if item.collectionName != CollectionModel.randomKeywordString {
+        if item.name != Collection.randomKeywordString {
             ProgressView().scaleEffect(0.3)
         }
     }
@@ -93,7 +83,7 @@ extension CollectionsVGridImageView {
     private var editButton: some View {
         Button {
             Task {
-                collectionsTabVM.updatingItem = item
+                collectionsTabVM.setUpdatingItem(item)
                 collectionsTabVM.presentPopup(true, for: .collectionUpdatePopOver)
             }
         } label: {
@@ -113,7 +103,7 @@ extension CollectionsVGridImageView {
     private var overlay: some View {
         Group {
             checkmark
-            CollectionNameOverlayView(collectionName: item.collectionName)
+            CollectionNameOverlayView(collectionName: item.name)
             editButton
         }
         .foregroundStyle(.white)
@@ -123,7 +113,9 @@ extension CollectionsVGridImageView {
     
     // MARK: - Handle Tap
     private func handleTap() {
-        collectionsTabVM.updateCollectionSelection(item: item)
+        Task {
+            await collectionsTabVM.updateCollectionSelection(item: item)
+        }
     }
     
     // MARK: - Handle Hover
@@ -140,6 +132,6 @@ extension CollectionsVGridImageView {
     
     // MARK: - Handle Task
     private func handleTask() async {
-        imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
+        imageURLString = try? await collectionsTabVM.getCollectionManager().getImageURLs(from: item).small
     }
 }

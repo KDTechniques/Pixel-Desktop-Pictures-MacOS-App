@@ -11,16 +11,16 @@ import SDWebImageSwiftUI
 struct UpdateCollectionPreviewImageView: View {
     //MARK: - INJECTED PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
-    let item: CollectionModel
+    let item: Collection
     
     // MARK: - ASSIGNED PROPERTIES
     let vGridValues = VGridValuesModel.self
-    let collectionModelManager: CollectionModelManager = .shared
+    var collectionModelManager: CollectionManager { collectionsTabVM.getCollectionManager() }
     @State private var imageURLString: String?
     @State private var showImage: Bool = false
     
     // MARK: - INITIALIZER
-    init(item: CollectionModel) {
+    init(item: Collection) {
         self.item = item
     }
     
@@ -44,7 +44,7 @@ struct UpdateCollectionPreviewImageView: View {
         .clipped()
         .overlay(Color.vGridItemOverlay)
         .overlay(CollectionNameOverlayView(collectionName: imageOverlayText()))
-        .onChange(of: item.imageURLsData) { _, _ in handleImageURLsDataChange() }
+        .onChange(of: item.imageQualityURLStringsEncoded) { _, _ in handleImageURLsDataChange() }
         .task { await handleTask() }
     }
 }
@@ -60,9 +60,9 @@ struct UpdateCollectionPreviewImageView: View {
 extension UpdateCollectionPreviewImageView {
     // MARK: - Image Overlay Text
     private func imageOverlayText() -> String {
-        return collectionsTabVM.collectionRenameTextfieldText.isEmpty
-        ? item.collectionName
-        : collectionsTabVM.collectionRenameTextfieldText.capitalized
+        return collectionsTabVM.renameTextfieldText.isEmpty
+        ? item.name
+        : collectionsTabVM.renameTextfieldText.capitalized
     }
     
     // MARK: FUNCTIONS
