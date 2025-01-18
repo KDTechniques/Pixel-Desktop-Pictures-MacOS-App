@@ -16,9 +16,10 @@ struct AddNewCollectionView: View {
         VStack(alignment: .leading) {
             AddNewCollectionTextfieldHeaderView()
             AddNewCollectionTextfieldView()
-            ButtonView(title: "Create", showProgress: collectionsTabVM.showCreateButtonProgress, type: .popup) {
-                collectionsTabVM.createCollection()
-            }
+            ButtonView(
+                title: "Create",
+                showProgress: collectionsTabVM.showCreateButtonProgress,
+                type: .popup) { await collectionsTabVM.createCollection() }
         }
         .padding()
         .background(Color.bottomPopupBackground)

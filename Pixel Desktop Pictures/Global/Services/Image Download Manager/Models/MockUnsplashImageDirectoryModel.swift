@@ -51,7 +51,7 @@ enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
             
             return folderURL
         } catch {
-            print("Error: Creating Folder Directory in \(directory).")
+            print("❌: Creating Folder Directory in \(directory).")
             throw error
         }
     }
@@ -64,7 +64,7 @@ enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
             
             return fileURL
         } catch {
-            print("Error: Constructing file url in \(directory). \(error.localizedDescription)")
+            print("❌: Constructing file url in \(directory). \(error.localizedDescription)")
             throw UnsplashImageDirectoryModelErrorModel.fileURLConstructionFailed(directory: directory, error: error)
         }
     }

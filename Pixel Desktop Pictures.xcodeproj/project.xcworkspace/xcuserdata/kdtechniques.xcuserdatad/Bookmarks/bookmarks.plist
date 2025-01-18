@@ -140,6 +140,53 @@
 			<key>type</key>
 			<string>bookmark</string>
 		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
+					<key>EndingLineNumber</key>
+					<string>32</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
+					<key>StartingLineNumber</key>
+					<string>31</string>
+					<key>Timestamp</key>
+					<string>758890918.218605</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Tabs/Collections Tab/View Models/CollectionsTabViewModel.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string>    // Query Images Related
+</string>
+				<key>leading</key>
+				<string>    private(set) var updatingItem: Collection?
+    
+</string>
+				<key>trailing</key>
+				<string>    private(set) var queryImagesArray: [QueryImage] = []
+    
+    // MARK: - INITIALIZER
+</string>
+			</dict>
+			<key>title</key>
+			<string>Get a random index to load images itterativly</string>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
 	</array>
 </dict>
 </plist>

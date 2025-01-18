@@ -12,10 +12,10 @@ struct TextfieldView: View {
     @Binding var textfieldText: String
     let localizedKey: String
     let prompt: String
-    let onSubmission: () -> Void
+    let onSubmission: () async -> Void
     
     // MARK: - INITIALIZER
-    init(textfieldText: Binding<String>, localizedKey: String, prompt: String, onSubmission: @escaping () -> Void) {
+    init(textfieldText: Binding<String>, localizedKey: String, prompt: String, onSubmission: @escaping () async -> Void) {
         _textfieldText = textfieldText
         self.localizedKey = localizedKey
         self.prompt = prompt
@@ -31,7 +31,7 @@ struct TextfieldView: View {
             .padding(.trailing, 25)
             .background( TextfieldBackgroundView() )
             .overlay(alignment: .trailing) { clearButton }
-            .onSubmit { onSubmission() }
+            .onSubmit { handleSubmission() }
     }
 }
 
@@ -58,6 +58,12 @@ extension TextfieldView {
                     .padding(.trailing, 5)
             }
             .buttonStyle(.plain)
+        }
+    }
+    
+    private func handleSubmission() {
+        Task {
+            await onSubmission()
         }
     }
 }

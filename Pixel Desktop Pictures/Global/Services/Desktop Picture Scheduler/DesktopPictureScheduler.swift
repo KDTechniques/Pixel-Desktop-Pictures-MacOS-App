@@ -225,7 +225,7 @@ final class DesktopPictureScheduler {
         activity.schedule { completion in
             Task { [weak self] in
                 guard let self else {
-                    print("Error: `NSBackgroundActivityScheduler` task is deallocated.")
+                    print("❌: `NSBackgroundActivityScheduler` task is deallocated.")
                     completion(.deferred)
                     throw DesktopPictureSchedulerErrorModel.taskDeallocated
                 }

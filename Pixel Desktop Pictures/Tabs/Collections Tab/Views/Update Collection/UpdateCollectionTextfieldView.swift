@@ -22,7 +22,7 @@ struct UpdateCollectionTextfieldView: View {
         TextfieldView(
             textfieldText: Binding(get: { collectionsTabVM.renameTextfieldText }, set: { collectionsTabVM.setRenameTextfieldText($0) }),
             localizedKey: "Update Collection Textfield",
-            prompt: collectionName) { collectionsTabVM.renameCollection() }
+            prompt: collectionName) { await collectionsTabVM.renameCollection() }
     }
 }
 

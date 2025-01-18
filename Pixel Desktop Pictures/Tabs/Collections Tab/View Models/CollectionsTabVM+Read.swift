@@ -8,70 +8,88 @@
 import Foundation
 
 extension CollectionsTabViewModel {
-    func fetchNAddQueryImages(with collectionNames: [String]) async throws {
-        // Create image API service instance to fetch data for each `QueryImage` on collection name
-        guard let apiAccessKey: String = await getAPIAccessKeyManager().getAPIAccessKey() else { return }
-        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
-        
-        // Using withTaskGroup for concurrency
-        let queryImagesWithCollectionNamesArray: [(String, UnsplashQueryImages)] = try await withThrowingTaskGroup(of: (String, UnsplashQueryImages).self) { taskGroup in
-            for collectionName in collectionNames {
-                taskGroup.addTask {
-                    // Fetch data for each collection name
-                    do {
-                        print("Fetching data for \(collectionName)...")
-                        let queryImages: UnsplashQueryImages = try await imageAPIService.getQueryImages(query: collectionName, pageNumber: 1)
-                        print("Successfully fetched data for \(collectionName).")
-                        return (collectionName, queryImages)
-                    } catch {
-                        print("Error: Failed fetch data for \(collectionName). \(error)")
-                        throw error
+    /// Fetches query images for a list of collection names and adds them to the local database.
+    ///
+    /// This function fetches query images concurrently for each collection name using the Unsplash API,
+    /// encodes the retrieved data, and saves the resulting `QueryImage` items to the local database.
+    /// It uses a task group to handle concurrent fetching and handles any errors that occur during the process.
+    ///
+    /// - Parameter collectionNames: A list of collection names for which query images are fetched.
+    /// - Throws: An error if any of the fetch or encoding operations fail, or if saving to the local database encounters an issue.
+    func fetchAndAddInitialQueryImages(with collectionNames: [String]) async throws {
+        do {
+            // Create an image API service instance to fetch data for each `QueryImage` on collection name
+            let imageAPIService: UnsplashImageAPIService = try await getImageAPIServiceInstance()
+            
+            // Using `withThrowingTaskGroup` for concurrency.
+            let queryImagesWithCollectionNamesArray: [(String, UnsplashQueryImages)] = try await withThrowingTaskGroup(of: (String, UnsplashQueryImages).self) { taskGroup in
+                for collectionName in collectionNames {
+                    taskGroup.addTask { [weak self] in
+                        // Fetch image api query images for each collection name.
+                        do {
+                            print("🤞: Fetching image api query images for \(collectionName)...")
+                            let queryImages: UnsplashQueryImages = try await imageAPIService.getQueryImages(query: collectionName, pageNumber: 1)
+                            print("✅: Successfully fetched image api query images for \(collectionName).")
+                            return (collectionName, queryImages)
+                        } catch {
+                            await print(self?.getVMError().failedToFetchQueryImages(collectionName: collectionName, error).localizedDescription as Any)
+                            throw error
+                        }
                     }
                 }
+                
+                // Collect results
+                var tempQueryImagesArray: [(String, UnsplashQueryImages)] = []
+                for try await result in taskGroup {
+                    tempQueryImagesArray.append(result)
+                }
+                
+                return tempQueryImagesArray
             }
             
-            // Collect results
-            var tempQueryImagesArray: [(String, UnsplashQueryImages)] = []
-            for try await result in taskGroup {
-                tempQueryImagesArray.append(result)
-            }
+            print("✅: All image api query images tasks have been completed. Results: \(queryImagesWithCollectionNamesArray)")
             
-            return tempQueryImagesArray
-        }
-        
-        print("All tasks completed. Query results: \(queryImagesWithCollectionNamesArray)")
-        
-        // Create `QueryImage` item once all tasks are complete
-        var queryImagesArray: [QueryImage] = []
-        let encoder: JSONEncoder = .init()
-        
-        for queryImage in queryImagesWithCollectionNamesArray {
-            do {
+            // Create `QueryImage` items once all image api query images tasks are completed.
+            var tempQueryImagesArray: [QueryImage] = []
+            let encoder: JSONEncoder = .init()
+            
+            for queryImage in queryImagesWithCollectionNamesArray {
                 let queryImagesEncoded: Data = try encoder.encode(queryImage.1)
-                let queryImage: QueryImage = .init(query: queryImage.0, queryImagesEncoded: queryImagesEncoded)
-                queryImagesArray.append(queryImage)
-            } catch {
-                print("Error: Failed to encode data for \(queryImage.0). \(error)")
-                throw error
+                let queryImageItem: QueryImage = .init(query: queryImage.0, queryImagesEncoded: queryImagesEncoded)
+                tempQueryImagesArray.append(queryImageItem)
             }
+            
+            // Save created `QueryImage`s array to local database.
+            try await getQueryImageManager().addQueryImages(tempQueryImagesArray)
+            print("✅: Initial `QueryImage`s array has been created and saved successfully to local database.")
+        } catch {
+            print(getVMError().failedToFetchInitialQueryImages(collectionNames: collectionNames, error).localizedDescription)
+            await getErrorPopupVM().addError(getErrorPopup().failedSomethingOnQueryImages)
+            throw error
         }
-        
-        // Save created `QueryImage` objects to swift data
-        print("All tasks completed. Saving \(queryImagesArray.count) `QueryImage`s to local database...")
-        try await getQueryImageManager().addQueryImages(queryImagesArray)
     }
     
-    func getNSetQueryImagesArray() async {
-        /// Filter the selected ones and get their names.
-        /// Then pass them to the LocalDatabaseManager class to fetch an array of [QueryImage].
-        /// Finally, assign the result to queryImagesArray.
+    /// Retrieves and sets the query images array based on selected collections.
+    ///
+    /// This function filters the selected collections, fetches the associated query images from the
+    /// local database, and assigns the resulting array to `queryImagesArray`. Any errors encountered
+    /// during the fetching process are logged.
+    ///
+    /// - Note: Only the selected collections are considered when fetching query images.
+    /// - Throws: An error if fetching query images from the local database fails.
+    func getAndSetQueryImagesArray() async throws {
+        // Filter selected collection names.
         let selectedCollectionNamesArray: [String] = collectionsArray.filter({ $0.isSelected }).map({ $0.name })
         
         do {
+            // Fetch `QueryImage` items for the selected collection names from the local database.
             let queryImagesArray: [QueryImage] = try await getQueryImageManager().fetchQueryImages(for: selectedCollectionNamesArray)
             setQueryImagesArray(queryImagesArray)
+            print(queryImagesArray.isEmpty ? "⚠️: Fetched query images array found empty." : "✅: query images array has been fetched successfully.")
         } catch {
-            print("Error: Failed to set `ImageQueryURLModels` to an array. \(error.localizedDescription)")
+            print(CollectionsViewModelErrorModel.failedSomethingOnQueryImages(error).localizedDescription)
+            await getErrorPopupVM().addError(getErrorPopup().failedSomethingOnQueryImages)
+            throw error
         }
     }
 }

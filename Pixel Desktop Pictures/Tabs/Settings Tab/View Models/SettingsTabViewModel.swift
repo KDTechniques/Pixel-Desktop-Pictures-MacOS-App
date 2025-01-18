@@ -157,7 +157,7 @@ import LaunchAtLogin
         do {
             try await defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
         } catch {
-            print("Error: Failed to save update Interval to user defaults.")
+            print("❌: Failed to save update Interval to user defaults.")
         }
     }
     

@@ -49,7 +49,7 @@ actor UserDefaultsManager {
             let encodedData: Data = try encoder.encode(value)
             await self.save(key: key, value: encodedData)
         } catch {
-            print("Error: Saving `\(T.self)` object to user defaults.")
+            print("❌: Saving `\(T.self)` object to user defaults.")
             throw error
         }
     }
@@ -72,7 +72,7 @@ actor UserDefaultsManager {
             let loadedModel: T = try decoder.decode(type, from: jsonData)
             return loadedModel
         } catch {
-            print("Error: Retrieving `\(T.self)` object from user defaults.")
+            print("❌: Retrieving `\(T.self)` object from user defaults.")
             throw error
         }
     }

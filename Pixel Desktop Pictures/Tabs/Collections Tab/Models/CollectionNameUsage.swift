@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum CollectionNameUsage {
+enum CollectionNameUsage: String, CaseIterable {
     case onCollectionCreation
     case onCollectionRenaming
 }

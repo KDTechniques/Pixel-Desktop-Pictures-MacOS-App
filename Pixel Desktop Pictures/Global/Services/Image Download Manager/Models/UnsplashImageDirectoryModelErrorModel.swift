@@ -14,9 +14,9 @@ enum UnsplashImageDirectoryModelErrorModel: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unableToReadDirectoryPath(let directory):
-            return "Error: Creating directory at \(directory)."
+            return "❌: Creating directory at \(directory)."
         case .fileURLConstructionFailed(let directory, let error):
-            return "Error: Constructing file url at \(directory). \(error.localizedDescription)"
+            return "❌: Constructing file url at \(directory). \(error.localizedDescription)"
         }
     }
 }

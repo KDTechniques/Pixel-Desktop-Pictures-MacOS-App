@@ -15,11 +15,11 @@ enum LocalDatabaseManagerErrorModel: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .failedToInitializeModelContainer(let error):
-            return "Error: Failed to initialize model container. \(error.localizedDescription)"
+            return "❌: Failed to initialize model container. \(error.localizedDescription)"
         case .failedToSaveContext(let error):
-            return "Error: Failed to save context to container. \(error.localizedDescription)"
+            return "❌: Failed to save context to container. \(error.localizedDescription)"
         case .failedToEraseAllData(let error):
-            return "Error: Failed to erase all data for query images from model container. \(error.localizedDescription)"
+            return "❌: Failed to erase all data for query images from model container. \(error.localizedDescription)"
         }
     }
 }

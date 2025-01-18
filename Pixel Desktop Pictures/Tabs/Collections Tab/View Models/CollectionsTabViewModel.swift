@@ -16,11 +16,6 @@ final class CollectionsTabViewModel {
     private let queryImageManager: QueryImageManager
     
     // MARK: - ASSIGNED PROPERTIES
-    private let defaults: UserDefaultsManager = .shared
-    private let errorPopup = CollectionsTabErrorPopupModel.self
-    private let encoder: JSONEncoder = .init()
-    private let decoder: JSONDecoder = .init()
-    private let errorPopupVM: ErrorPopupViewModel = .shared
     private(set) var collectionsArray: [Collection] = []
     private(set) var popOverItem: (isPresented: Bool, type: CollectionsViewPopOverModel) = (false, .collectionCreationPopOver)
     
@@ -35,11 +30,9 @@ final class CollectionsTabViewModel {
     private(set) var updatingItem: Collection?
     
     // Query Images Related
-    /// Get a random index object and pass it to model manager to get an image
     private(set) var queryImagesArray: [QueryImage] = []
     
     // MARK: - INITIALIZER
-    
     init(
         apiAccessKeyManager: APIAccessKeyManager,
         collectionManager: CollectionManager,
@@ -66,23 +59,27 @@ extension CollectionsTabViewModel {
     }
     
     func getJSONEncoder() -> JSONEncoder {
-        return encoder
+        return .init()
     }
     
     func getJSONDecoder() -> JSONDecoder {
-        return decoder
+        return .init()
     }
     
     func getUserDefaults() -> UserDefaultsManager {
-        return defaults
+        return .shared
     }
     
     func getErrorPopup() -> CollectionsTabErrorPopupModel.Type {
-        return errorPopup
+        return CollectionsTabErrorPopupModel.self
     }
     
     func getErrorPopupVM() -> ErrorPopupViewModel {
-        return errorPopupVM
+        return .shared
+    }
+    
+    func getVMError() -> CollectionsViewModelErrorModel.Type {
+        return CollectionsViewModelErrorModel.self
     }
 }
 
@@ -90,7 +87,14 @@ extension CollectionsTabViewModel {
 extension CollectionsTabViewModel {
     func setCollectionsArray(_ newArray: [Collection]) {
         collectionsArray = newArray
-        Task {  await getNSetQueryImagesArray() }
+    }
+    
+    func appendCollectionsArray(_ newElement: Collection) {
+        collectionsArray.append(newElement)
+    }
+    
+    func removeFromCollectionsArray(_ element: Collection) {
+        collectionsArray.removeAll(where: { $0 == element })
     }
     
     func setPopOverItem(_ newItem: (isPresented: Bool, type: CollectionsViewPopOverModel) ) {

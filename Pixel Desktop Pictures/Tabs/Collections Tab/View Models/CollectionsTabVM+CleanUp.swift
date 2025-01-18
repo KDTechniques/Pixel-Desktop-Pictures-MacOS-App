@@ -8,16 +8,20 @@
 import Foundation
 
 extension CollectionsTabViewModel {
+    /// Resets the text fields to empty strings to ensure a clean state.
+    ///
+    /// This function should be called when the popover is dismissed to avoid a poor user experience
+    /// by ensuring the text fields are cleared when the popover reappears.
     func resetTextfieldTexts() {
         setNameTextfieldText("")
         setRenameTextfieldText("")
     }
     
+    /// Resets the updating collection item to `nil` to prevent data corruption.
+    ///
+    /// This function must be called when the popover is dismissed to ensure that
+    /// no stale data remains associated with the updating item.
     func resetUpdatingItem() {
         setUpdatingItem(nil)
-    }
-    
-    func resetQueryImagesArray() {
-        setQueryImagesArray([])
     }
 }

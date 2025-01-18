@@ -16,13 +16,13 @@ enum APIAccessKeyManagerErrorModel: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .apiAccessKeyNotFound:
-            return "Error: Failed to find api access key from user defaults."
+            return "❌: Failed to find api access key from user defaults."
         case .EmptyAPIAccessKey:
-            return "Error: The passed API access key is empty."
+            return "❌: The passed API access key is empty."
         case .apiAccessKeyCheckupFailed:
-            return "Error: Failed to perform an api access key checkup."
+            return "❌: Failed to perform an api access key checkup."
         case .apiAccessKeyStatusNotFound:
-            return "Error: Failed to find api access key status from user defaults."
+            return "❌: Failed to find api access key status from user defaults."
         }
     }
 }

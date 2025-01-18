@@ -46,7 +46,7 @@ struct Pixel_Desktop_PicturesApp: App {
                 queryImageManager: queryImageManagerInstance
             )
         } catch {
-            print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
+            print("❌: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
             // Fallback code goes here..
 #if DEBUG
             fatalError()
@@ -82,7 +82,7 @@ struct Pixel_Desktop_PicturesApp: App {
                         do {
                             try await settingsTabVM.initializeSettingsTabVM()
                         } catch {
-                            print("Error: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
+                            print("❌: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
                         }
                     }
                     

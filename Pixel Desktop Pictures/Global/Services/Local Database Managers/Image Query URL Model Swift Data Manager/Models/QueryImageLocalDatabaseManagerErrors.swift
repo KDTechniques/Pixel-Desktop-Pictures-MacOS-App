@@ -21,15 +21,15 @@ enum QueryImageLocalDatabaseManagerErrors: LocalizedError {
         switch self {
             // Create Operation Errors
         case .failedToCreateQueryImages(let error):
-            return "Error: Failed to create query images. \(error.localizedDescription)"
+            return "❌: Failed to create query images. \(error.localizedDescription)"
             
             // Read Operation Errors
         case .failedToFetchQueryImages(let error):
-            return "Error: Failed to fetch query images from context. \(error.localizedDescription)"
+            return "❌: Failed to fetch query images from context. \(error.localizedDescription)"
             
             // Update Operation Errors
         case .failedToUpdateQueryImages(let error):
-            return "Error: Failed to update query images from context. \(error.localizedDescription)"
+            return "❌: Failed to update query images from context. \(error.localizedDescription)"
         }
     }
 }

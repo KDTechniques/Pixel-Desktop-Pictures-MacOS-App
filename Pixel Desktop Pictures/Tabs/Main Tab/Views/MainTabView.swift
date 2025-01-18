@@ -96,7 +96,7 @@ extension MainTabView {
                 regularImageURLString = queryImageItem.imageQualityURLStrings.regular
                 thumbImageURLString = queryImageItem.imageQualityURLStrings.thumb
             } catch {
-                print("Error: getting UnsplashQueryImage ❌❌❌❌")
+                print("❌: getting UnsplashQueryImage ❌❌❌❌")
             }
         }
     }

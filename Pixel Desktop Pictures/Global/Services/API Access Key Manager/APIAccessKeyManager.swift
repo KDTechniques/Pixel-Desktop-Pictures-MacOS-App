@@ -121,7 +121,7 @@ final class APIAccessKeyManager {
                 try await saveAPIAccessKeyStatusToUserDefaults(.connected)
             }
         } catch {
-            print("Error: Saving `\(status)` status to user defaults. \(error.localizedDescription)")
+            print("❌: Saving `\(status)` status to user defaults. \(error.localizedDescription)")
         }
     }
     

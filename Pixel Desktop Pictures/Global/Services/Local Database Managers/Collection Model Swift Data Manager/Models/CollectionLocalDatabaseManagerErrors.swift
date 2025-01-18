@@ -24,19 +24,19 @@ enum CollectionLocalDatabaseManagerErrors: LocalizedError {
         switch self {
             // Create Operation Errors
         case .failedToCreateCollection(let error):
-            return "Error: Failed to create collection. \(error.localizedDescription)"
+            return "❌: Failed to create collection. \(error.localizedDescription)"
             
             // Read Operation Errors
         case .failedToFetchCollections(let error):
-            return "Error: Failed to fetch collections from context. \(error.localizedDescription)"
+            return "❌: Failed to fetch collections from context. \(error.localizedDescription)"
             
             // Update Operation Errors
         case .failedToUpdateCollections(let error):
-            return "Error: failed to update collections. \(error.localizedDescription)"
+            return "❌: failed to update collections. \(error.localizedDescription)"
             
             // Delete Operation Errors
         case .failedToDeleteCollection(let error):
-            return "Error: Failed to delete collection from context. \(error.localizedDescription)"
+            return "❌: Failed to delete collection from context. \(error.localizedDescription)"
         }
     }
 }

@@ -15,11 +15,11 @@ enum UnsplashImageAPIServiceErrorModel: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .failedToFetchAPIAccessKey(let error):
-            return "Error: Validating api access key. \(error.localizedDescription)"
+            return "❌: Validating api access key. \(error.localizedDescription)"
         case .failedToFetchRandomImage(let error):
-            return "Error: Failed to fetch a random image. \(error.localizedDescription)"
+            return "❌: Failed to fetch a random image. \(error.localizedDescription)"
         case .failedToFetchQueryImages(let error):
-            return "Error: Failed to fetch a query images. \(error.localizedDescription)"
+            return "❌: Failed to fetch a query images. \(error.localizedDescription)"
         }
     }
 }

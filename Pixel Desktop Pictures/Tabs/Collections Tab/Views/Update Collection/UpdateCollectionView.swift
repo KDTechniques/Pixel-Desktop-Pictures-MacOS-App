@@ -21,9 +21,10 @@ struct UpdateCollectionView: View {
                     UpdateCollectionTextfieldHeaderView()
                     UpdateCollectionTextfieldView(collectionName: item.name)
                     
-                    ButtonView(title: "Rename", showProgress: collectionsTabVM.showRenameButtonProgress, type: .popup) {
-                        collectionsTabVM.renameCollection()
-                    }
+                    ButtonView(
+                        title: "Rename",
+                        showProgress: collectionsTabVM.showRenameButtonProgress,
+                        type: .popup) { await collectionsTabVM.renameCollection() }
                     
                     VStack(alignment: .leading) {
                         HStack {
@@ -72,7 +73,7 @@ extension UpdateCollectionView {
             foregroundColor: Color.textfieldBackground,
             showProgress: collectionsTabVM.showChangeThumbnailButtonProgress) {
                 Task {
-                    await collectionsTabVM.updateCollectionImageURLString(item: item)
+                    await collectionsTabVM.changeCollectionThumbnailImage(item: item)
                 }
             }
     }
