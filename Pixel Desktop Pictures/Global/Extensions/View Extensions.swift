@@ -44,7 +44,7 @@ extension View {
             .environment(APIAccessKeyManager())
         //            .environment(try! QueryImageLocalDatabaseManager(appEnvironment: .production))
         //            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .production))
-        //            .environment(try! CollectionsLocalDatabaseManager(appEnvironment: .production))
+        //            .environment(try! CollectionLocalDatabaseManager(appEnvironment: .production))
     }
 }
 

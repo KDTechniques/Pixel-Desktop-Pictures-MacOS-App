@@ -17,7 +17,7 @@ actor LocalDatabaseManager {
     init(appEnvironment: AppEnvironmentModel) throws {
         do {
             container = try ModelContainer(
-                for: QueryImage.self, Collection.self,
+                for: Collection.self, QueryImage.self, Recent.self,
                 configurations: .init(isStoredInMemoryOnly: appEnvironment == .mock)
             )
             print("`LocalDatabaseManager` has been initialized!")

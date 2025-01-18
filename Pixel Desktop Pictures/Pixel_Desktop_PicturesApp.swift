@@ -35,7 +35,7 @@ struct Pixel_Desktop_PicturesApp: App {
             let localDatabaseManagerInstance: LocalDatabaseManager = try .init(appEnvironment: appEnvironment)
             
             // Collections Related
-            let collectionLocalDatabaseManagerInstance: CollectionsLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
+            let collectionLocalDatabaseManagerInstance: CollectionLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let collectionManagerInstance: CollectionManager = .shared(localDatabaseManager: collectionLocalDatabaseManagerInstance)
             let queryImageLocalDatabaseManagerInstance: QueryImageLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let queryImageManagerInstance: QueryImageManager = .shared(localDatabaseManager: queryImageLocalDatabaseManagerInstance)

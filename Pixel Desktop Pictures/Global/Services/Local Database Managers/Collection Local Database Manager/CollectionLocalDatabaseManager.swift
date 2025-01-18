@@ -1,5 +1,5 @@
 //
-//  CollectionsLocalDatabaseManager.swift
+//  CollectionLocalDatabaseManager.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-11.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-actor CollectionsLocalDatabaseManager {
+actor CollectionLocalDatabaseManager {
     // MARK: - INJECTED PROPERTIES
     let localDatabaseManager: LocalDatabaseManager
     
@@ -43,8 +43,12 @@ actor CollectionsLocalDatabaseManager {
             let descriptor: FetchDescriptor = FetchDescriptor<Collection>(
                 sortBy: [SortDescriptor(\.timestamp, order: .forward)] // Ascending order
             )
-            let collectionItemModelsArray: [Collection] = try await localDatabaseManager.container.mainContext.fetch(descriptor)
-            return collectionItemModelsArray
+            let collectionsArray: [Collection] = try await localDatabaseManager
+                .container
+                .mainContext
+                .fetch(descriptor)
+            
+            return collectionsArray
         } catch {
             print(CollectionLocalDatabaseManagerErrors.failedToFetchCollections(error).localizedDescription)
             throw error

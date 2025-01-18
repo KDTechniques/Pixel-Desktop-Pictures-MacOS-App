@@ -12,16 +12,16 @@ actor CollectionManager {
     private static var singleton: CollectionManager?
     
     // MARK: - PROPERTIES
-    let localDatabaseManager: CollectionsLocalDatabaseManager
+    let localDatabaseManager: CollectionLocalDatabaseManager
     
     // MARK: - INITIALIZER
-    private init(localDatabaseManager: CollectionsLocalDatabaseManager) {
+    private init(localDatabaseManager: CollectionLocalDatabaseManager) {
         self.localDatabaseManager = localDatabaseManager
     }
     
     // MARK: - INTERNAL FUNCTIONS
     
-    static func shared(localDatabaseManager: CollectionsLocalDatabaseManager) -> CollectionManager {
+    static func shared(localDatabaseManager: CollectionLocalDatabaseManager) -> CollectionManager {
         guard singleton == nil else {
             return singleton!
         }
@@ -88,6 +88,7 @@ actor CollectionManager {
     }
     
     // MARK: - Delete Operations
+    
     func deleteCollection(at item: Collection) async throws {
         try await localDatabaseManager.deleteCollection(at: item)
     }
