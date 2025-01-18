@@ -9,12 +9,12 @@ import SwiftUI
 
 struct CollectionsGridPopupBackgroundView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
     // MARK: - BODY
     var body: some View {
         Color.windowBackground
-            .opacity(collectionsVM.popOverItem.isPresented ? 0.8 : 0)
+            .opacity(collectionsTabVM.popOverItem.isPresented ? 0.8 : 0)
             .onTapGesture { handleTap() }
     }
 }
@@ -23,16 +23,17 @@ struct CollectionsGridPopupBackgroundView: View {
 #Preview("Collections Grid Popup Background View") {
     CollectionsGridPopupBackgroundView()
         .environment(
-            CollectionsViewModel(
+            CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init())
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
+            )
         )
 }
 
 extension CollectionsGridPopupBackgroundView {
     // MARK: - Handle Tap
     private func handleTap() {
-        collectionsVM.presentPopup(false, for: collectionsVM.popOverItem.type)
+        collectionsTabVM.presentPopup(false, for: collectionsTabVM.popOverItem.type)
     }
 }

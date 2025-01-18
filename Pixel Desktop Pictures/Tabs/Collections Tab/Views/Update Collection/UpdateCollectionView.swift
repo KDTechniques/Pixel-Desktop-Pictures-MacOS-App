@@ -10,21 +10,21 @@ import SDWebImageSwiftUI
 
 struct UpdateCollectionView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let vGridValues = VGridValuesModel.self
     
     // MARK: - BODY
     var body: some View {
         Group {
-            if let item: CollectionModel = collectionsVM.updatingItem {
+            if let item: Collection = collectionsTabVM.updatingItem {
                 VStack(alignment: .leading) {
                     UpdateCollectionTextfieldHeaderView()
-                    UpdateCollectionTextfieldView(collectionName: item.collectionName)
+                    UpdateCollectionTextfieldView(collectionName: item.name)
                     
-                    ButtonView(title: "Rename", showProgress: collectionsVM.showRenameButtonProgress, type: .popup) {
-                        collectionsVM.updateCollectionName()
-                    }
-                    .disabled(collectionsVM.collectionRenameTextfieldText.isEmpty)
+                    ButtonView(
+                        title: "Rename",
+                        showProgress: collectionsTabVM.showRenameButtonProgress,
+                        type: .popup) { await collectionsTabVM.renameCollection() }
                     
                     VStack(alignment: .leading) {
                         HStack {
@@ -61,34 +61,31 @@ struct UpdateCollectionView: View {
 // MARK: EXTENSIONS
 extension UpdateCollectionView {
     // MARK: - Preview Image
-    private func previewImage(item: CollectionModel) -> some View {
+    private func previewImage(item: Collection) -> some View {
         UpdateCollectionPreviewImageView(item: item)
     }
     
     // MARK: - Change Thumbnail Button
-    private func changeThumbnailButton(item: CollectionModel) -> some View {
+    private func changeThumbnailButton(item: Collection) -> some View {
         CollectionPopOverSecondaryButtonView(
             title: "Change Thumbnail",
             systemImageName: "arrow.trianglehead.clockwise.rotate.90",
             foregroundColor: Color.textfieldBackground,
-            showProgress: collectionsVM.showChangeThumbnailButtonProgress) {
+            showProgress: collectionsTabVM.showChangeThumbnailButtonProgress) {
                 Task {
-                    await collectionsVM.updateCollectionImageURLString(item: item)
+                    await collectionsTabVM.changeCollectionThumbnailImage(item: item)
                 }
             }
     }
     
     // MARK: - Delete Button
-    private func deleteButton(item: CollectionModel) -> some View {
+    private func deleteButton(item: Collection) -> some View {
         CollectionPopOverSecondaryButtonView(
             title: "Delete",
             systemImageName: "trash",
             foregroundColor: Color.red) {
-                do {
-                    try collectionsVM.deleteCollection(item: item)
-                } catch {
-                    print("Error: Failed to delete collection: \(item.collectionName).")
-                    // show an alert here for deletion error...
+                Task {
+                    await collectionsTabVM.deleteCollection(at: item)
                 }
             }
     }

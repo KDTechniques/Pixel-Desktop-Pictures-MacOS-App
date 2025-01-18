@@ -25,9 +25,7 @@ final class DesktopPictureScheduler {
     private let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
     private var scheduler: NSBackgroundActivityScheduler?
-    private var currentTimeIntervalSince1970: TimeInterval {
-        return Date().timeIntervalSince1970
-    }
+    private var currentTimeIntervalSince1970: TimeInterval { return Date().timeIntervalSince1970 }
     
     // MARK: - INITIALIZER
     private init(appEnvironmentType: AppEnvironmentModel) {
@@ -227,7 +225,7 @@ final class DesktopPictureScheduler {
         activity.schedule { completion in
             Task { [weak self] in
                 guard let self else {
-                    print("Error: `NSBackgroundActivityScheduler` task is deallocated.")
+                    print("❌: `NSBackgroundActivityScheduler` task is deallocated.")
                     completion(.deferred)
                     throw DesktopPictureSchedulerErrorModel.taskDeallocated
                 }

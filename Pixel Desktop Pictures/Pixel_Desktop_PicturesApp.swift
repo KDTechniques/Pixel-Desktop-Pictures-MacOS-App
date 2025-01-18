@@ -18,32 +18,35 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var apiAccessKeyManager: APIAccessKeyManager
     
     // Tabs
-    @State private var errorPopupVM: ErrorPopupViewModel
     @State private var tabsVM: TabsViewModel = .init()
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel = .init()
     @State private var recentsTabVM: RecentsTabViewModel = .init()
-    @State private var collectionsTabVM: CollectionsViewModel
+    @State private var collectionsTabVM: CollectionsTabViewModel
     
     // MARK: - INITIALIZER
     init() {
         settingsTabVM = .init(appEnvironment: appEnvironment)
         
         do {
-            let tempSwiftDataManager: SwiftDataManager = try .init(appEnvironment: appEnvironment)
-            let tempAPIAccessKeyManager: APIAccessKeyManager = .init()
-            let tempErrorPopupVM: ErrorPopupViewModel = .init()
+            let apiAccessKeyManagerInstance: APIAccessKeyManager = .init()
+            apiAccessKeyManager = apiAccessKeyManagerInstance
             
-            apiAccessKeyManager = tempAPIAccessKeyManager
-            errorPopupVM = tempErrorPopupVM
+            let localDatabaseManagerInstance: LocalDatabaseManager = try .init(appEnvironment: appEnvironment)
+            
+            // Collections Related
+            let collectionLocalDatabaseManagerInstance: CollectionsLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
+            let collectionManagerInstance: CollectionManager = .shared(localDatabaseManager: collectionLocalDatabaseManagerInstance)
+            let queryImageLocalDatabaseManagerInstance: QueryImageLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
+            let queryImageManagerInstance: QueryImageManager = .shared(localDatabaseManager: queryImageLocalDatabaseManagerInstance)
             
             collectionsTabVM = .init(
-                apiAccessKeyManager: tempAPIAccessKeyManager,
-                swiftDataManager: .init(swiftDataManager: tempSwiftDataManager),
-                errorPopupVM: tempErrorPopupVM
+                apiAccessKeyManager: apiAccessKeyManagerInstance,
+                collectionManager: collectionManagerInstance,
+                queryImageManager: queryImageManagerInstance
             )
         } catch {
-            print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
+            print("❌: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
             // Fallback code goes here..
 #if DEBUG
             fatalError()
@@ -64,7 +67,6 @@ struct Pixel_Desktop_PicturesApp: App {
                 .environment(networkManager)
                 .environment(apiAccessKeyManager)
             // Tabs Environment Values
-                .environment(errorPopupVM)
                 .environment(tabsVM)
                 .environment(settingsTabVM)
                 .environment(mainTabVM)
@@ -73,21 +75,14 @@ struct Pixel_Desktop_PicturesApp: App {
                 .onFirstTaskViewModifier {
                     // MARK: - Service Initializations
                     networkManager.initializeNetworkManager()
-                    
-                    Task {
-                        do {
-                            try await apiAccessKeyManager.initializeAPIAccessKeyManager()
-                        } catch {
-                            print("Error: Initializing `API Access Key Manager`, \(error.localizedDescription)")
-                        }
-                    }
+                    Task { await apiAccessKeyManager.initializeAPIAccessKeyManager() }
                     
                     // MARK: - Tabs Initializations
                     Task {
                         do {
                             try await settingsTabVM.initializeSettingsTabVM()
                         } catch {
-                            print("Error: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
+                            print("❌: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
                         }
                     }
                     

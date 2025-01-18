@@ -9,22 +9,22 @@ import SwiftUI
 
 struct CollectionsTabView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @State private var scrollPosition: ScrollPosition = .init()
     
     // MARK: - BODY
     var body: some View {
         TabContentWithWindowErrorView(tab: .collections) {
             Group {
-                if !collectionsVM.collectionItemsArray.isEmpty {
+                if !collectionsTabVM.collectionsArray.isEmpty {
                     CollectionsVGridScrollView(scrollPosition: $scrollPosition)
                 } else {
                     WindowErrorView(model: CollectionsTabWindowErrorModel.collectionsViewModelInitializationFailed)
                 }
             }
             .background(Color.windowBackground)
-            .onChange(of: collectionsVM.collectionItemsArray.count) {
-                collectionsVM.onCollectionItemsArrayChange(oldValue: $0, newValue: $1, scrollPosition: $scrollPosition)
+            .onChange(of: collectionsTabVM.collectionsArray.count) {
+                collectionsTabVM.onCollectionItemsArrayChange(oldValue: $0, newValue: $1, scrollPosition: $scrollPosition)
             }
         }
     }
@@ -32,17 +32,17 @@ struct CollectionsTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections Grid Tab View") {
-    @Previewable @State var collectionsVM: CollectionsViewModel = .init(
+    @Previewable @State var collectionsTabVM: CollectionsTabViewModel = .init(
         apiAccessKeyManager: .init(),
-        swiftDataManager: try! .init(swiftDataManager: .init(appEnvironment: .mock)),
-        errorPopupVM: .init()
+        collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+        queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
     )
     
     PreviewView {
         CollectionsVGridScrollView(scrollPosition: .constant(.init(edge: .top)))
-            .environment(collectionsVM)
+            .environment(collectionsTabVM)
             .onFirstAppearViewModifier {
-                collectionsVM.collectionItemsArray = try! CollectionModel.getDefaultCollectionsArray()
+                collectionsTabVM.setCollectionsArray(try! Collection.getDefaultCollectionsArray())
             }
     }
 }

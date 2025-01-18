@@ -29,22 +29,22 @@ extension View {
         self
             .frame(width: TabItemsModel.allWindowWidth)
             .background(Color.windowBackground)
-            .environment(ErrorPopupViewModel())
+            .environment(ErrorPopupViewModel.shared)
             .environment(TabsViewModel())
             .environment(MainTabViewModel())
             .environment(
-                CollectionsViewModel(
+                CollectionsTabViewModel(
                     apiAccessKeyManager: .init(),
-                    swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                    errorPopupVM: .init()
+                    collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                    queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
                 )
             )
             .environment(RecentsTabViewModel())
             .environment(SettingsTabViewModel(appEnvironment: .mock))
             .environment(APIAccessKeyManager())
-        //            .environment(try! ImageQueryURLModelSwiftDataManager(appEnvironment: .production))
+        //            .environment(try! QueryImageLocalDatabaseManager(appEnvironment: .production))
         //            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .production))
-        //            .environment(try! CollectionModelSwiftDataManager(appEnvironment: .production))
+        //            .environment(try! CollectionsLocalDatabaseManager(appEnvironment: .production))
     }
 }
 

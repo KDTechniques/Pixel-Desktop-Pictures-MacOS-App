@@ -10,6 +10,10 @@ import SwiftUI
 struct MainTabView: View {
     // MARK: - PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
+    
+    @State var thumbImageURLString: String = ""
+    @State var regularImageURLString: String = ""
     
     // MARK: - BODY
     var body: some View {
@@ -21,14 +25,17 @@ struct MainTabView: View {
 #Preview("Main Tab View") {
     @Previewable @State var networkManager: NetworkManager = .init()
     @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
-    PreviewView { MainTabView()  }
-        .environment(networkManager)
-        .environment(apiAccessKeyManager)
-        .onFirstTaskViewModifier {
-            networkManager.initializeNetworkManager()
-            try? await apiAccessKeyManager.initializeAPIAccessKeyManager()
-            await apiAccessKeyManager.connectAPIAccessKey(key: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
-        }
+    
+    PreviewView {
+        MainTabView()
+            .frame(maxHeight: .infinity)
+            .environment(networkManager)
+            .environment(apiAccessKeyManager)
+            .onFirstTaskViewModifier {
+                networkManager.initializeNetworkManager()
+                apiAccessKeyManager.apiAccessKeyStatus = .connected
+            }
+    }
 }
 
 // MARK: EXTENSIONS
@@ -47,19 +54,50 @@ extension MainTabView {
         VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
-                thumbnailURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().thumb,
-                imageURLString: try! CollectionModel.getDefaultCollectionsArray().first!.getImageURLs().regular,
+                thumbnailURLString: thumbImageURLString,
+                imageURLString: regularImageURLString,
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
+            .task {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                handleGetImage(currentImage: true)
+            }
             
             VStack {
                 // Set Desktop Picture Button
-                ButtonView(title: "Set Desktop Picture", type: .regular) { mainTabVM.setDesktopPicture() }
+                ButtonView(title: "Set Desktop Picture", type: .regular) {
+                    mainTabVM.setDesktopPicture()
+                    handleGetImage(currentImage: false)
+                }
                 
                 // Author and Download Button
                 footer
             }
             .padding()
+        }
+    }
+}
+
+extension MainTabView {
+    func handleGetImage(currentImage: Bool) {
+        guard let queryImage: QueryImage = collectionsTabVM.queryImagesArray.first else { return }
+        
+        let apiAccessKey: String = "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ"
+        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        
+        Task {
+            do {
+                let queryImageItem: UnsplashQueryImage = try await QueryImageManager.shared(localDatabaseManager: .init(localDatabaseManager: try .init(appEnvironment: .production))).getQueryImage(
+                    item: queryImage,
+                    isCurrentImage: currentImage,
+                    imageAPIService: imageAPIService
+                )
+                
+                regularImageURLString = queryImageItem.imageQualityURLStrings.regular
+                thumbImageURLString = queryImageItem.imageQualityURLStrings.thumb
+            } catch {
+                print("❌: getting UnsplashQueryImage ❌❌❌❌")
+            }
         }
     }
 }

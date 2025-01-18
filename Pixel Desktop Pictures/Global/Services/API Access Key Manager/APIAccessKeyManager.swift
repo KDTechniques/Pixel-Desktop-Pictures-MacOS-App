@@ -12,7 +12,8 @@ import Foundation
  It interacts with UserDefaults for persistence and ensures the access key's validity through API calls.
  */
 @MainActor
-@Observable final class APIAccessKeyManager {
+@Observable
+final class APIAccessKeyManager {
     // MARK: - PROPERTIES
     private let defaults: UserDefaultsManager = .shared
     
@@ -24,48 +25,46 @@ import Foundation
         }
     }
     
-    // MARK: FUNCTIONS
+    @ObservationIgnored
+    private var apiAccessKey: String?
+    private let errorModel: APIAccessKeyManagerErrorModel.Type = APIAccessKeyManagerErrorModel.self
     
-    // MARK: INTERNAL FUNCTIONS
+    // MARK: - INTERNAL FUNCTIONS
     
-    // MARK: - Initialize API Access Key Manager
-    /// Initializes the API Access Key Manager by fetching and assigning the API access key status from UserDefaults.
-    /// - Throws: An error if fetching the access key status from UserDefaults fails.
-    func initializeAPIAccessKeyManager() async throws {
-        try await getNAssignAPIAccessKeyStatusFromUserDefaults()
+    func initializeAPIAccessKeyManager() async {
+        await getNAssignAPIAccessKeyStatusFromUserDefaults()
         print("`API Access Key Manager` has been initialized!")
     }
     
-    // MARK: - getAPIAccessKeyFromUserDefaults
-    /// Retrieves the API access key stored in UserDefaults.
-    /// - Returns: The stored API access key as a `String`, or `nil` if not found.
-    /// If the key is not found, the `apiAccessKeyStatus` will be set to `.notFound`.
-    func getAPIAccessKeyFromUserDefaults() async -> String? {
-        guard let apiAccessKey: String = await defaults.get(key: .apiAccessKey) as? String else {
-            apiAccessKeyStatus = .notFound
-            return nil
+    func getAPIAccessKey() async -> String? {
+        guard let apiAccessKey else {
+            guard let tempAPIAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
+                return nil
+            }
+            
+            apiAccessKey = tempAPIAccessKey
+            return tempAPIAccessKey
         }
         
         return apiAccessKey
     }
     
-    // MARK: - API Access Key Checkup
-    /// Checks if an API access key is stored in UserDefaults and attempts to connect it.
-    /// If no key is found, the status is set to `.notFound`.
     func apiAccessKeyCheckup() async {
         // Get the API access key from UserDefaults to ensure we always work with a valid API key, in case changes happen.
-        guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
-            return
-        }
+        guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else { return }
         
-        await connectAPIAccessKey(key: apiAccessKey)
+        do {
+            try await connectAPIAccessKey(key: apiAccessKey)
+        } catch {
+            print(errorModel.apiAccessKeyCheckupFailed)
+        }
     }
     
-    // MARK: - Connect API Access Key
-    /// Attempts to connect and validate the provided API access key.
-    /// - Parameter key: The API access key to validate.
-    func connectAPIAccessKey(key: String) async {
-        guard !key.isEmpty else { return }
+    func connectAPIAccessKey(key: String) async throws {
+        guard !key.isEmpty else {
+            print(errorModel.EmptyAPIAccessKey.localizedDescription)
+            throw errorModel.EmptyAPIAccessKey
+        }
         
         apiAccessKeyStatus = .validating
         let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: key)
@@ -74,29 +73,43 @@ import Foundation
             try await imageAPIService.validateAPIAccessKey()
             apiAccessKeyStatus = .connected
             await saveAPIAccessKeyToUserDefaults(key)
-        } catch let error as URLError {
+        } catch  {
             print(error.localizedDescription)
+            handleURLError(error)
+        }
+    }
+    
+    func handleURLError(_ error: Error?) {
+        if let urlError = error as? URLError {
             apiAccessKeyStatus = {
-                switch error.code {
+                switch urlError.code {
                 case .notConnectedToInternet:
                     return .failed
                 case .clientCertificateRejected:
                     return .rateLimited
-                default:
+                case .userAuthenticationRequired:
                     return .invalid
+                default:
+                    print(urlError.localizedDescription)
+                    return .failed
                 }
             }()
-        } catch {
-            print(error.localizedDescription)
-            apiAccessKeyStatus = .invalid
         }
     }
     
-    // MARK: PRIVATE FUNCTIONS
+    // MARK: - PRIVATE FUNCTIONS
     
-    // MARK: - On API Access Key Status Change
-    /// Handles changes to the API access key status and updates the stored status in UserDefaults.
-    /// - Parameter status: The new API access key status.
+    private func getAPIAccessKeyFromUserDefaults() async -> String? {
+        guard let apiAccessKey: String = await defaults.get(key: .apiAccessKey) as? String else {
+            apiAccessKeyStatus = .notFound
+            
+            print(errorModel.apiAccessKeyNotFound.localizedDescription)
+            return nil
+        }
+        
+        return apiAccessKey
+    }
+    
     private func onAPIAccessKeyStatusChange(_ status: APIAccessKeyValidityStatusModel) async {
         do {
             switch status {
@@ -108,34 +121,28 @@ import Foundation
                 try await saveAPIAccessKeyStatusToUserDefaults(.connected)
             }
         } catch {
-            print("Error: Saving `\(status)` status to user defaults. \(error.localizedDescription)")
+            print("❌: Saving `\(status)` status to user defaults. \(error.localizedDescription)")
         }
     }
     
-    // MARK: - Save API Access Key to User Defaults
-    /// Saves the provided API access key to UserDefaults.
-    /// - Parameter key: The API access key to save.
     private func saveAPIAccessKeyToUserDefaults(_ key: String) async {
         await defaults.save(key: .apiAccessKey, value: key)
     }
     
-    // MARK: - Save API Access Key Status to User Defaults
-    /// Saves the provided API access key status to UserDefaults.
-    /// - Parameter status: The API access key status to save.
-    /// - Throws: An error if saving the status to UserDefaults fails.
     private func saveAPIAccessKeyStatusToUserDefaults(_ status: APIAccessKeyValidityStatusModel) async throws {
         try await defaults.saveModel(key: .apiAccessKeyStatusKey, value: status)
     }
     
-    // MARK: - Get & Assign API Access Key Status from User Defaults
-    /// Retrieves and assigns the API access key status stored in UserDefaults.
-    /// - Throws: An error if fetching the access key status from UserDefaults fails.
-    private func getNAssignAPIAccessKeyStatusFromUserDefaults() async throws {
-        guard let apiAccessKeyStatus: APIAccessKeyValidityStatusModel = try await defaults.getModel(key: .apiAccessKeyStatusKey, type: APIAccessKeyValidityStatusModel.self) else {
-            apiAccessKeyStatus = .notFound
-            return
+    private func getNAssignAPIAccessKeyStatusFromUserDefaults() async {
+        do {
+            guard let apiAccessKeyStatus: APIAccessKeyValidityStatusModel = try await defaults.getModel(key: .apiAccessKeyStatusKey, type: APIAccessKeyValidityStatusModel.self) else {
+                apiAccessKeyStatus = .notFound
+                return
+            }
+            
+            self.apiAccessKeyStatus = apiAccessKeyStatus
+        } catch {
+            print(errorModel.apiAccessKeyStatusNotFound.localizedDescription)
         }
-        
-        self.apiAccessKeyStatus = apiAccessKeyStatus
     }
 }

@@ -218,7 +218,7 @@ actor DesktopPictureManager {
         do {
             try await setDesktopPicture(from: imageFileURL)
         } catch {
-            print("Error: Initializing desktop picture. \(error.localizedDescription)")
+            print("❌: Initializing desktop picture. \(error.localizedDescription)")
         }
     }
     
@@ -235,7 +235,7 @@ actor DesktopPictureManager {
         do {
             try await setDesktopPicture(from: currentDesktopPictureFileURLString)
         } catch {
-            print("Error: Updating desktop picture.")
+            print("❌: Updating desktop picture.")
         }
     }
 }

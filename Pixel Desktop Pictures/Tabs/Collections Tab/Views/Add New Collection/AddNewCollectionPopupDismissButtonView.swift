@@ -9,12 +9,12 @@ import SwiftUI
 
 struct AddNewCollectionPopupDismissButtonView: View {
     // MARK: - PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
     // MARK: - BODY
     var body: some View {
         Button {
-            collectionsVM.presentPopup(false, for: .collectionCreationPopOver)
+            collectionsTabVM.presentPopup(false, for: .collectionCreationPopOver)
         } label: {
             Image(systemName: "xmark.circle.fill")
                 .foregroundStyle(.secondary)
@@ -31,10 +31,10 @@ struct AddNewCollectionPopupDismissButtonView: View {
     AddNewCollectionPopupDismissButtonView()
         .padding()
         .environment(
-            CollectionsViewModel(
+            CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init()
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
             )
         )
 }

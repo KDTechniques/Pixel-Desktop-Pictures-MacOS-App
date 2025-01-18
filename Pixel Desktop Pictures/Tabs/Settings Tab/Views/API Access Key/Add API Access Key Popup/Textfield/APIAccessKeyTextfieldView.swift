@@ -64,7 +64,7 @@ extension APIAccessKeyTextfieldView {
         Task {
             let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText
             settingsTabVM.dismissPopUp()
-            await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
+            try await apiAccessKeyManager.connectAPIAccessKey(key: tempAPIAccessKey)
         }
     }
 }

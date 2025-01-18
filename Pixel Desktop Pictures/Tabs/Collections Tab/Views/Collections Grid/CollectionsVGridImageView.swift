@@ -8,24 +8,17 @@
 import SwiftUI
 import SDWebImageSwiftUI
 
-
-struct VGridItemWidthPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 struct CollectionsVGridImageView: View {
     // MARK: - INJECTED PROPERTIES
-    let item: CollectionModel
+    let item: Collection
     
     // MARK: - ASSIGNED PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @State private var showEditButton: Bool = false
+    @State private var imageURLString: String?
     
     // MARK: - INITIALIZER
-    init(item: CollectionModel) {
+    init(item: Collection) {
         self.item = item
     }
     
@@ -34,29 +27,21 @@ struct CollectionsVGridImageView: View {
     
     // MARK: - BODY
     var body: some View {
-        Group {
-            if let imageURLString: String = try? item.getImageURLs().small {
-                WebImage(
-                    url: .init(string: imageURLString),
-                    options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
-                )
-                .placeholder {
-                    if item.collectionName != CollectionModel.randomKeywordString {
-                        ProgressView().scaleEffect(0.3)
-                    }
-                }
-                .resizable()
-                .scaledToFill()
-            } else {
-                Color.clear
-            }
-        }
+        WebImage(
+            url: .init(string: imageURLString ?? ""),
+            options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
+        )
+        .placeholder { placeholder }
+        .resizable()
+        .scaledToFill()
         .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
         .overlay(Color.vGridItemOverlay)
         .overlay { overlay }
         .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
+        .onChange(of: item.imageQualityURLStringsEncoded) { _, _ in handleImageURLsDataChange() }
+        .task { await handleTask() }
     }
 }
 
@@ -66,16 +51,25 @@ struct CollectionsVGridImageView: View {
         .frame(width: 120)
         .padding()
         .environment(
-            CollectionsViewModel(
+            CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),
-                swiftDataManager: .init(swiftDataManager: try! .init(appEnvironment: .mock)),
-                errorPopupVM: .init())
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
+            )
         )
         .previewModifier
 }
 
 // MARK: EXTENSIONS
 extension CollectionsVGridImageView {
+    // MARK: - Placeholder
+    @ViewBuilder
+    private var placeholder: some View {
+        if item.name != Collection.randomKeywordString {
+            ProgressView().scaleEffect(0.3)
+        }
+    }
+    
     // MARK: - Checkmark
     private var checkmark: some View {
         Image(systemName: "checkmark")
@@ -89,8 +83,8 @@ extension CollectionsVGridImageView {
     private var editButton: some View {
         Button {
             Task {
-                collectionsVM.updatingItem = item
-                collectionsVM.presentPopup(true, for: .collectionUpdatePopOver)
+                collectionsTabVM.setUpdatingItem(item)
+                collectionsTabVM.presentPopup(true, for: .collectionUpdatePopOver)
             }
         } label: {
             Image(systemName: "applepencil.gen1")
@@ -109,7 +103,7 @@ extension CollectionsVGridImageView {
     private var overlay: some View {
         Group {
             checkmark
-            CollectionNameOverlayView(collectionName: item.collectionName)
+            CollectionNameOverlayView(collectionName: item.name)
             editButton
         }
         .foregroundStyle(.white)
@@ -119,7 +113,9 @@ extension CollectionsVGridImageView {
     
     // MARK: - Handle Tap
     private func handleTap() {
-        collectionsVM.updateCollectionSelection(item: item)
+        Task {
+            await collectionsTabVM.updateCollectionSelection(item: item)
+        }
     }
     
     // MARK: - Handle Hover
@@ -127,5 +123,15 @@ extension CollectionsVGridImageView {
         withAnimation(.smooth(duration: 0.3)) {
             showEditButton = isHovering
         }
+    }
+    
+    // MARK: - Handle `imageURLsData` Change
+    private func handleImageURLsDataChange() {
+        Task { await handleTask() }
+    }
+    
+    // MARK: - Handle Task
+    private func handleTask() async {
+        imageURLString = try? await collectionsTabVM.getCollectionManager().getImageURLs(from: item).small
     }
 }

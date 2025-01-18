@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CollectionsVGridScrollView: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @Binding var scrollPosition: ScrollPosition
     
     // MARK: - ASSIGNED PROPERTIES
@@ -25,15 +25,15 @@ struct CollectionsVGridScrollView: View {
     var body: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(collectionsVM.collectionItemsArray, id: \.self) { item in
-                    CollectionsVGridPlusFrameButtonView(collectionName: item.collectionName)
+                ForEach(collectionsTabVM.collectionsArray, id: \.self) { item in
+                    CollectionsVGridPlusFrameButtonView(collectionName: item.name)
                     CollectionsVGridImageView(item: item)
                 }
             }
             .padding(.horizontal)
         }
         .scrollPosition($scrollPosition)
-        .scrollDisabled(collectionsVM.collectionItemsArray.count <= nonScrollableItemsCount)
+        .scrollDisabled(collectionsTabVM.collectionsArray.count <= nonScrollableItemsCount)
         .frame(height: TabItemsModel.collections.contentHeight)
         .padding(.bottom)
         .overlay { CollectionsGridPopupBackgroundView() }
@@ -51,12 +51,12 @@ extension CollectionsVGridScrollView {
     // MARK: - bottomPopup
     @ViewBuilder
     private var bottomPopup: some View {
-        if collectionsVM.popOverItem == (true, .collectionCreationPopOver) {
+        if collectionsTabVM.popOverItem == (true, .collectionCreationPopOver) {
             AddNewCollectionView()
                 .transition(.move(edge: .bottom))
         }
         
-        if collectionsVM.popOverItem == (true, .collectionUpdatePopOver) {
+        if collectionsTabVM.popOverItem == (true, .collectionUpdatePopOver) {
             UpdateCollectionView()
                 .transition(.move(edge: .bottom))
         }

@@ -12,7 +12,6 @@ struct SwiftUIView2: View {
     var apiService: UnsplashImageAPIService = .init(apiAccessKey: "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ")
     let desktopPictureManager: DesktopPictureManager = .shared
     let imageDownloadManager: ImageDownloadManager = .shared
-    @State private var pageNumber: Int = 60
     
     var body: some View {
         VStack {
@@ -49,14 +48,13 @@ struct SwiftUIView2: View {
             Button("Get Query Image Model") {
                 Task {
                     do {
-                        pageNumber += 1
-                        let model = try await apiService.getQueryImageModel(queryText: "Black and White", pageNumber: pageNumber, imagesPerPage: 1)
+                        let item = try await apiService.getQueryImages(query: "nature", pageNumber: 1, imagesPerPage: 1)
                         let imageFileURLString: String = try await imageDownloadManager.downloadImage(
-                            url: model.results.first!.imageQualityURLStrings.small,
+                            url: item.results.first!.imageQualityURLStrings.small,
                             to: MockUnsplashImageDirectoryModel.downloadsDirectory
                         )
-                        print("URL: \(model.results.first!.imageQualityURLStrings.small) ❤️")
-//                        try await desktopPictureManager.setDesktopPicture(from: imageFileURLString)
+                        print("URL: \(item.results.first!.imageQualityURLStrings.small) ❤️")
+                        try await desktopPictureManager.setDesktopPicture(from: imageFileURLString)
                     } catch {
                         print(error.localizedDescription)
                     }

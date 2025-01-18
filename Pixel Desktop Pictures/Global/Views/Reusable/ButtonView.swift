@@ -16,7 +16,7 @@ struct ButtonView: View {
     let title: String
     let showProgress: Bool
     let type: ButtonTypes
-    let action: () -> Void
+    let action: () async -> Void
     
     // MARK: - PRIVATE PROPERTIES
     var foregroundColor: Color {
@@ -38,7 +38,7 @@ struct ButtonView: View {
     }
     
     // MARK: - INITIALIZER
-    init(title: String, showProgress: Bool = false, type: ButtonTypes, action: @escaping () -> Void) {
+    init(title: String, showProgress: Bool = false, type: ButtonTypes, action: @escaping () async -> Void) {
         self.title = title
         self.showProgress = showProgress
         self.type = type
@@ -48,7 +48,7 @@ struct ButtonView: View {
     // MARK: - BODY
     var body: some View {
         Button {
-            action()
+            Task { await action() }
         } label: {
             Text(title)
                 .overlay(alignment: .trailing) {

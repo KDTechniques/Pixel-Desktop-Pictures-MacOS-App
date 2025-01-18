@@ -10,46 +10,42 @@ import SDWebImageSwiftUI
 
 struct UpdateCollectionPreviewImageView: View {
     //MARK: - INJECTED PROPERTIES
-    @Environment(CollectionsViewModel.self) private var collectionsVM
-    let item: CollectionModel
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
+    let item: Collection
     
     // MARK: - ASSIGNED PROPERTIES
     let vGridValues = VGridValuesModel.self
+    var collectionModelManager: CollectionManager { collectionsTabVM.getCollectionManager() }
+    @State private var imageURLString: String?
     @State private var showImage: Bool = false
     
     // MARK: - INITIALIZER
-    init(item: CollectionModel) {
+    init(item: Collection) {
         self.item = item
     }
     
     // MARK: - BODY
     var body: some View {
         Group {
-            if let imageURLString: String = try? item.getImageURLs().small {
-                if showImage {
-                    WebImage(
-                        url: .init(string: imageURLString),
-                        options: [.retryFailed, .highPriority, .continueInBackground]
-                    )
-                    .placeholder { ProgressView().scaleEffect(0.3) }
-                    .resizable()
-                    .scaledToFill()
-                    .transition(.fade)
-                } else {
-                    ProgressView().scaleEffect(0.3)
-                }
+            if showImage {
+                WebImage(
+                    url: .init(string: imageURLString ?? ""),
+                    options: [.retryFailed, .highPriority, .continueInBackground]
+                )
+                .placeholder { ProgressView().scaleEffect(0.3) }
+                .resizable()
+                .scaledToFill()
+                .transition(.fade)
             } else {
-                Color.clear
+                ProgressView().scaleEffect(0.3)
             }
         }
         .frame(width: vGridValues.width, height: vGridValues.height)
         .clipped()
         .overlay(Color.vGridItemOverlay)
         .overlay(CollectionNameOverlayView(collectionName: imageOverlayText()))
-        .onFirstTaskViewModifier {
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            withAnimation { showImage = true }
-        }
+        .onChange(of: item.imageQualityURLStringsEncoded) { _, _ in handleImageURLsDataChange() }
+        .task { await handleTask() }
     }
 }
 
@@ -64,8 +60,24 @@ struct UpdateCollectionPreviewImageView: View {
 extension UpdateCollectionPreviewImageView {
     // MARK: - Image Overlay Text
     private func imageOverlayText() -> String {
-        return collectionsVM.collectionRenameTextfieldText.isEmpty
-        ? item.collectionName
-        : collectionsVM.collectionRenameTextfieldText.capitalized
+        return collectionsTabVM.renameTextfieldText.isEmpty
+        ? item.name
+        : collectionsTabVM.renameTextfieldText.capitalized
+    }
+    
+    // MARK: FUNCTIONS
+    
+    // MARK: - Handle `imageURLsData` Change
+    private func handleImageURLsDataChange() {
+        Task {
+            imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
+        }
+    }
+    
+    // MARK: - Handle Task
+    private func handleTask() async {
+        imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        withAnimation { showImage = true }
     }
 }
