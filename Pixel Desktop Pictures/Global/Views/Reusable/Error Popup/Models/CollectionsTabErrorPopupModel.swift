@@ -14,6 +14,7 @@ enum CollectionsTabErrorPopupModel: ErrorPopupProtocol {
     case failedToUpdateCollectionThumbnail
     case failedToUpdateCollectionSelection
     case failedToDeleteCollection
+    case emptyCollectionName
     case somethingWentWrong
     
     var title: String {
@@ -30,6 +31,8 @@ enum CollectionsTabErrorPopupModel: ErrorPopupProtocol {
             return "Failed to select/deselect collection."
         case .failedToDeleteCollection:
             return "Failed to delete collection."
+        case .emptyCollectionName:
+            return "You forgot to enter the collection name."
         case .somethingWentWrong:
             return "Something went wrong. Please try again later."
         }

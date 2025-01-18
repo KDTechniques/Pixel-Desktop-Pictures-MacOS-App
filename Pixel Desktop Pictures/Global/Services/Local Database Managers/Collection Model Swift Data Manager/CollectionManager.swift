@@ -60,17 +60,18 @@ actor CollectionManager {
         try await localDatabaseManager.updateCollection()
     }
     
-    
-    func rename(for item: Collection, newName: String, imageAPIService: UnsplashImageAPIService) async throws {
+    func rename(for item: Collection, newName: String, imageQualityURLStringsEncoded: Data) async throws {
         item.name = newName.capitalized
-        item.pageNumber = 0
-        try await updateImageQualityURLStrings(for: item, imageAPIService: imageAPIService)
+        item.pageNumber = 1
+        item.imageQualityURLStringsEncoded = imageQualityURLStringsEncoded
         try await localDatabaseManager.updateCollection()
     }
     
     func updateImageQualityURLStrings(for item: Collection, imageAPIService: UnsplashImageAPIService) async throws {
         let nextPageNumber:Int = item.pageNumber + 1
+        
         let nextQueryImages: UnsplashQueryImages = try await imageAPIService.getQueryImages(query: item.name.capitalized, pageNumber: nextPageNumber, imagesPerPage: 1)
+        
         guard let newImageURLs: UnsplashImage = nextQueryImages.results.first?.imageQualityURLStrings else {
             throw URLError(.badServerResponse)
         }

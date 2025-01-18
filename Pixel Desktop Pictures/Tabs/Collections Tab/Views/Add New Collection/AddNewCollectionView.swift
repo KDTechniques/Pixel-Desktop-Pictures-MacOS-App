@@ -19,7 +19,6 @@ struct AddNewCollectionView: View {
             ButtonView(title: "Create", showProgress: collectionsTabVM.showCreateButtonProgress, type: .popup) {
                 collectionsTabVM.createCollection()
             }
-            .disabled(collectionsTabVM.nameTextfieldText.isEmpty)
         }
         .padding()
         .background(Color.bottomPopupBackground)

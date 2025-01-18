@@ -22,9 +22,8 @@ struct UpdateCollectionView: View {
                     UpdateCollectionTextfieldView(collectionName: item.name)
                     
                     ButtonView(title: "Rename", showProgress: collectionsTabVM.showRenameButtonProgress, type: .popup) {
-                        collectionsTabVM.updateCollectionName()
+                        collectionsTabVM.renameCollection()
                     }
-                    .disabled(collectionsTabVM.renameTextfieldText.isEmpty)
                     
                     VStack(alignment: .leading) {
                         HStack {

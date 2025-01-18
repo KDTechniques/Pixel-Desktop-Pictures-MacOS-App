@@ -70,4 +70,14 @@ extension CollectionsTabViewModel {
             scrollPosition.wrappedValue.scrollTo(edge: .bottom)
         }
     }
+    
+    func getImageAPIServiceInstance() async throws -> UnsplashImageAPIService {
+        guard let apiAccessKey: String = await getAPIAccessKeyManager().getAPIAccessKey() else {
+            throw CollectionsViewModelErrorModel.apiAccessKeyNotFound
+        }
+        
+        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        
+        return imageAPIService
+    }
 }

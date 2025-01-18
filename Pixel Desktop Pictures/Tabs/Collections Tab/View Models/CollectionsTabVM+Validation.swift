@@ -18,4 +18,19 @@ extension CollectionsTabViewModel {
             throw CollectionsViewModelErrorModel.duplicateCollectionName
         }
     }
+    
+    func isQueryImageExistInLocalDatabase(for collectionName: String) async throws -> Bool {
+        let isExist: Bool = try await !getQueryImageManager().fetchQueryImages(for: [collectionName]).isEmpty
+        return isExist
+    }
+    
+    func handleEmptyCollectionName(_ name: String) async -> Bool {
+        // Early exit to avoid errors when creating a collection with an empty value.
+        guard !name.isEmpty else {
+            await getErrorPopupVM().addError(getErrorPopup().emptyCollectionName)
+            return false
+        }
+        
+        return true
+    }
 }
