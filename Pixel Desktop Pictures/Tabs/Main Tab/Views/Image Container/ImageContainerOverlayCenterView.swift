@@ -33,7 +33,7 @@ struct ImageContainerOverlayCenterView: View {
 #Preview("Image Preview Image Container Overlay Center View") {
     Color.debug
         .overlay {
-            ImageContainerOverlayCenterView(centerItem: .random()) {
+            ImageContainerOverlayCenterView(centerItem: .retryIcon/*.random()*/) {
                 print("Button Clicked!")
             }
         }
@@ -45,7 +45,8 @@ extension ImageContainerOverlayCenterView {
         Group {
             switch centerItem {
             case .retryIcon:
-                Image(systemName: "arrow.trianglehead.clockwise.rotate.90")
+                Image(systemName: "arrow.trianglehead.2.clockwise")
+                    .fontWeight(.semibold)
             case .progressView:
                 Image(systemName: "progress.indicator")
                     .symbolEffect(.variableColor.iterative.hideInactiveLayers)

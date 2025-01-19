@@ -17,7 +17,7 @@ final class CollectionsTabViewModel {
     
     // MARK: - ASSIGNED PROPERTIES
     private(set) var collectionsArray: [Collection] = []
-    private(set) var popOverItem: (isPresented: Bool, type: CollectionsViewPopOverModel) = (false, .collectionCreationPopOver)
+    private(set) var popOverItem: (isPresented: Bool, type: CollectionsViewPopOver) = (false, .collectionCreationPopOver)
     
     // Create Collection
     private(set) var nameTextfieldText: String = ""
@@ -78,8 +78,8 @@ extension CollectionsTabViewModel {
         return .shared
     }
     
-    func getVMError() -> CollectionsViewModelErrorModel.Type {
-        return CollectionsViewModelErrorModel.self
+    func getVMError() -> CollectionsViewModelError.Type {
+        return CollectionsViewModelError.self
     }
 }
 
@@ -97,7 +97,7 @@ extension CollectionsTabViewModel {
         collectionsArray.removeAll(where: { $0 == element })
     }
     
-    func setPopOverItem(_ newItem: (isPresented: Bool, type: CollectionsViewPopOverModel) ) {
+    func setPopOverItem(_ newItem: (isPresented: Bool, type: CollectionsViewPopOver) ) {
         popOverItem = newItem
     }
     

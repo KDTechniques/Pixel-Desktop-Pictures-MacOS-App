@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>50</string>
+					<string>56</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>49</string>
+					<string>55</string>
 					<key>Timestamp</key>
-					<string>758793627.384425</string>
+					<string>758933561.851141</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -38,7 +38,7 @@
 </string>
 				<key>leading</key>
 				<string>        } catch {
-            print("Error: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
+            print("❌: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
 </string>
 				<key>trailing</key>
 				<string>#if DEBUG
@@ -184,6 +184,100 @@
 			</dict>
 			<key>title</key>
 			<string>Get a random index to load images itterativly</string>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
+					<key>EndingLineNumber</key>
+					<string>59</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
+					<key>StartingLineNumber</key>
+					<string>58</string>
+					<key>Timestamp</key>
+					<string>758943777.229897</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Global/Services/Local Database Managers/Recents Local Database Manager/RecentManager.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string>                    throw URLError(.badURL)
+</string>
+				<key>leading</key>
+				<string>            case .queryImage:
+                guard let data: Data = item.queryImageEncoded else {
+</string>
+				<key>trailing</key>
+				<string>                }
+                
+                var imageURLs: UnsplashQueryImage = try JSONDecoder().decode(UnsplashQueryImage.self, from: data)
+</string>
+			</dict>
+			<key>title</key>
+			<string>create custom error for this</string>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
+					<key>EndingLineNumber</key>
+					<string>67</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
+					<key>StartingLineNumber</key>
+					<string>66</string>
+					<key>Timestamp</key>
+					<string>758943777.230034</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Pixel Desktop Pictures/Global/Services/Local Database Managers/Recents Local Database Manager/RecentManager.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string>                    throw URLError(.badURL)
+</string>
+				<key>leading</key>
+				<string>            case .randomImage:
+                guard let data: Data = item.randomImageEncoded else {
+</string>
+				<key>trailing</key>
+				<string>                }
+                
+                let imageURLs: UnsplashRandomImage = try JSONDecoder().decode(UnsplashRandomImage.self, from: data)
+</string>
+			</dict>
+			<key>title</key>
+			<string>create custom error for this</string>
 			<key>type</key>
 			<string>bookmark</string>
 		</dict>

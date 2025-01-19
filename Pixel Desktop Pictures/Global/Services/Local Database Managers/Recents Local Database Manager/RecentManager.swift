@@ -39,13 +39,61 @@ actor RecentManager {
     
     // MARK: - Read Operations
     
-    func fetchRecents() async throws -> [Recent] {
+    func getRecents() async throws -> [Recent] {
         try await localDatabaseManager.fetchRecents()
+    }
+    
+    func getImageTypeEncoded(for type: RecentImage) throws -> Data {
+        let imageTypeEncoded: Data = try JSONEncoder().encode(type)
+        return imageTypeEncoded
+    }
+    
+    func getImageURLs(from item: Recent) async throws -> UnsplashImage {
+        // First, decode data.
+        let imageTypeDecoded: RecentImage = try JSONDecoder().decode(RecentImage.self, from: item.imageTypeEncoded)
+        
+        var imageQualityURLStrings: UnsplashImage = try {
+            switch imageTypeDecoded {
+            case .queryImage:
+                guard let data: Data = item.queryImageEncoded else {
+                    throw URLError(.badURL)
+                }
+                
+                var imageURLs: UnsplashQueryImage = try JSONDecoder().decode(UnsplashQueryImage.self, from: data)
+                return imageURLs.imageQualityURLStrings
+                
+            case .randomImage:
+                guard let data: Data = item.randomImageEncoded else {
+                    throw URLError(.badURL)
+                }
+                
+                let imageURLs: UnsplashRandomImage = try JSONDecoder().decode(UnsplashRandomImage.self, from: data)
+                return imageURLs.imageQualityURLStrings
+            }
+        }()
+        
+        // Then modify thumbnail sizing.
+        let updatedThumbURL: String = imageQualityURLStrings.thumb.replacingOccurrences( // Note: If this 50 width has no impact on UX, remove this line
+            of: "(?<=\\b)w=200(?=&|$)",
+            with: "w=50",
+            options: .regularExpression
+        )
+        
+        imageQualityURLStrings.thumb = updatedThumbURL
+        
+        // Return modified `UnsplashImage` item.
+        return imageQualityURLStrings
+    }
+    
+    // MARK: - Update Operations
+    
+    func updateRecents() async throws {
+        try await localDatabaseManager.updateRecents()
     }
     
     // MARK: - Delete Operations
     
-    func deleteRecent(at item: Recent) async throws {
-        try await localDatabaseManager.deleteRecent(at: item)
+    func deleteRecents(at items: [Recent]) async throws {
+        try await localDatabaseManager.deleteRecents(at: items)
     }
 }

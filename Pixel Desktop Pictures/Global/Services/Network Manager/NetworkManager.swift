@@ -34,7 +34,7 @@ final class NetworkManager {
     // MARK: - Initialize Network Manager
     func initializeNetworkManager() {
         startNetworkMonitor()
-        print("`Network Manager` has been initialized!")
+        print("✅: `Network Manager` has been initialized successfully.")
     }
     
     // MARK: PRIVATE FUNCTIONS
@@ -63,11 +63,11 @@ final class NetworkManager {
     
     // MARK: - handleConnectedStatus
     private func handleConnectedStatus() {
-        print("Connected to a Network. 🛜")
+        print("✅🛜: Connected to a Network.")
     }
     
     // MARK: - handleNoConnectionStatus
     private func handleNoConnectionStatus() {
-        print("No Network Connection. 😕")
+        print("❌🛜: No Network Connection.")
     }
 }

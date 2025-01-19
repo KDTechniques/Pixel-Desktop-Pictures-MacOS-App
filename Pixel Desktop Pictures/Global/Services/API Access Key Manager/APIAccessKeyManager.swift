@@ -33,7 +33,7 @@ final class APIAccessKeyManager {
     
     func initializeAPIAccessKeyManager() async {
         await getNAssignAPIAccessKeyStatusFromUserDefaults()
-        print("`API Access Key Manager` has been initialized!")
+        print("✅: `API Access Key Manager` has been initialized successfully.")
     }
     
     func getAPIAccessKey() async -> String? {

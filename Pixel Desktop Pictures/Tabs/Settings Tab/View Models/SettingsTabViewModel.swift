@@ -36,6 +36,7 @@ import LaunchAtLogin
     private(set) var isPresentedPopup: Bool = false
     var apiAccessKeyTextfieldText: String = ""
     let defaults: UserDefaultsManager = .shared
+    let vmError: SettingsTabViewModelError.Type = SettingsTabViewModelError.self
     
     // MARK: - INITIALIZER
     init(appEnvironment: AppEnvironmentModel) {
@@ -51,11 +52,13 @@ import LaunchAtLogin
     ///
     /// This asynchronous function retrieves and sets up user settings from UserDefaults.
     /// It ensures that any settings data required by the Settings tab is properly loaded and ready for use.
-    ///
-    /// - Throws: An error if retrieving settings from UserDefaults fails.
-    func initializeSettingsTabVM() async throws {
-        try await getSettingsFromUserDefaults()
-        print("`Settings Tab View Model` has been initialized!")
+    func initializeSettingsTabVM() async {
+        do {
+            try await getSettingsFromUserDefaults()
+            print("✅: `Settings Tab View Model` has been initialized successfully.")
+        } catch {
+            print(vmError.failedToInitializeSettingsTabViewModel(error).localizedDescription)
+        }
     }
     
     // MARK: - Present Popup
@@ -157,7 +160,7 @@ import LaunchAtLogin
         do {
             try await defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
         } catch {
-            print("❌: Failed to save update Interval to user defaults.")
+            print(vmError.failedToSaveUpdateIntervalsToUserDefaults(error).localizedDescription)
         }
     }
     
@@ -193,16 +196,21 @@ import LaunchAtLogin
     ///
     /// - Throws: An error if retrieving the `updateIntervalSelection` model fails.
     private func getSettingsFromUserDefaults() async throws {
-        guard
-            let launchAtLogin: Bool = await defaults.get(key: .launchAtLoginKey) as? Bool,
-            let showOnAllSpaces: Bool = await defaults.get(key: .showOnAllSpacesKey) as? Bool,
-            let updateInterval: DesktopPictureSchedulerIntervalsModel = try await defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerIntervalsModel.self) else {
-            await saveSettingsToUserDefaults()
-            return
+        do {
+            guard
+                let launchAtLogin: Bool = await defaults.get(key: .launchAtLoginKey) as? Bool,
+                let showOnAllSpaces: Bool = await defaults.get(key: .showOnAllSpacesKey) as? Bool,
+                let updateInterval: DesktopPictureSchedulerIntervalsModel = try await defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerIntervalsModel.self) else {
+                await saveSettingsToUserDefaults()
+                return
+            }
+            
+            self.launchAtLogin = launchAtLogin
+            self.showOnAllSpaces = showOnAllSpaces
+            self.updateIntervalSelection = updateInterval
+        } catch {
+            print(vmError.failedToGetSettingsFromUserDefaults(error).localizedDescription)
+            throw error
         }
-        
-        self.launchAtLogin = launchAtLogin
-        self.showOnAllSpaces = showOnAllSpaces
-        self.updateIntervalSelection = updateInterval
     }
 }

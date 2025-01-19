@@ -39,7 +39,7 @@ extension View {
                     queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
                 )
             )
-            .environment(RecentsTabViewModel())
+            .environment(RecentsTabViewModel(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
             .environment(SettingsTabViewModel(appEnvironment: .mock))
             .environment(APIAccessKeyManager())
         //            .environment(try! QueryImageLocalDatabaseManager(appEnvironment: .production))

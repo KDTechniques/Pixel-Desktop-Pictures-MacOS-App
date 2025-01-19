@@ -11,9 +11,10 @@ struct MainTabView: View {
     // MARK: - PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
+    @Environment(RecentsTabViewModel.self) private var recentsTabVM
     
-    @State var thumbImageURLString: String = ""
     @State var regularImageURLString: String = ""
+    @State var isLoading: Bool = false
     
     // MARK: - BODY
     var body: some View {
@@ -54,21 +55,25 @@ extension MainTabView {
         VStack(spacing: 0) {
             // Image Preview
             ImageContainerView(
-                thumbnailURLString: thumbImageURLString,
                 imageURLString: regularImageURLString,
                 location: "Colombo, Sri Lanka"
             ) // change this later with a view model property model
-            .task {
+            .onFirstTaskViewModifier {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
-                handleGetImage(currentImage: true)
+                if recentsTabVM.recentsArray.isEmpty {
+                    await handleGetImage(currentImage: true)
+                }
             }
             
             VStack {
                 // Set Desktop Picture Button
                 ButtonView(title: "Set Desktop Picture", type: .regular) {
                     mainTabVM.setDesktopPicture()
-                    handleGetImage(currentImage: false)
+                    isLoading = true
+                    await handleGetImage(currentImage: false)
+                    isLoading = false
                 }
+                .disabled(isLoading)
                 
                 // Author and Download Button
                 footer
@@ -79,25 +84,25 @@ extension MainTabView {
 }
 
 extension MainTabView {
-    func handleGetImage(currentImage: Bool) {
+    func handleGetImage(currentImage: Bool) async {
         guard let queryImage: QueryImage = collectionsTabVM.queryImagesArray.first else { return }
         
         let apiAccessKey: String = "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ"
         let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
         
-        Task {
-            do {
-                let queryImageItem: UnsplashQueryImage = try await QueryImageManager.shared(localDatabaseManager: .init(localDatabaseManager: try .init(appEnvironment: .production))).getQueryImage(
-                    item: queryImage,
-                    isCurrentImage: currentImage,
-                    imageAPIService: imageAPIService
-                )
-                
-                regularImageURLString = queryImageItem.imageQualityURLStrings.regular
-                thumbImageURLString = queryImageItem.imageQualityURLStrings.thumb
-            } catch {
-                print("❌: getting UnsplashQueryImage ❌❌❌❌")
-            }
+        do {
+            let queryImageItem: UnsplashQueryImage = try await QueryImageManager.shared(localDatabaseManager: .init(localDatabaseManager: try .init(appEnvironment: .production))).getQueryImage(
+                item: queryImage,
+                isCurrentImage: currentImage,
+                imageAPIService: imageAPIService
+            )
+            
+            regularImageURLString = queryImageItem.imageQualityURLStrings.regular
+            
+            let data: Data = try JSONEncoder().encode(queryImageItem)
+            await recentsTabVM.addRecent(type: .queryImage, imageEncoded: data)
+        } catch {
+            print("❌: getting UnsplashQueryImage ❌❌❌❌")
         }
     }
 }

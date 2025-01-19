@@ -9,30 +9,28 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct ImageContainerView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
-    let thumbnailURLString: String
     let imageURLString: String
-    let location: String
+    let location: String?
     
-    // MARK: - PRIVATE PROPERTIES
-    let imageHeight: CGFloat = 200
+    // MARK: - ASSIGNED PROPERTIES
+    let imageHeight: CGFloat = 225
     
     // MARK: - INITIALIZER
-    init(thumbnailURLString: String, imageURLString: String, location: String) {
-        self.thumbnailURLString = thumbnailURLString
+    init(imageURLString: String, location: String?) {
         self.imageURLString = imageURLString
         self.location = location
     }
     
     // MARK: - BODY
     var body: some View {
-        ZStack {
+        Group {
             WebImage(
                 url: .init(string: imageURLString),
-                options: [.retryFailed, .continueInBackground, .lowPriority, .scaleDownLargeImages]
+                options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
             )
-            .placeholder { thumbnail }
+            .placeholder { placeholder }
             .resizable()
             .scaledToFill()
             .frame(maxWidth: .infinity)
@@ -40,10 +38,9 @@ struct ImageContainerView: View {
             .clipped()
             .id(imageURLString)
             .transition(.opacity.animation(.default))
-            
-            centerButton
-            locationText
         }
+        .overlay(centerButton)
+        .overlay(alignment: .bottomLeading) { locationText }
     }
 }
 
@@ -53,7 +50,6 @@ struct ImageContainerView: View {
     @Previewable @State var regularImageURLString: String = ""
     
     ImageContainerView(
-        thumbnailURLString: thumbImageURLString,
         imageURLString: regularImageURLString,
         location: "Colombo, Sri Lanka"
     ) // change this later with a view model property model
@@ -75,26 +71,21 @@ extension ImageContainerView {
     }
     
     // MARK: - thumbnail
-    private var thumbnail: some View {
-        WebImage(
-            url: .init(string: thumbnailURLString),
-            options: [.retryFailed, .highPriority]
-        )
-        .placeholder { Color.clear }
-        .resizable()
-        .scaledToFill()
-        .frame(maxWidth: .infinity)
-        .frame(height: imageHeight)
-        .overlay(.ultraThinMaterial)
-        .clipped()
+    private var placeholder: some View {
+        BlurPlaceholderView(blurRadius: 100)
+            .frame(maxWidth: .infinity)
+            .frame(height: imageHeight)
+            .clipped()
     }
     
     // MARK: - Location Text
+    @ViewBuilder
     private var locationText: some View {
-        Label(location, systemImage: "location.fill")
-            .foregroundStyle(.white)
-            .font(.subheadline)
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+        if let location {
+            Label(location, systemImage: "location.fill")
+                .foregroundStyle(.white)
+                .font(.subheadline)
+                .padding()
+        }
     }
 }

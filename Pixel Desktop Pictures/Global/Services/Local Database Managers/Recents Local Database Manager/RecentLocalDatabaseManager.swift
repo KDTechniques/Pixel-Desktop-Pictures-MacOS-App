@@ -54,11 +54,25 @@ actor RecentLocalDatabaseManager {
         }
     }
     
+    // MARK: - Update Operations
+    
+    func updateRecents() async throws {
+        do {
+            try await localDatabaseManager.saveContext()
+        } catch {
+            print(QueryImageLocalDatabaseManagerErrors.failedToUpdateQueryImages(error).localizedDescription)
+            throw error
+        }
+    }
+    
     // MARK: - Delete Operations
     
     @MainActor
-    func deleteRecent(at item: Recent) async throws {
-        await localDatabaseManager.container.mainContext.delete(item)
+    func deleteRecents(at items: [Recent]) async throws {
+        for item in items {
+            await localDatabaseManager.container.mainContext.delete(item)
+        }
+        
         do {
             try await localDatabaseManager.saveContext()
         } catch {

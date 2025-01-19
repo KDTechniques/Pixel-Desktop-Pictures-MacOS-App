@@ -1,19 +1,19 @@
 //
-//  CollectionsTabWindowErrorModel.swift
+//  CollectionsTabWindowError.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-11.
 //
 
-import SwiftUI
+import SwiftUICore
 
-enum CollectionsTabWindowErrorModel: CaseIterable, WindowErrorModelProtocol {
-    case collectionsViewModelInitializationFailed
+enum CollectionsTabWindowError: CaseIterable, WindowErrorProtocol {
+    case collectionsTabViewModelInitializationFailed
     case updatingCollectionNotFound
     
     var title: String {
         switch self {
-        case .collectionsViewModelInitializationFailed:
+        case .collectionsTabViewModelInitializationFailed:
             return "Failed to Fetch Content"
         case .updatingCollectionNotFound:
             return "You May Be Unable to Edit the Collection"
@@ -22,14 +22,14 @@ enum CollectionsTabWindowErrorModel: CaseIterable, WindowErrorModelProtocol {
     
     var messageView: some View {
         switch self {
-        case .collectionsViewModelInitializationFailed, .updatingCollectionNotFound:
+        case .collectionsTabViewModelInitializationFailed, .updatingCollectionNotFound:
             return SomethingWentWrongWindowErrorMessageView()
         }
     }
     
     var withBottomPadding: Bool {
         switch self {
-        case .collectionsViewModelInitializationFailed:
+        case .collectionsTabViewModelInitializationFailed:
             return true
         case .updatingCollectionNotFound:
             return false
