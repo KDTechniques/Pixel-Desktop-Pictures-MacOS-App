@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WindowErrorView<T: WindowErrorModelProtocol>: View {
+struct WindowErrorView<T: WindowErrorProtocol>: View {
     // MARK: - PROPERTIES
     let model: T
     

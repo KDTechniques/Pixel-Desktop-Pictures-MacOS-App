@@ -21,7 +21,7 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var tabsVM: TabsViewModel = .init()
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel = .init()
-    @State private var recentsTabVM: RecentsTabViewModel = .init()
+    @State private var recentsTabVM: RecentsTabViewModel
     @State private var collectionsTabVM: CollectionsTabViewModel
     
     // MARK: - INITIALIZER
@@ -35,7 +35,7 @@ struct Pixel_Desktop_PicturesApp: App {
             let localDatabaseManagerInstance: LocalDatabaseManager = try .init(appEnvironment: appEnvironment)
             
             // Collections Related
-            let collectionLocalDatabaseManagerInstance: CollectionsLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
+            let collectionLocalDatabaseManagerInstance: CollectionLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let collectionManagerInstance: CollectionManager = .shared(localDatabaseManager: collectionLocalDatabaseManagerInstance)
             let queryImageLocalDatabaseManagerInstance: QueryImageLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let queryImageManagerInstance: QueryImageManager = .shared(localDatabaseManager: queryImageLocalDatabaseManagerInstance)
@@ -45,6 +45,12 @@ struct Pixel_Desktop_PicturesApp: App {
                 collectionManager: collectionManagerInstance,
                 queryImageManager: queryImageManagerInstance
             )
+            
+            // Recents Related
+            let recentLocalDatabaseManagerInstance: RecentLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
+            let recentManagerInstance: RecentManager = .shared(localDatabaseManager: recentLocalDatabaseManagerInstance)
+            
+            recentsTabVM = .init(recentManager: recentManagerInstance)
         } catch {
             print("❌: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
             // Fallback code goes here..
@@ -78,15 +84,9 @@ struct Pixel_Desktop_PicturesApp: App {
                     Task { await apiAccessKeyManager.initializeAPIAccessKeyManager() }
                     
                     // MARK: - Tabs Initializations
-                    Task {
-                        do {
-                            try await settingsTabVM.initializeSettingsTabVM()
-                        } catch {
-                            print("❌: Initializing `Settings Tab View Model`, \(error.localizedDescription)")
-                        }
-                    }
-                    
+                    Task { await settingsTabVM.initializeSettingsTabVM() }
                     Task { await collectionsTabVM.initializeCollectionsViewModel() }
+                    Task { await recentsTabVM.initializeRecentsTabViewModel() }
                 }
         }
         .windowResizability(.contentSize)

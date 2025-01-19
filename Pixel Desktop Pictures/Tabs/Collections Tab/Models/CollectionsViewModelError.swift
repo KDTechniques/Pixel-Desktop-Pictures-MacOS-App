@@ -1,5 +1,5 @@
 //
-//  CollectionsViewModelErrorModel.swift
+//  CollectionsViewModelError.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-09.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum CollectionsViewModelErrorModel: LocalizedError {
+enum CollectionsViewModelError: LocalizedError {
     case failedToInitializeCollectionsTabVM(_ error: Error)
     case apiAccessKeyNotFound
     case duplicateCollectionName

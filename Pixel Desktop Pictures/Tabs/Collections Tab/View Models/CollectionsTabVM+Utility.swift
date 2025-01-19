@@ -19,8 +19,6 @@ extension CollectionsTabViewModel {
     ///
     /// - Important: The function ensures that the `Collections Tab View Model` is initialized correctly with either
     /// persistent or default data to prevent the app from running in an inconsistent state.
-    ///
-    /// - Throws: Any error that occurs while fetching, creating, or saving data.
     func initializeCollectionsViewModel() async {
         do {
             // Try to fetch collections from local database, if available.
@@ -80,8 +78,8 @@ extension CollectionsTabViewModel {
     ///
     /// - Parameters:
     ///   - isPresented: A Boolean indicating whether the popup should be presented (`true`) or dismissed (`false`).
-    ///   - type: The type of the popup, represented by `CollectionsViewPopOverModel`.
-    func presentPopup(_ isPresented: Bool, for type: CollectionsViewPopOverModel) {
+    ///   - type: The type of the popup, represented by `CollectionsViewPopOver`.
+    func presentPopup(_ isPresented: Bool, for type: CollectionsViewPopOver) {
         withAnimation(.smooth(duration: 0.4)) {
             setPopOverItem((isPresented, type))
         }

@@ -8,29 +8,39 @@
 import SwiftUI
 
 struct RecentsTabView: View {
-    // MARK: - PROPERTIES
-    @State private var recentsTabVM: RecentsTabViewModel = .init()
+    // MARK: - INJECTED PROPERTIES
+    @Environment(RecentsTabViewModel.self) private var recentsTabVM
+    
+    // MARK: - ASSIGNED PROPERTIES
     let vGridValues = VGridValuesModel.self
     
     // MARK: - BODY
     var body: some View {
-        ScrollView(.vertical) {
-            LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(0...20, id: \.self) { _ in
-                    Rectangle()
-                        .fill(Color.debug)
-                        .frame(height: vGridValues.height)
+        TabContentWithWindowErrorView(tab: .recents) {
+            Group {
+                if recentsTabVM.recentsArray.isEmpty {
+                    WindowErrorView(model: RecentsTabWindowError.recentsTabViewModelInitializationFailed)
+                } else {
+                    RecentsVGridScrollView()
                 }
             }
-            .padding([.horizontal, .bottom])
+            .frame(height: recentsTabVM.recentsArray.isEmpty ? .nan : TabItemsModel.recents.contentHeight)
         }
-        .frame(height: TabItemsModel.recents.contentHeight)
-        .setTabContentHeightToTabsViewModelViewModifier(from: .recents)
         .environment(recentsTabVM)
     }
 }
 
 // MARK: - PREVIEWS
-#Preview("Image Grid View") {
-    PreviewView { RecentsTabView() }
+#Preview("Recents Tab View") {
+    @Previewable @State var networkManager: NetworkManager = .init()
+    @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
+    
+    RecentsTabView()
+        .environment(networkManager)
+        .environment(apiAccessKeyManager)
+        .previewModifier
+        .onFirstTaskViewModifier {
+            await networkManager.initializeNetworkManager()
+            await apiAccessKeyManager.apiAccessKeyCheckup()
+        }
 }

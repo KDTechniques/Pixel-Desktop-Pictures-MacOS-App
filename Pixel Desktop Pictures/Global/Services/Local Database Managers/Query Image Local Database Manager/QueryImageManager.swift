@@ -58,10 +58,11 @@ actor QueryImageManager {
     // MARK: - PRIVATE FUNCTIONS
     
     private func getQueryImages(item: QueryImage) async throws -> UnsplashQueryImages {
-        let queryImages: UnsplashQueryImages =  try JSONDecoder().decode(
-            UnsplashQueryImages.self,
-            from: item.queryImagesEncoded
-        )
+        let queryImages: UnsplashQueryImages =  try JSONDecoder()
+            .decode(
+                UnsplashQueryImages.self,
+                from: item.queryImagesEncoded
+            )
         
         return queryImages
     }

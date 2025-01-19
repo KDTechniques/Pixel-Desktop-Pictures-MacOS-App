@@ -1,14 +1,14 @@
 //
-//  CollectionsLocalDatabaseManager.swift
+//  RecentLocalDatabaseManager.swift
 //  Pixel Desktop Pictures
 //
-//  Created by Kavinda Dilshan on 2025-01-11.
+//  Created by Kavinda Dilshan on 2025-01-19.
 //
 
 import Foundation
 import SwiftData
 
-actor CollectionsLocalDatabaseManager {
+actor RecentLocalDatabaseManager {
     // MARK: - INJECTED PROPERTIES
     let localDatabaseManager: LocalDatabaseManager
     
@@ -22,10 +22,8 @@ actor CollectionsLocalDatabaseManager {
     // MARK: - Create Operations
     
     @MainActor
-    func addCollections(_ newItems: [Collection]) async throws {
-        for item in newItems {
-            await localDatabaseManager.container.mainContext.insert(item)
-        }
+    func addRecent(_ newItem: Recent) async throws {
+        await localDatabaseManager.container.mainContext.insert(newItem)
         
         do {
             try await localDatabaseManager.saveContext()
@@ -38,13 +36,18 @@ actor CollectionsLocalDatabaseManager {
     // MARK: - Read Operations
     
     @MainActor
-    func fetchCollections() async throws -> [Collection] {
+    func fetchRecents() async throws -> [Recent] {
         do {
-            let descriptor: FetchDescriptor = FetchDescriptor<Collection>(
-                sortBy: [SortDescriptor(\.timestamp, order: .forward)] // Ascending order
+            let descriptor: FetchDescriptor = FetchDescriptor<Recent>(
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)] // Descending order
             )
-            let collectionItemModelsArray: [Collection] = try await localDatabaseManager.container.mainContext.fetch(descriptor)
-            return collectionItemModelsArray
+            
+            let recentsArray: [Recent] = try await localDatabaseManager
+                .container
+                .mainContext
+                .fetch(descriptor)
+            
+            return recentsArray
         } catch {
             print(CollectionLocalDatabaseManagerErrors.failedToFetchCollections(error).localizedDescription)
             throw error
@@ -53,11 +56,11 @@ actor CollectionsLocalDatabaseManager {
     
     // MARK: - Update Operations
     
-    func updateCollection() async throws {
+    func updateRecents() async throws {
         do {
             try await localDatabaseManager.saveContext()
         } catch {
-            print(CollectionLocalDatabaseManagerErrors.failedToUpdateCollections(error).localizedDescription)
+            print(QueryImageLocalDatabaseManagerErrors.failedToUpdateQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -65,8 +68,11 @@ actor CollectionsLocalDatabaseManager {
     // MARK: - Delete Operations
     
     @MainActor
-    func deleteCollection(at item: Collection) async throws {
-        await localDatabaseManager.container.mainContext.delete(item)
+    func deleteRecents(at items: [Recent]) async throws {
+        for item in items {
+            await localDatabaseManager.container.mainContext.delete(item)
+        }
+        
         do {
             try await localDatabaseManager.saveContext()
         } catch {

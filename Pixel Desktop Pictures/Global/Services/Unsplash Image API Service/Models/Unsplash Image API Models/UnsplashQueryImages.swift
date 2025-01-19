@@ -12,7 +12,7 @@ struct UnsplashQueryImages: Codable {
 }
 
 struct UnsplashQueryImage: Codable {
-    let imageQualityURLStrings: UnsplashImage
+    var imageQualityURLStrings: UnsplashImage
     let links: UnsplashImageLink
     let user: UnsplashImageUser
     

@@ -41,7 +41,7 @@ struct UpdateCollectionView: View {
                 }
                 .padding()
             } else {
-                WindowErrorView(model: CollectionsTabWindowErrorModel.updatingCollectionNotFound)
+                WindowErrorView(model: CollectionsTabWindowError.updatingCollectionNotFound)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }

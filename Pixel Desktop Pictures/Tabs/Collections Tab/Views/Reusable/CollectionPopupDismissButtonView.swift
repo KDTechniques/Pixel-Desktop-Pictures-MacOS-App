@@ -10,10 +10,10 @@ import SwiftUI
 struct CollectionPopupDismissButtonView: View {
     // MARK: - PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
-    let popOverType: CollectionsViewPopOverModel
+    let popOverType: CollectionsViewPopOver
     
     // MARK: - INITIALIZER
-    init(popOverType: CollectionsViewPopOverModel) {
+    init(popOverType: CollectionsViewPopOver) {
         self.popOverType = popOverType
     }
     
