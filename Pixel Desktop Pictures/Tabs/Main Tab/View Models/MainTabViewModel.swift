@@ -16,6 +16,7 @@ final class MainTabViewModel {
     // MARK: - ASSIGNED PROPERTIES
     private(set) var centerItem: ImageContainerCenterItemsModel?
     private let defaults: UserDefaultsManager = .shared
+    private var currentImage: UnsplashImage?
     
     // MARK: - INITIALIZER
     init(collectionsTabVM: CollectionsTabViewModel) {
@@ -24,40 +25,64 @@ final class MainTabViewModel {
     
     // MARK: - INTERNAL FUNCTIONS
     
-    func getCurrentImageFromUserDefaults() async -> UnsplashImage? {
-        do {
-            let image: UnsplashImage? = try await defaults.getModel(key: .currentImageKey, type: UnsplashImage.self)
-            return image
-        } catch {
-            print("⚠️/❌: Failed to fetch current image from user defaults.")
-            return nil
-        }
+    func initializeMainTabViewModel() async {
+        await getCurrentImageFromUserDefaults()
     }
     
-    func getNextImage() async throws -> UnsplashImage {
+    func setNextImage() async {
         do {
             guard let randomQueryImageItem: QueryImage = collectionsTabVM.queryImagesArray.randomElement() else {
                 // Random element must not fail, but if it does, fallback to next image conforming to `UnsplashRandomImage`.
                 print("❌: Query images array is empty for some unknown reason.")
-                return try await getNextRandomImage()
+                try await setNextRandomImage()
+                return
             }
             
             // Handle case when the random element is the `RANDOM` query.
             guard randomQueryImageItem.query != Collection.randomKeywordString else {
-                return try await getNextRandomImage()
+                try await setNextRandomImage()
+                return
             }
             
             // Handle case when the random element is a non-random query. ex: Nature
-            return try await getNextQueryImage(from: randomQueryImageItem)
+            try await setNextQueryImage(from: randomQueryImageItem)
         } catch {
             print("❌: Failed to generate next image. \(error.localizedDescription)")
-            throw error
+        }
+    }
+    
+    func setDesktopPicture() async {
+        // Early exit if the current image is not available.
+        guard let currentImage else { return }
+        
+        do {
+            // Download the image to documents directory
+            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: UnsplashImageDirectoryModel.documentsDirectory)
+            
+            // Then set the desktop picture.
+            try await DesktopPictureManager.shared.setDesktopPicture(from: savedPath)
+            print("✅: Current image has been set as desktop picture successfully.")
+        } catch {
+            print("❌: Failed to set desktop picture. \(error.localizedDescription)")
+        }
+    }
+    
+    func downloadImageToDevice() async {
+        // Early exit if the current image is not available.
+        guard let currentImage else { return }
+        
+        do {
+            // Download the image to downloads directory
+            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.links.downloadURL, to: UnsplashImageDirectoryModel.downloadsDirectory)
+            print("✅: Current image has been downloaded to `Downloads` folder path: `\(savedPath)` successfully.")
+        } catch {
+            print("❌: Failed to set desktop picture. \(error.localizedDescription)")
         }
     }
     
     // MARK: - PRIVATE FUNCTIONS
     
-    private func getNextRandomImage() async throws -> UnsplashImage {
+    private func setNextRandomImage() async throws {
         do {
             let randomImage: UnsplashRandomImage = try await collectionsTabVM.getImageAPIServiceInstance().getRandomImage()
             
@@ -67,15 +92,14 @@ final class MainTabViewModel {
             // Save the image as current image to user defaults.
             try await saveCurrentImageToUserDefaults(convertedImage)
             
-            // Then return the next random image.
-            return convertedImage
+            currentImage = convertedImage
         } catch {
             print("❌: Failed to generate the next random image. \(error.localizedDescription)")
             throw error
         }
     }
     
-    private func getNextQueryImage(from item: QueryImage) async throws -> UnsplashImage {
+    private func setNextQueryImage(from item: QueryImage) async throws {
         do {
             // Get image api service instance to fetch or load next query image.
             let imageAPIService: UnsplashImageAPIService = try await collectionsTabVM.getImageAPIServiceInstance()
@@ -87,8 +111,7 @@ final class MainTabViewModel {
             // Save the image as current image to user defaults.
             try await saveCurrentImageToUserDefaults(convertedImage)
             
-            // Then return the next query image.
-            return convertedImage
+            currentImage = convertedImage
         } catch {
             print("❌: Failed to generate the next query image. \(error.localizedDescription)")
             throw error
@@ -105,13 +128,12 @@ final class MainTabViewModel {
         }
     }
     
-    // MARK: - Set Desktop Picture
-    func setDesktopPicture() {
-        
-    }
-    
-    // MARK: - Download Image to Device
-    func downloadImageToDevice() {
-        
+    func getCurrentImageFromUserDefaults() async {
+        do {
+            let image: UnsplashImage? = try await defaults.getModel(key: .currentImageKey, type: UnsplashImage.self)
+            currentImage = image
+        } catch {
+            print("⚠️/❌: Failed to fetch current image from user defaults.")
+        }
     }
 }

@@ -14,7 +14,7 @@ struct DownloadButtonView: View {
     // MARK: - BODY
     var body: some View {
         Button("Download") {
-            mainTabVM.downloadImageToDevice()
+            Task { await mainTabVM.downloadImageToDevice() }
         }
         .buttonStyle(.plain)
     }

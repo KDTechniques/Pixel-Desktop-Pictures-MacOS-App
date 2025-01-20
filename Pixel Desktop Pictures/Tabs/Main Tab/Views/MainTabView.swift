@@ -68,7 +68,7 @@ extension MainTabView {
             VStack {
                 // Set Desktop Picture Button
                 ButtonView(title: "Set Desktop Picture", type: .regular) {
-                    mainTabVM.setDesktopPicture()
+                    await mainTabVM.setDesktopPicture()
                     isLoading = true
                     await handleGetImage(currentImage: false)
                     isLoading = false
