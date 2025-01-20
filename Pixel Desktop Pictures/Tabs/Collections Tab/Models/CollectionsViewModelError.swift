@@ -18,6 +18,7 @@ enum CollectionsViewModelError: LocalizedError {
     case failedToFetchQueryImages(collectionName: String, _ error: Error)
     case failedToPrepareCollectionUpdate(for: CollectionNameUsage, _ error: Error)
     case failedToUpdateCollectionSelection(collectionName: String, _ error: Error)
+    case failedToUpdateCollectionSelections(collectionName: String, _ error: Error)
     case failedToUpdateCollectionThumbnailImage(collectionName: String, _ error: Error)
     case updatingItemFoundNil
     case failedToRenameCollection(_ error: Error)
@@ -44,6 +45,8 @@ enum CollectionsViewModelError: LocalizedError {
             return "❌: Failed to prepare collection update for `\(usage.rawValue)`. \(error.localizedDescription)"
         case .failedToUpdateCollectionSelection(let collectionName, let error):
             return "❌: Failed to update selection for `\(collectionName)` collection. \(error.localizedDescription)"
+        case .failedToUpdateCollectionSelections(let collectionName, let error):
+            return "❌: Failed to update collection selections for false, except for `\(collectionName)` collection. \(error.localizedDescription)"
         case .failedToUpdateCollectionThumbnailImage(let collectionName, let error):
             return "❌: Failed to update thumbnail image for `\(collectionName)` collection. \(error.localizedDescription)"
         case .updatingItemFoundNil:

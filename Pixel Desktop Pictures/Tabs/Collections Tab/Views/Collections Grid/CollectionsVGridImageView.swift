@@ -40,6 +40,7 @@ struct CollectionsVGridImageView: View {
         .overlay { overlay }
         .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
+        .onLongPressGesture { handleLongTap() }
         .onChange(of: item.imageQualityURLStringsEncoded) { _, _ in handleImageURLsDataChange() }
         .task { await handleTask() }
     }
@@ -110,27 +111,28 @@ extension CollectionsVGridImageView {
     }
     
     // MARK: FUNCTIONS
-    
-    // MARK: - Handle Tap
     private func handleTap() {
         Task {
             await collectionsTabVM.updateCollectionSelection(item: item)
         }
     }
     
-    // MARK: - Handle Hover
+    private func handleLongTap() {
+        Task {
+            await collectionsTabVM.updateCollectionSelections(excludedItem: item)
+        }
+    }
+    
     private func handleHover(_ isHovering: Bool) {
         withAnimation(.smooth(duration: 0.3)) {
             showEditButton = isHovering
         }
     }
     
-    // MARK: - Handle `imageURLsData` Change
     private func handleImageURLsDataChange() {
         Task { await handleTask() }
     }
     
-    // MARK: - Handle Task
     private func handleTask() async {
         imageURLString = try? await collectionsTabVM.getCollectionManager().getImageURLs(from: item).small
     }

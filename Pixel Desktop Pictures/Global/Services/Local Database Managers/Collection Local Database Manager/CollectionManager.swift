@@ -87,6 +87,17 @@ actor CollectionManager {
         try await localDatabaseManager.updateCollection()
     }
     
+    func updateSelection(for items: [Collection], except: Collection) async throws {
+        for item in items {
+            guard item.isSelected != false else { continue }
+            item.isSelected = false
+        }
+        
+        except.isSelected = true
+        
+        try await localDatabaseManager.updateCollection()
+    }
+    
     // MARK: - Delete Operations
     
     func deleteCollection(at item: Collection) async throws {

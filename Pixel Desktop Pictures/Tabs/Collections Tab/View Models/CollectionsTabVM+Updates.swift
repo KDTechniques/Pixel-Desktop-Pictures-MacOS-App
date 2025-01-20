@@ -125,6 +125,36 @@ extension CollectionsTabViewModel {
         }
     }
     
+    /// Updates the selection status of collections, excluding a specified collection.
+    ///
+    /// This function ensures that all collections, except the one specified in `excludedItem`,
+    /// have their selection status set to false. The excluded collection retains its current
+    /// selection status, and the query images array is updated accordingly. If the excluded
+    /// item is the `RANDOM` collection, the function exits early without making any changes.
+    ///
+    /// - Parameter excludedItem: The `Collection` instance to exclude from the selection update.
+    /// - Throws: Propagates errors that occur while updating the collection selections or
+    ///           setting the query images array.
+    func updateCollectionSelections(excludedItem: Collection) async {
+        // Exit early if the excluded item is the `RANDOM` collection
+        guard excludedItem.name != Collection.randomKeywordString else { return }
+        
+        // Filter all the collections except the excluded item.
+        let collectionItems: [Collection] = collectionsArray.filter({ $0.name != excludedItem.name })
+        
+        do {
+            // Set selection to false for filtered collections, and true for the excluded item.
+            try await getCollectionManager().updateSelection(for: collectionItems, except: excludedItem)
+            
+            // Then set the query images array.
+            try await getAndSetQueryImagesArray()
+            print("✅: Collection selections has been updated to false successfully, except `\(excludedItem.name)` collection.")
+        } catch {
+            print(getVMError().failedToUpdateCollectionSelections(collectionName: excludedItem.name, error).localizedDescription)
+            await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionSelection)
+        }
+    }
+    
     /// Prepares the data required to update or create a collection.
     ///
     /// This function ensures the uniqueness of the collection name in the local database,
