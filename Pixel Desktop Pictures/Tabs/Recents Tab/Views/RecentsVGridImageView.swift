@@ -11,10 +11,11 @@ import SDWebImageSwiftUI
 struct RecentsVGridImageView: View {
     // MARK: - INJECTED PROPETIES
     @Environment(RecentsTabViewModel.self) private var recentsTabVM
+    @Environment(MainTabViewModel.self) private var mainTabVM
     let item: Recent
     
     // MARK: - ASSIGNED PROPERTIES
-    @State private var imageQualitiesURLStrings: UnsplashImage?
+    @State private var imageQualitiesURLStrings: UnsplashImageResolution?
     let vGridValues = VGridValuesModel.self
     
     // MARK: - INITIALIZER
@@ -24,27 +25,28 @@ struct RecentsVGridImageView: View {
     
     // MARK: - BODY
     var body: some View {
-        WebImage(
-            url: .init(string: imageQualitiesURLStrings?.small ?? ""),
-            options: [.highPriority, .retryFailed]
-        )
-        .placeholder { placeholder }
-        .resizable()
-        .scaledToFill()
-        .frame(width: vGridValues.width, height: vGridValues.height)
-        .clipped()
+        Button {
+            handleTap()
+        } label: {
+            WebImage(
+                url: .init(string: imageQualitiesURLStrings?.small ?? ""),
+                options: [.highPriority, .retryFailed, .scaleDownLargeImages]
+            )
+            .placeholder { placeholder }
+            .resizable()
+            .scaledToFill()
+            .frame(width: vGridValues.width, height: vGridValues.height)
+            .clipped()
+        }
+        .buttonStyle(.plain)
         .onFirstTaskViewModifier { await handleOnFirstTaskModifier() }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Recents VGrid Image View") {
-    RecentsVGridImageView(item: .init(
-        imageType: .random(),
-        imageEncoded: .init(),
-        imageTypeEncoded: .init()
-    ))
-    .previewModifier
+    RecentsVGridImageView(item: .init(imageEncoded: .init()))
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS
@@ -59,5 +61,11 @@ extension RecentsVGridImageView {
         imageQualitiesURLStrings = try? await recentsTabVM
             .recentManager
             .getImageURLs(from: item)
+    }
+    
+    private func handleTap() {
+        // Decode image data to set the current image
+        let decodedImage: UnsplashImage? = try? JSONDecoder().decode(UnsplashImage.self, from: item.imageEncoded)
+        Task { await mainTabVM.setCurrentImage(decodedImage) }
     }
 }

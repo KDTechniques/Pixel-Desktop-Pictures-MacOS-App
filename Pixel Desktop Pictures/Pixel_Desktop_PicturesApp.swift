@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import SDWebImageSwiftUI
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
@@ -20,7 +21,7 @@ struct Pixel_Desktop_PicturesApp: App {
     // Tabs
     @State private var tabsVM: TabsViewModel = .init()
     @State private var settingsTabVM: SettingsTabViewModel
-    @State private var mainTabVM: MainTabViewModel = .init()
+    @State private var mainTabVM: MainTabViewModel
     @State private var recentsTabVM: RecentsTabViewModel
     @State private var collectionsTabVM: CollectionsTabViewModel
     
@@ -39,20 +40,24 @@ struct Pixel_Desktop_PicturesApp: App {
             let collectionManagerInstance: CollectionManager = .shared(localDatabaseManager: collectionLocalDatabaseManagerInstance)
             let queryImageLocalDatabaseManagerInstance: QueryImageLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let queryImageManagerInstance: QueryImageManager = .shared(localDatabaseManager: queryImageLocalDatabaseManagerInstance)
-            
-            collectionsTabVM = .init(
+            let collectionsTabVMInstance: CollectionsTabViewModel = .init(
                 apiAccessKeyManager: apiAccessKeyManagerInstance,
                 collectionManager: collectionManagerInstance,
                 queryImageManager: queryImageManagerInstance
             )
+            collectionsTabVM = collectionsTabVMInstance
             
             // Recents Related
             let recentLocalDatabaseManagerInstance: RecentLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let recentManagerInstance: RecentManager = .shared(localDatabaseManager: recentLocalDatabaseManagerInstance)
+            let recentsTabVMInstance: RecentsTabViewModel = .init(recentManager: recentManagerInstance)
+            recentsTabVM = recentsTabVMInstance
             
-            recentsTabVM = .init(recentManager: recentManagerInstance)
+            // Main tab Related
+            mainTabVM = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
         } catch {
             print("❌: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
+            Task { try? await LocalDatabaseManager(appEnvironment: .production).eraseAllData() }
             // Fallback code goes here..
 #if DEBUG
             fatalError()
@@ -86,6 +91,7 @@ struct Pixel_Desktop_PicturesApp: App {
                     // MARK: - Tabs Initializations
                     Task { await settingsTabVM.initializeSettingsTabVM() }
                     Task { await collectionsTabVM.initializeCollectionsViewModel() }
+                    Task { await mainTabVM.initializeMainTabViewModel() }
                     Task { await recentsTabVM.initializeRecentsTabViewModel() }
                 }
         }

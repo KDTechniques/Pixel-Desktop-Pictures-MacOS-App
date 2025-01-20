@@ -91,7 +91,7 @@ final class APIAccessKeyManager {
                     return .invalid
                 default:
                     print(urlError.localizedDescription)
-                    return .failed
+                    return .connected
                 }
             }()
         }

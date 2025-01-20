@@ -18,6 +18,7 @@ struct ErrorPopupView: View {
                 Text(error)
                     .font(.footnote)
                     .multilineTextAlignment(.center)
+                    .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical)
@@ -45,20 +46,20 @@ struct ErrorPopupView: View {
             VStack {
                 Button("Trigger") {
                     Task {
-                        await errorPopupVM.addError(CollectionsTabErrorPopupModel.duplicateCollectionNameFound)
-                        await errorPopupVM.addError(CollectionsTabErrorPopupModel.failedToCreateCollection
+                        await errorPopupVM.addError(CollectionsTabErrorPopup.duplicateCollectionNameFound)
+                        await errorPopupVM.addError(CollectionsTabErrorPopup.failedToCreateCollection
                         )
-                        await errorPopupVM.addError(CollectionsTabErrorPopupModel.somethingWentWrong)
+                        await errorPopupVM.addError(CollectionsTabErrorPopup.somethingWentWrong)
                     }
                 }
                 
                 Button("Trigger") {
-                    Task { await errorPopupVM.addError(CollectionsTabErrorPopupModel.failedToCreateCollection
+                    Task { await errorPopupVM.addError(CollectionsTabErrorPopup.failedToCreateCollection
                     ) }
                 }
                 
                 Button("Trigger") {
-                    Task {  await errorPopupVM.addError(CollectionsTabErrorPopupModel.somethingWentWrong) }
+                    Task {  await errorPopupVM.addError(CollectionsTabErrorPopup.somethingWentWrong) }
                 }
             }
             .padding()

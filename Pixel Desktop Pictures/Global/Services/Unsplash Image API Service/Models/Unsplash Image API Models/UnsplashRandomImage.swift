@@ -8,7 +8,7 @@
 import Foundation
 
 struct UnsplashRandomImage: Codable {
-    var imageQualityURLStrings: UnsplashImage
+    var imageQualityURLStrings: UnsplashImageResolution
     let links: UnsplashImageLink
     let user: UnsplashImageUser
     let location: UnsplashImageLocation
@@ -23,7 +23,7 @@ struct UnsplashRandomImage: Codable {
 
 // MARK: - SUB MODELS
 
-struct UnsplashImage: Codable {
+struct UnsplashImageResolution: Codable {
     let full: String // 2MB
     let regular: String // Ex: 241KB
     let small: String // Ex: 38KB

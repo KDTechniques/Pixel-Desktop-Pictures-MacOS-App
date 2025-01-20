@@ -20,4 +20,5 @@ enum UserDefaultKeys: String {
     case timeIntervalDoubleKey
     case executionTimeIntervalSince1970Key
     case currentDesktopPictureFileURLStringKey
+    case currentImageKey
 }

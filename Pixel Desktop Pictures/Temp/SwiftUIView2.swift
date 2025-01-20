@@ -32,7 +32,7 @@ struct SwiftUIView2: View {
                 Task {
                     
                     do {
-                        let model = try await apiService.getRandomImageModel()
+                        let model = try await apiService.getRandomImage()
                         let imageFileURLString: String = try await imageDownloadManager.downloadImage(
                             url: model.imageQualityURLStrings.full,
                             to: MockUnsplashImageDirectoryModel.downloadsDirectory

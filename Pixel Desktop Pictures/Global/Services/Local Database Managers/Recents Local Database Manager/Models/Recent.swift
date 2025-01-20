@@ -13,19 +13,10 @@ final class Recent {
     // MARK: - PROPERTIES
     @Attribute(.unique) var id: String = UUID().uuidString
     private(set) var timestamp: Date = Date()
-    private(set) var queryImageEncoded: Data? // Encoded `UnsplashQueryImage`
-    private(set) var randomImageEncoded: Data? // Encoded `UnsplashRandomImage`
-    private(set) var imageTypeEncoded: Data
+    private(set) var imageEncoded: Data // Encoded `UnsplashImage`
     
     // MARK: - INITILAIZER
-    init(imageType: RecentImage, imageEncoded: Data, imageTypeEncoded: Data) {
-        switch imageType {
-        case .queryImage:
-            queryImageEncoded = imageEncoded
-        case .randomImage:
-            randomImageEncoded = imageEncoded
-        }
-        
-        self.imageTypeEncoded = imageTypeEncoded
+    init(imageEncoded: Data) {
+        self.imageEncoded = imageEncoded
     }
 }

@@ -56,6 +56,40 @@ enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
         }
     }
     
+    func deletePreviousDesktopPictures() throws {
+        let fileManager: FileManager = .default
+        
+        guard let directoryURL = fileManager
+            .urls(for: directory, in: .userDomainMask)
+            .first else {
+            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
+        }
+        
+        let folderURL: URL = directoryURL.appending(path: folderName)
+        
+        do {
+            // Get the list of files in the directory
+            let contents = try fileManager.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil, options: [])
+            
+            // Iterate through each file and delete it
+            for fileURL in contents {
+                if fileURL.hasDirectoryPath {
+                    // Skip subdirectories
+                    continue
+                }
+                
+                do {
+                    try fileManager.removeItem(at: fileURL)
+                    print("Deleted: \(fileURL.lastPathComponent)")
+                } catch {
+                    print("Failed to delete: \(fileURL.lastPathComponent) - Error: \(error.localizedDescription)")
+                }
+            }
+        } catch {
+            print("Error accessing directory: \(error.localizedDescription)")
+        }
+    }
+    
     func fileURL(extension fileExtension: String) throws -> URL {
         do {
             let fileURL: URL = try createDirectoryIfNeeded()

@@ -11,34 +11,29 @@ import SDWebImageSwiftUI
 struct ImageContainerView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
-    let imageURLString: String
-    let location: String?
     
     // MARK: - ASSIGNED PROPERTIES
     let imageHeight: CGFloat = 225
-    
-    // MARK: - INITIALIZER
-    init(imageURLString: String, location: String?) {
-        self.imageURLString = imageURLString
-        self.location = location
-    }
+    @State private var isImageLoaded = false
     
     // MARK: - BODY
     var body: some View {
-        Group {
-            WebImage(
-                url: .init(string: imageURLString),
-                options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
-            )
-            .placeholder { placeholder }
-            .resizable()
-            .scaledToFill()
-            .frame(maxWidth: .infinity)
-            .frame(height: imageHeight)
-            .clipped()
-            .id(imageURLString)
-            .transition(.opacity.animation(.default))
-        }
+        let imageURLString: String = mainTabVM.currentImage?.imageQualityURLStrings.regular ?? ""
+        
+        WebImage(
+            url: .init(string: imageURLString),
+            options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
+        )
+        .onSuccess { _, _, _ in handleOnSuccess() }
+        .onProgress { _, _ in handleOnProgress() }
+        .resizable()
+        .scaledToFill()
+        .frame(maxWidth: .infinity)
+        .frame(height: imageHeight)
+        .clipped()
+        .opacity(isImageLoaded ? 1 : 0)
+        .overlay { placeholder.opacity(isImageLoaded ? 0 : 1) }
+        .animation(.default, value: isImageLoaded)
         .overlay(centerButton)
         .overlay(alignment: .bottomLeading) { locationText }
     }
@@ -46,46 +41,44 @@ struct ImageContainerView: View {
 
 // MARK: - PREVIEWS
 #Preview("Image Preview Image Container View") {
-    @Previewable @State var thumbImageURLString: String = ""
-    @Previewable @State var regularImageURLString: String = ""
-    
-    ImageContainerView(
-        imageURLString: regularImageURLString,
-        location: "Colombo, Sri Lanka"
-    ) // change this later with a view model property model
-    .task {
-        thumbImageURLString = "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2ODg0NDh8MHwxfHNlYXJjaHw5Mnx8TmF0dXJlfGVufDB8MHx8fDE3MzYzNDk4MjJ8MA&ixlib=rb-4.0.3&q=80&w=400"
-        regularImageURLString = "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2ODg0NDh8MHwxfHNlYXJjaHw5Mnx8TmF0dXJlfGVufDB8MHx8fDE3MzYzNDk4MjJ8MA&ixlib=rb-4.0.3&q=80&w=400"
-    }
-    .previewModifier
+    ImageContainerView()
+        .previewModifier
 }
 
 // MARK: EXTENSIONS
 extension ImageContainerView {
-    // MARK: - Center Item
     private var centerButton: some View {
         ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) {
             guard mainTabVM.centerItem == .retryIcon else { return }
-            mainTabVM.nextImage()
+            await mainTabVM.setNextImage()
         }
     }
     
-    // MARK: - thumbnail
     private var placeholder: some View {
         BlurPlaceholderView(blurRadius: 100)
             .frame(maxWidth: .infinity)
             .frame(height: imageHeight)
             .clipped()
+            .id(UUID().uuidString)
     }
     
-    // MARK: - Location Text
     @ViewBuilder
     private var locationText: some View {
-        if let location {
+        if let location: String = mainTabVM.currentImage?.location?.name {
             Label(location, systemImage: "location.fill")
                 .foregroundStyle(.white)
                 .font(.subheadline)
                 .padding()
         }
+    }
+    
+    // MARK: - FUNCTIONS
+    private func handleOnSuccess() {
+        isImageLoaded = true
+        mainTabVM.setCenterItem(.retryIcon)
+    }
+    
+    private func handleOnProgress() {
+        isImageLoaded = false
     }
 }

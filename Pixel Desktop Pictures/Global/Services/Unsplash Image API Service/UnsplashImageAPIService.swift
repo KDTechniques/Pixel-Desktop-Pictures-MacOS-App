@@ -44,7 +44,7 @@ struct UnsplashImageAPIService {
         }
     }
     
-    /// Fetches a random image model from the Unsplash API.
+    /// Fetches a random image  from the Unsplash API.
     /// This function performs a network call to retrieve a random image and returns the corresponding model.
     ///
     /// - Returns: An `UnsplashRandomImage` object representing the fetched random image.
@@ -52,7 +52,7 @@ struct UnsplashImageAPIService {
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
-    func getRandomImageModel() async throws -> UnsplashRandomImage {
+    func getRandomImage() async throws -> UnsplashRandomImage {
         do {
             let randomImageModel: UnsplashRandomImage = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImage.self)
             return randomImageModel

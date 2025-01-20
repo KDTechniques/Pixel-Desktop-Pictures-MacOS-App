@@ -52,6 +52,8 @@ actor ImageDownloadManager {
         // Create File Path in the Desired Directory
         let fileURL: URL = try directory.fileURL(extension: fileExtension)
         
+        try directory.deletePreviousDesktopPictures()
+        
         // Save the File in the Desired Directory Path
         try data.write(to: fileURL)
         

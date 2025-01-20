@@ -13,4 +13,6 @@ protocol UnsplashImageDirectoryModelProtocol {
     // MARK: - File URL
     /// Constructs a file URL with the specified file extension in the target directory.
     func fileURL(extension fileExtension: String) throws -> URL
+    
+    func deletePreviousDesktopPictures() throws
 }
