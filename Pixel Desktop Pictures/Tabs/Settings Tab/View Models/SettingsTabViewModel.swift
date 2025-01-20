@@ -7,6 +7,7 @@
 
 import AppKit
 import LaunchAtLogin
+import Combine
 
 @MainActor
 @Observable final class SettingsTabViewModel {
@@ -28,32 +29,33 @@ import LaunchAtLogin
         }
     }
     var updateIntervalSelection: DesktopPictureSchedulerIntervalsModel = .defaultTimeInterval {
-        didSet {
-            guard oldValue != updateIntervalSelection else { return }
-            Task { await saveUpdateIntervalToUserDefaults(updateIntervalSelection) }
-        }
+        didSet { updateIntervalSelection$ = updateIntervalSelection }
     }
+    @ObservationIgnored @Published private var updateIntervalSelection$: DesktopPictureSchedulerIntervalsModel = .defaultTimeInterval
     private(set) var isPresentedPopup: Bool = false
     var apiAccessKeyTextfieldText: String = ""
     let defaults: UserDefaultsManager = .shared
     let vmError: SettingsTabViewModelError.Type = SettingsTabViewModelError.self
+    @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
-    init(appEnvironment: AppEnvironmentModel) {
-        desktopPictureScheduler = .shared(appEnvironmentType: appEnvironment)
+    init(appEnvironment: AppEnvironmentModel, mainTabVM: MainTabViewModel) {
+        desktopPictureScheduler = .shared(appEnvironmentType: appEnvironment, mainTabVM: mainTabVM)
     }
     
-    // MARK: FUNCTIONS
+    // MARK: - INTERNAL FUNCTIONS
     
-    // MARK: INTERNAL FUNCTIONS
-    
-    // MARK: - Initialize Settings Tab View Model
     /// Initializes the ViewModel for the Settings tab.
     ///
-    /// This asynchronous function retrieves and sets up user settings from UserDefaults.
-    /// It ensures that any settings data required by the Settings tab is properly loaded and ready for use.
+    /// This asynchronous function handles the setup of the Settings tab ViewModel by:
+    /// - Setting up subscribers for update interval changes
+    /// - Loading user settings from UserDefaults
+    ///
+    /// - Throws: `vmError` if initialization fails
+    /// - Note: Settings are persisted using UserDefaults and loaded on initialization
     func initializeSettingsTabVM() async {
         do {
+            updateIntervalSelectionSubscriber()
             try await getSettingsFromUserDefaults()
             print("✅: `Settings Tab View Model` has been initialized successfully.")
         } catch {
@@ -61,7 +63,6 @@ import LaunchAtLogin
         }
     }
     
-    // MARK: - Present Popup
     /// Controls the visibility of a popup.
     ///
     /// This function updates the state of `isPresentedPopup` to show or hide the popup
@@ -72,7 +73,6 @@ import LaunchAtLogin
         isPresentedPopup = present
     }
     
-    // MARK: - Dismiss Popup
     /// Dismisses the popup and resets related data.
     ///
     /// This function hides the popup by setting its visibility state to `false` and clears
@@ -82,7 +82,6 @@ import LaunchAtLogin
         apiAccessKeyTextfieldText = ""
     }
     
-    // MARK: - Pate API Access Key from Clipboard
     /// Pastes the API access key from the clipboard into the text field.
     ///
     /// This function retrieves a string from the system clipboard and sets it as the text
@@ -92,7 +91,6 @@ import LaunchAtLogin
         apiAccessKeyTextfieldText = clipboardString
     }
     
-    // MARK: - Restore Default Settings
     /// Restores the default settings and saves them to UserDefaults.
     ///
     /// This function resets the settings to their default values and ensures these values are
@@ -105,7 +103,6 @@ import LaunchAtLogin
         updateIntervalSelection = .defaultTimeInterval
     }
     
-    // MARK: - Quit App
     /// Quits the application.
     ///
     /// This function terminates the running application by invoking the `terminate` method
@@ -114,9 +111,37 @@ import LaunchAtLogin
         NSApplication.shared.terminate(nil)
     }
     
-    // MARK: PRIVATE FUNCTIONS
+    // MARK: - PRIVATE FUNCTIONS
     
-    // MARK: - Reset API Access Key Textfield Text
+    /// Subscribes to changes in the update interval selection and handles the updates.
+    ///
+    /// This function sets up a Combine subscriber that monitors changes to the update interval selection and:
+    /// - Skips the first two values to avoid initial setup triggers
+    /// - Removes duplicate interval selections
+    /// - Saves the selected interval to UserDefaults
+    /// - Updates the desktop picture scheduler with the new interval
+    ///
+    /// The subscription:
+    /// 1. Uses `@MainActor` to ensure UI updates occur on the main thread
+    /// 2. Implements weak self to prevent retain cycles
+    /// 3. Stores the cancellable in the cancellables set for proper cleanup
+    ///
+    /// - Note: This is a private function as it handles internal view model state management
+    private func updateIntervalSelectionSubscriber() {
+        $updateIntervalSelection$
+            .dropFirst(2)
+            .removeDuplicates()
+            .sink { interval in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    
+                    await saveUpdateIntervalToUserDefaults(interval)
+                    await desktopPictureScheduler.onChangeOfTimeIntervalSelection(from: interval)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     /// Resets the API access key text field to an empty state.
     ///
     /// This function clears the text in the API access key text field by setting it to an empty string.
@@ -124,7 +149,21 @@ import LaunchAtLogin
         apiAccessKeyTextfieldText = ""
     }
     
-    //  MARK: - Save Launch at Login to User Defaults
+    /// Handles changes to the update interval setting.
+    ///
+    /// This asynchronous function is called when the update interval setting is changed. It updates
+    /// the `desktopPictureScheduler` with the new interval value.
+    ///
+    /// - Parameter value: The new `DesktopPictureSchedulerIntervalsModel` representing the updated update interval selection.
+    private func onUpdateIntervalChange(_ value: DesktopPictureSchedulerIntervalsModel) async {
+        await desktopPictureScheduler.onChangeOfTimeIntervalSelection(from: value)
+    }
+}
+
+// MARK: EXTENSIONS
+
+// MARK: - User Defaults Related
+extension SettingsTabViewModel {
     /// Saves the `launchAtLogin` setting to UserDefaults.
     ///
     /// This asynchronous function saves the given Boolean value for the `launchAtLogin` setting
@@ -136,7 +175,6 @@ import LaunchAtLogin
         await defaults.save(key: .launchAtLoginKey, value: value)
     }
     
-    // MARK: - Save Show on All Spaces to User Defaults
     /// Saves the `showOnAllSpaces` setting to UserDefaults.
     ///
     /// This asynchronous function saves the given Boolean value for the `showOnAllSpaces` setting
@@ -148,7 +186,6 @@ import LaunchAtLogin
         await defaults.save(key: .showOnAllSpacesKey, value: value)
     }
     
-    // MARK: - Save Update Interval to User Defaults
     /// Saves the update interval setting to UserDefaults.
     ///
     /// This asynchronous function saves the `updateIntervalSelection` setting, represented
@@ -164,18 +201,6 @@ import LaunchAtLogin
         }
     }
     
-    // MARK: - On Update Interval Change
-    /// Handles changes to the update interval setting.
-    ///
-    /// This asynchronous function is called when the update interval setting is changed. It updates
-    /// the `desktopPictureScheduler` with the new interval value.
-    ///
-    /// - Parameter value: The new `DesktopPictureSchedulerIntervalsModel` representing the updated update interval selection.
-    private func onUpdateIntervalChange(_ value: DesktopPictureSchedulerIntervalsModel) async {
-        await desktopPictureScheduler.onChangeOfTimeIntervalSelection(from: value)
-    }
-    
-    // MARK: - Save Settings to User Defaults
     /// Saves all the settings to UserDefaults.
     ///
     /// This asynchronous function saves the current settings for `launchAtLogin`, `showOnAllSpaces`,
@@ -186,7 +211,6 @@ import LaunchAtLogin
         await saveUpdateIntervalToUserDefaults(updateIntervalSelection)
     }
     
-    // MARK: - Get Settings from User Defaults
     /// Retrieves settings from UserDefaults and updates the current settings.
     ///
     /// This asynchronous function attempts to load the `launchAtLogin`, `showOnAllSpaces`,
