@@ -45,17 +45,16 @@ struct Pixel_Desktop_PicturesApp: App {
                 collectionManager: collectionManagerInstance,
                 queryImageManager: queryImageManagerInstance
             )
-            
             collectionsTabVM = collectionsTabVMInstance
             
             // Recents Related
             let recentLocalDatabaseManagerInstance: RecentLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let recentManagerInstance: RecentManager = .shared(localDatabaseManager: recentLocalDatabaseManagerInstance)
-            
-            recentsTabVM = .init(recentManager: recentManagerInstance)
+            let recentsTabVMInstance: RecentsTabViewModel = .init(recentManager: recentManagerInstance)
+            recentsTabVM = recentsTabVMInstance
             
             // Main tab Related
-            mainTabVM = .init(collectionsTabVM: collectionsTabVMInstance)
+            mainTabVM = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
         } catch {
             print("❌: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
             Task { try? await LocalDatabaseManager(appEnvironment: .production).eraseAllData() }

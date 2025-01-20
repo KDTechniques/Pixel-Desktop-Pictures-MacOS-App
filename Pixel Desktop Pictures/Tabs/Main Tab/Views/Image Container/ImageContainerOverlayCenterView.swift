@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ImageContainerOverlayCenterView: View {
+    @Environment(MainTabViewModel.self) private var mainTabsVM
     // MARK: - PROPERTIES
-    let centerItem: ImageContainerCenterItemsModel
+    let centerItem: ImageContainerCenterItems
     let action: () async -> Void
     
     // MARK: - INITIALIZER
-    init(centerItem: ImageContainerCenterItemsModel, action: @escaping () -> Void) {
+    init(centerItem: ImageContainerCenterItems, action: @escaping () async -> Void) {
         self.centerItem = centerItem
         self.action = action
     }
@@ -33,9 +34,10 @@ struct ImageContainerOverlayCenterView: View {
 #Preview("Image Preview Image Container Overlay Center View") {
     Color.debug
         .overlay {
-            ImageContainerOverlayCenterView(centerItem: .retryIcon/*.random()*/) {
+            ImageContainerOverlayCenterView(centerItem: .random()) {
                 print("Button Clicked!")
             }
+            .previewModifier
         }
 }
 
@@ -49,8 +51,8 @@ extension ImageContainerOverlayCenterView {
                 Image(systemName: "arrow.trianglehead.2.clockwise")
                     .fontWeight(.semibold)
             case .progressView:
-                Image(systemName: "progress.indicator")
-                    .symbolEffect(.variableColor.iterative.hideInactiveLayers)
+                ProgressView()
+                    .scaleEffect(0.6)
             }
         }
         .foregroundStyle(.white)

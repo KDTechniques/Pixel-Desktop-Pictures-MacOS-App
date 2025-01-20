@@ -28,14 +28,7 @@ enum UnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
         }
     }
     
-    private var fileName: String {
-        switch self {
-        case .downloadsDirectory:
-            return UUID().uuidString
-        case .documentsDirectory:
-            return "Desktop Picture"
-        }
-    }
+    private var fileName: String { UUID().uuidString }
     
     private func createDirectoryIfNeeded() throws -> URL {
         guard let directoryURL = FileManager.default
@@ -53,6 +46,43 @@ enum UnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
         } catch {
             print("❌: Creating Folder Directory in \(directory).")
             throw error
+        }
+    }
+    
+    func deletePreviousDesktopPictures() throws {
+        // Avoid removing all the files in the downloads folder
+        guard directory == .documentDirectory else { return }
+        
+        let fileManager: FileManager = .default
+        
+        guard let directoryURL = fileManager
+            .urls(for: directory, in: .userDomainMask)
+            .first else {
+            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
+        }
+        
+        let folderURL: URL = directoryURL.appending(path: folderName)
+        
+        do {
+            // Get the list of files in the directory
+            let contents = try fileManager.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil, options: [])
+            
+            // Iterate through each file and delete it
+            for fileURL in contents {
+                if fileURL.hasDirectoryPath {
+                    // Skip subdirectories
+                    continue
+                }
+                
+                do {
+                    try fileManager.removeItem(at: fileURL)
+                    print("Deleted: \(fileURL.lastPathComponent)")
+                } catch {
+                    print("Failed to delete: \(fileURL.lastPathComponent) - Error: \(error.localizedDescription)")
+                }
+            }
+        } catch {
+            print("Error accessing directory: \(error.localizedDescription)")
         }
     }
     

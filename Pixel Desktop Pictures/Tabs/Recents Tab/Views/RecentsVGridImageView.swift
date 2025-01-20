@@ -11,6 +11,7 @@ import SDWebImageSwiftUI
 struct RecentsVGridImageView: View {
     // MARK: - INJECTED PROPETIES
     @Environment(RecentsTabViewModel.self) private var recentsTabVM
+    @Environment(MainTabViewModel.self) private var mainTabVM
     let item: Recent
     
     // MARK: - ASSIGNED PROPERTIES
@@ -24,15 +25,20 @@ struct RecentsVGridImageView: View {
     
     // MARK: - BODY
     var body: some View {
-        WebImage(
-            url: .init(string: imageQualitiesURLStrings?.small ?? ""),
-            options: [.highPriority, .retryFailed, .scaleDownLargeImages]
-        )
-        .placeholder { placeholder }
-        .resizable()
-        .scaledToFill()
-        .frame(width: vGridValues.width, height: vGridValues.height)
-        .clipped()
+        Button {
+            handleTap()
+        } label: {
+            WebImage(
+                url: .init(string: imageQualitiesURLStrings?.small ?? ""),
+                options: [.highPriority, .retryFailed, .scaleDownLargeImages]
+            )
+            .placeholder { placeholder }
+            .resizable()
+            .scaledToFill()
+            .frame(width: vGridValues.width, height: vGridValues.height)
+            .clipped()
+        }
+        .buttonStyle(.plain)
         .onFirstTaskViewModifier { await handleOnFirstTaskModifier() }
     }
 }
@@ -55,5 +61,11 @@ extension RecentsVGridImageView {
         imageQualitiesURLStrings = try? await recentsTabVM
             .recentManager
             .getImageURLs(from: item)
+    }
+    
+    private func handleTap() {
+        // Decode image data to set the current image
+        let decodedImage: UnsplashImage? = try? JSONDecoder().decode(UnsplashImage.self, from: item.imageEncoded)
+        mainTabVM.setCurrentImage(decodedImage)
     }
 }

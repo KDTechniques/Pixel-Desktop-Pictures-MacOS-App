@@ -38,7 +38,7 @@ final class RecentsTabViewModel {
         do {
             // First fetch the `Recent` items from local database
             var tempRecentsArray: [Recent] = try await recentManager.getRecents()
-            
+          
             let recentsArrayCount: Int = tempRecentsArray.count
             
             // Make sure not to exceed 102 max items.

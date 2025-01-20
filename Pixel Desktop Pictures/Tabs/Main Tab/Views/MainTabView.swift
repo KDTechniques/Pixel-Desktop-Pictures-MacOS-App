@@ -8,17 +8,33 @@
 import SwiftUI
 
 struct MainTabView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
-    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
-    @Environment(RecentsTabViewModel.self) private var recentsTabVM
     
-    @State var regularImageURLString: String = ""
-    @State var isLoading: Bool = false
+    // MARK: - ASSIGNED PROPERTIES
+    @State private var showProgress: Bool = false
     
     // MARK: - BODY
     var body: some View {
-        TabContentWithWindowErrorView(tab: .main, content)
+        TabContentWithWindowErrorView(tab: .main) {
+            VStack(spacing: 0) {
+                // Image Preview
+                ImageContainerView()
+                
+                VStack {
+                    // Set Desktop Picture Button
+                    ButtonView(
+                        title: "Set Desktop Picture",
+                        showProgress: showProgress,
+                        type: .regular
+                    ) { await setDesktopPicture() }
+                    
+                    // Author and Download Button
+                    footer
+                }
+                .padding()
+            }
+        }
     }
 }
 
@@ -41,68 +57,24 @@ struct MainTabView: View {
 
 // MARK: EXTENSIONS
 extension MainTabView {
-    // MARK: - Footer
+    @ViewBuilder
     private var footer: some View {
+        let authorName: String? = mainTabVM.currentImage?.user.firstNLastName
+        
         HStack {
-            ImageAuthorView(name: "John Doe") // change this later with a view model property model
+            ImageAuthorView(name: authorName ?? "")
             Spacer()
             DownloadButtonView()
         }
         .padding(.top)
+        .opacity(authorName == nil ? 0 : 1)
+        .disabled(authorName == nil)
     }
     
-    private var content: some View {
-        VStack(spacing: 0) {
-            // Image Preview
-            ImageContainerView(
-                imageURLString: regularImageURLString,
-                location: "Colombo, Sri Lanka"
-            ) // change this later with a view model property model
-            .onFirstTaskViewModifier {
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                if recentsTabVM.recentsArray.isEmpty {
-                    await handleGetImage(currentImage: true)
-                }
-            }
-            
-            VStack {
-                // Set Desktop Picture Button
-                ButtonView(title: "Set Desktop Picture", type: .regular) {
-                    await mainTabVM.setDesktopPicture()
-                    isLoading = true
-                    await handleGetImage(currentImage: false)
-                    isLoading = false
-                }
-                .disabled(isLoading)
-                
-                // Author and Download Button
-                footer
-            }
-            .padding()
-        }
-    }
-}
-
-extension MainTabView {
-    func handleGetImage(currentImage: Bool) async {
-        guard let queryImage: QueryImage = collectionsTabVM.queryImagesArray.first else { return }
-        
-        let apiAccessKey: String = "Gqa1CTD4LkSdLlUlKH7Gxo8EQNZocXujDfe26KlTQwQ"
-        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
-        
-        do {
-            let queryImageItem: UnsplashQueryImage = try await QueryImageManager.shared(localDatabaseManager: .init(localDatabaseManager: try .init(appEnvironment: .production))).getQueryImage(
-                item: queryImage,
-                isCurrentImage: currentImage,
-                imageAPIService: imageAPIService
-            )
-            
-            regularImageURLString = queryImageItem.imageQualityURLStrings.regular
-            
-            let data: Data = try JSONEncoder().encode(queryImageItem)
-            await recentsTabVM.addRecent(imageEncoded: data)
-        } catch {
-            print("❌: getting UnsplashQueryImage ❌❌❌❌")
-        }
+    // MARK: - FUNCTIONS
+    private func setDesktopPicture() async {
+        showProgress = true
+        await mainTabVM.setDesktopPicture()
+        showProgress = false
     }
 }
