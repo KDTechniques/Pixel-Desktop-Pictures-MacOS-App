@@ -9,7 +9,6 @@ import Foundation
 
 // Note: Do not change the following cases as it could result in data, settings, and config losses.
 enum UserDefaultKeys: String {
-    case hasFirstLaunchKey
     case launchAtLoginKey
     case showOnAllSpacesKey
     case timeIntervalSelectionKey
@@ -21,4 +20,5 @@ enum UserDefaultKeys: String {
     case executionTimeIntervalSince1970Key
     case currentDesktopPictureFileURLStringKey
     case currentImageKey
+    case desktopSchedulerBackgroundTaskFailureKey
 }

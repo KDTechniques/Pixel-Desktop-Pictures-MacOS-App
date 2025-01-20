@@ -50,7 +50,7 @@ extension ImageContainerView {
     private var centerButton: some View {
         ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) {
             guard mainTabVM.centerItem == .retryIcon else { return }
-            await mainTabVM.setNextImage()
+            try? await mainTabVM.setNextImage()
         }
     }
     

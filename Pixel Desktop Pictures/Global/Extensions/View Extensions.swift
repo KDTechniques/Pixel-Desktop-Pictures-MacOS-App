@@ -45,11 +45,15 @@ extension View {
                 )
             )
             .environment(RecentsTabViewModel(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
-            .environment(SettingsTabViewModel(appEnvironment: .mock))
+            .environment(SettingsTabViewModel(
+                appEnvironment: .mock,
+                mainTabVM: .init(
+                    collectionsTabVM: .init(apiAccessKeyManager: .init(),
+                                            collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock))),
+                                            queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))),
+                    recentsTabVM: .init(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
+            ))
             .environment(APIAccessKeyManager())
-        //            .environment(try! QueryImageLocalDatabaseManager(appEnvironment: .production))
-        //            .environment(try! RecentImageURLModelSwiftDataManager(appEnvironment: .production))
-        //            .environment(try! CollectionLocalDatabaseManager(appEnvironment: .production))
     }
 }
 

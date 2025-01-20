@@ -52,6 +52,6 @@ struct TabContentWithWindowErrorView<T: View>: View {
 // MARK: - PREVIEWS
 #Preview("Tab Content with Error View") {
     TabContentWithWindowErrorView(tab: .random(), Color.debug)
-        .environment(NetworkManager())
+        .environment(NetworkManager.shared)
         .previewModifier
 }

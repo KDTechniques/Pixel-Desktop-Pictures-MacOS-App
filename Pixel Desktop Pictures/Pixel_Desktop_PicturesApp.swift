@@ -15,7 +15,7 @@ struct Pixel_Desktop_PicturesApp: App {
     private let appEnvironment: AppEnvironmentModel = .production // Note: Change to `.production` as needed
     
     // Services
-    @State private var networkManager: NetworkManager = .init()
+    let networkManager: NetworkManager = .shared
     @State private var apiAccessKeyManager: APIAccessKeyManager
     
     // Tabs
@@ -27,12 +27,10 @@ struct Pixel_Desktop_PicturesApp: App {
     
     // MARK: - INITIALIZER
     init() {
-        settingsTabVM = .init(appEnvironment: appEnvironment)
+        let apiAccessKeyManagerInstance: APIAccessKeyManager = .init()
+        apiAccessKeyManager = apiAccessKeyManagerInstance
         
         do {
-            let apiAccessKeyManagerInstance: APIAccessKeyManager = .init()
-            apiAccessKeyManager = apiAccessKeyManagerInstance
-            
             let localDatabaseManagerInstance: LocalDatabaseManager = try .init(appEnvironment: appEnvironment)
             
             // Collections Related
@@ -54,14 +52,14 @@ struct Pixel_Desktop_PicturesApp: App {
             recentsTabVM = recentsTabVMInstance
             
             // Main tab Related
-            mainTabVM = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
+            let mainTabVMInstance: MainTabViewModel = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
+            mainTabVM = mainTabVMInstance
+            
+            // Settings Tab Related
+            settingsTabVM = .init(appEnvironment: appEnvironment, mainTabVM: mainTabVMInstance)
         } catch {
-            print("❌: Unable to initialize the app properly. You may encounter unexpected behaviors from now on. \(error.localizedDescription)")
-            Task { try? await LocalDatabaseManager(appEnvironment: .production).eraseAllData() }
-            // Fallback code goes here..
-#if DEBUG
+            print("❌: Unable to initialize the app properly. Due to local database initialization. \(error.localizedDescription)")
             fatalError()
-#endif
         }
     }
     
@@ -85,7 +83,6 @@ struct Pixel_Desktop_PicturesApp: App {
                 .environment(collectionsTabVM)
                 .onFirstTaskViewModifier {
                     // MARK: - Service Initializations
-                    networkManager.initializeNetworkManager()
                     Task { await apiAccessKeyManager.initializeAPIAccessKeyManager() }
                     
                     // MARK: - Tabs Initializations

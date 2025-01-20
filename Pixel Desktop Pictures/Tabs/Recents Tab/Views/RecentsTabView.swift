@@ -32,7 +32,7 @@ struct RecentsTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Recents Tab View") {
-    @Previewable @State var networkManager: NetworkManager = .init()
+    @Previewable @State var networkManager: NetworkManager = .shared
     @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
     
     RecentsTabView()
@@ -40,7 +40,6 @@ struct RecentsTabView: View {
         .environment(apiAccessKeyManager)
         .previewModifier
         .onFirstTaskViewModifier {
-            networkManager.initializeNetworkManager()
             await apiAccessKeyManager.apiAccessKeyCheckup()
         }
 }

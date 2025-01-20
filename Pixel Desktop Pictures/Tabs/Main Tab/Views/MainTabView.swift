@@ -40,7 +40,7 @@ struct MainTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Main Tab View") {
-    @Previewable @State var networkManager: NetworkManager = .init()
+    @Previewable @State var networkManager: NetworkManager = .shared
     @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
     
     PreviewView {
@@ -49,7 +49,6 @@ struct MainTabView: View {
             .environment(networkManager)
             .environment(apiAccessKeyManager)
             .onFirstTaskViewModifier {
-                networkManager.initializeNetworkManager()
                 apiAccessKeyManager.apiAccessKeyStatus = .connected
             }
     }

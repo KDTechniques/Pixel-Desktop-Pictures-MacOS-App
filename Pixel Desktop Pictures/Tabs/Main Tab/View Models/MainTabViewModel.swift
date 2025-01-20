@@ -39,7 +39,7 @@ final class MainTabViewModel {
     ///
     /// - Note: Randomly selects a query image or fetches a random Unsplash image
     /// if no valid query is available. Updates the `currentImage` and stores it in UserDefaults.
-    func setNextImage() async {
+    func setNextImage() async throws {
         setCenterItem(.progressView)
         
         do {
@@ -62,6 +62,7 @@ final class MainTabViewModel {
             setCenterItem(.retryIcon)
             print(vmError.failedToSetNextImage(error).localizedDescription)
             await errorPopupVM.addError(errorPopup.failedToGenerateNextImage)
+            throw error
         }
     }
     
