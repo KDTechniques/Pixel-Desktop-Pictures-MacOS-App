@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum CollectionsTabErrorPopupModel: ErrorPopupProtocol {
+enum CollectionsTabErrorPopup: ErrorPopupProtocol {
     case duplicateCollectionNameFound
     case failedToCreateCollection
     case failedToUpdateCollectionName

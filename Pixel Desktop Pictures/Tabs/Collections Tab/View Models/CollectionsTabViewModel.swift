@@ -70,8 +70,8 @@ extension CollectionsTabViewModel {
         return .shared
     }
     
-    func getErrorPopup() -> CollectionsTabErrorPopupModel.Type {
-        return CollectionsTabErrorPopupModel.self
+    func getErrorPopup() -> CollectionsTabErrorPopup.Type {
+        return CollectionsTabErrorPopup.self
     }
     
     func getErrorPopupVM() -> ErrorPopupViewModel {

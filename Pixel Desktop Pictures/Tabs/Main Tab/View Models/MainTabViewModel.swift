@@ -18,6 +18,9 @@ final class MainTabViewModel {
     private(set) var centerItem: ImageContainerCenterItems = .retryIcon
     private let defaults: UserDefaultsManager = .shared
     private(set) var currentImage: UnsplashImage?
+    private let vmError: MainTabViewModelError.Type = MainTabViewModelError.self
+    private let errorPopupVM: ErrorPopupViewModel = .shared
+    private let errorPopup: MainTabErrorPopup.Type = MainTabErrorPopup.self
     
     // MARK: - INITIALIZER
     init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel) {
@@ -57,7 +60,8 @@ final class MainTabViewModel {
             try await setNextQueryImage(from: randomQueryImageItem)
         } catch {
             setCenterItem(.retryIcon)
-            print("❌: Failed to generate next image. \(error.localizedDescription)")
+            print(vmError.failedToSetNextImage(error).localizedDescription)
+            await errorPopupVM.addError(errorPopup.failedToGenerateNextImage)
         }
     }
     
@@ -76,7 +80,8 @@ final class MainTabViewModel {
             try await DesktopPictureManager.shared.setDesktopPicture(from: savedPath)
             print("✅: Current image has been set as desktop picture successfully.")
         } catch {
-            print("❌: Failed to set desktop picture. \(error.localizedDescription)")
+            print(vmError.failedToSetDesktopPicture(error).localizedDescription)
+            await errorPopupVM.addError(errorPopup.failedToSetDesktopPicture)
         }
     }
     
@@ -92,7 +97,8 @@ final class MainTabViewModel {
             let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.links.downloadURL, to: UnsplashImageDirectoryModel.downloadsDirectory)
             print("✅: Current image has been downloaded to `Downloads` folder path: `\(savedPath)` successfully.")
         } catch {
-            print("❌: Failed to set desktop picture. \(error.localizedDescription)")
+            print(vmError.failedToDownloadImageToDevice(error).localizedDescription)
+            await errorPopupVM.addError(errorPopup.failedToDownloadImageToDevice)
             throw error
         }
     }
@@ -100,8 +106,11 @@ final class MainTabViewModel {
     /// Sets the current image to the specified `UnsplashImage`.
     ///
     /// - Parameter item: The new `UnsplashImage` to set as the current image.
-    func setCurrentImage(_ item: UnsplashImage?) {
+    func setCurrentImage(_ item: UnsplashImage?) async {
         currentImage = item
+        
+        // Save the current image to user defaults every time.
+        if let item { try? await saveCurrentImageToUserDefaults(item) }
     }
     
     /// Updates the center item (e.g., progress indicator or retry icon).
@@ -124,18 +133,15 @@ final class MainTabViewModel {
             // Convert the random image to `UnsplashImage`.
             let convertedImage: UnsplashImage = .convertUnsplashRandomImageToUnsplashImage(randomImage)
             
-            // Save the image as current image to user defaults.
-            try await saveCurrentImageToUserDefaults(convertedImage)
-            
             // Set the current image
-            setCurrentImage(convertedImage)
+            await setCurrentImage(convertedImage)
             
             // Then encode and add the current image to recents
             let imageEncoded: Data = try JSONEncoder().encode(convertedImage)
             await recentsTabVM.addRecent(imageEncoded: imageEncoded)
             print("✅: Next random image has been set and added to recents successfully.")
         } catch {
-            print("❌: Failed to generate the next random image. \(error.localizedDescription)")
+            print(vmError.failedToGenerateNextRandomImage(error).localizedDescription)
             throw error
         }
     }
@@ -152,18 +158,15 @@ final class MainTabViewModel {
             // Convert the query image to `UnsplashImage`.
             let convertedImage: UnsplashImage = .convertUnsplashQueryImageToUnsplashImage(queryImageItem)
             
-            // Save the image as current image to user defaults.
-            try await saveCurrentImageToUserDefaults(convertedImage)
-            
             // Set the current image
-            setCurrentImage(convertedImage)
+            await setCurrentImage(convertedImage)
             
             // Then encode and add the current image to recents
             let imageEncoded: Data = try JSONEncoder().encode(convertedImage)
             await recentsTabVM.addRecent(imageEncoded: imageEncoded)
             print("✅: Next query image has been set and added to recents successfully.")
         } catch {
-            print("❌: Failed to generate the next query image. \(error.localizedDescription)")
+            print(vmError.failedToGenerateNextQueryImage(error).localizedDescription)
             throw error
         }
     }
@@ -173,10 +176,10 @@ final class MainTabViewModel {
     /// - Parameter currentImage: The image to save.
     private func saveCurrentImageToUserDefaults(_ currentImage: UnsplashImage) async throws {
         do {
-            let encodedImage: Data = try JSONEncoder().encode(currentImage)
-            try await defaults.saveModel(key: .currentImageKey, value: encodedImage)
+            try await defaults.saveModel(key: .currentImageKey, value: currentImage)
+            print("✅: Current image has been saved to user defaults successfully.")
         } catch {
-            print("❌: Failed to save current image to user defaults.")
+            print(vmError.failedToSaveCurrentImageToUserDefaults(error).localizedDescription)
             throw error
         }
     }
@@ -193,9 +196,10 @@ final class MainTabViewModel {
                 try await setNextRandomImage()
             }
             
-            setCurrentImage(image)
+            await setCurrentImage(image)
+            print("✅: Current image has been fetched from user defaults successfully.")
         } catch {
-            print("⚠️/❌: Failed to fetch current image from user defaults.")
+            print(vmError.failedToGetCurrentImageFromUserDefaults(error).localizedDescription)
             try? await setNextRandomImage()
         }
     }

@@ -44,9 +44,8 @@ actor UserDefaultsManager {
     ///   - value: The model object to be encoded and saved.
     /// - Throws: An error if encoding the model or saving to User Defaults fails.
     func saveModel<T: Encodable>(key: UserDefaultKeys, value: T) async throws {
-        let encoder = JSONEncoder()
         do {
-            let encodedData: Data = try encoder.encode(value)
+            let encodedData: Data = try JSONEncoder().encode(value)
             await self.save(key: key, value: encodedData)
         } catch {
             print("❌: Saving `\(T.self)` object to user defaults.")
@@ -67,9 +66,8 @@ actor UserDefaultsManager {
             return nil
         }
         
-        let decoder = JSONDecoder()
         do {
-            let loadedModel: T = try decoder.decode(type, from: jsonData)
+            let loadedModel: T = try JSONDecoder().decode(type, from: jsonData)
             return loadedModel
         } catch {
             print("❌: Retrieving `\(T.self)` object from user defaults.")

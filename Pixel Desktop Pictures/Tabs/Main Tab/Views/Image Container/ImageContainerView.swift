@@ -59,6 +59,7 @@ extension ImageContainerView {
             .frame(maxWidth: .infinity)
             .frame(height: imageHeight)
             .clipped()
+            .id(UUID().uuidString)
     }
     
     @ViewBuilder

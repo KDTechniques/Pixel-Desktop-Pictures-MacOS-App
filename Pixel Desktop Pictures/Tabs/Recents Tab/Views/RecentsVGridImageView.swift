@@ -66,6 +66,6 @@ extension RecentsVGridImageView {
     private func handleTap() {
         // Decode image data to set the current image
         let decodedImage: UnsplashImage? = try? JSONDecoder().decode(UnsplashImage.self, from: item.imageEncoded)
-        mainTabVM.setCurrentImage(decodedImage)
+        Task { await mainTabVM.setCurrentImage(decodedImage) }
     }
 }
