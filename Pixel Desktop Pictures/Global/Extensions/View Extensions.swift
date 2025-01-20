@@ -31,7 +31,11 @@ extension View {
             .background(Color.windowBackground)
             .environment(ErrorPopupViewModel.shared)
             .environment(TabsViewModel())
-            .environment(MainTabViewModel())
+            .environment(MainTabViewModel(collectionsTabVM: .init(
+                apiAccessKeyManager: .init(),
+                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock))),
+                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))
+            )))
             .environment(
                 CollectionsTabViewModel(
                     apiAccessKeyManager: .init(),

@@ -100,7 +100,7 @@ extension MainTabView {
             regularImageURLString = queryImageItem.imageQualityURLStrings.regular
             
             let data: Data = try JSONEncoder().encode(queryImageItem)
-            await recentsTabVM.addRecent(type: .queryImage, imageEncoded: data)
+            await recentsTabVM.addRecent(imageEncoded: data)
         } catch {
             print("❌: getting UnsplashQueryImage ❌❌❌❌")
         }

@@ -14,7 +14,7 @@ struct RecentsVGridImageView: View {
     let item: Recent
     
     // MARK: - ASSIGNED PROPERTIES
-    @State private var imageQualitiesURLStrings: UnsplashImage?
+    @State private var imageQualitiesURLStrings: UnsplashImageResolution?
     let vGridValues = VGridValuesModel.self
     
     // MARK: - INITIALIZER
@@ -26,7 +26,7 @@ struct RecentsVGridImageView: View {
     var body: some View {
         WebImage(
             url: .init(string: imageQualitiesURLStrings?.small ?? ""),
-            options: [.highPriority, .retryFailed]
+            options: [.highPriority, .retryFailed, .scaleDownLargeImages]
         )
         .placeholder { placeholder }
         .resizable()
@@ -39,12 +39,8 @@ struct RecentsVGridImageView: View {
 
 // MARK: - PREVIEWS
 #Preview("Recents VGrid Image View") {
-    RecentsVGridImageView(item: .init(
-        imageType: .random(),
-        imageEncoded: .init(),
-        imageTypeEncoded: .init()
-    ))
-    .previewModifier
+    RecentsVGridImageView(item: .init(imageEncoded: .init()))
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS

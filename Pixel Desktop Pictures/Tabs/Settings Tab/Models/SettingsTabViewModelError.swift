@@ -15,7 +15,7 @@ enum SettingsTabViewModelError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case.failedToInitializeSettingsTabViewModel(let error):
-            return "❌: Failed to initialize `Settings Tab View Model`."
+            return "❌: Failed to initialize `Settings Tab View Model`. \(error.localizedDescription)"
         case .failedToSaveUpdateIntervalsToUserDefaults(let error):
             return "❌: Failed to save update Interval to user defaults. \(error.localizedDescription)"
         case .failedToGetSettingsFromUserDefaults(let error):

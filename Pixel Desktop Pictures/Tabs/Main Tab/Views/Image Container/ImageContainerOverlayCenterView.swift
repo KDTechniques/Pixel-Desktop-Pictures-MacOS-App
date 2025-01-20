@@ -10,7 +10,7 @@ import SwiftUI
 struct ImageContainerOverlayCenterView: View {
     // MARK: - PROPERTIES
     let centerItem: ImageContainerCenterItemsModel
-    let action: () -> Void
+    let action: () async -> Void
     
     // MARK: - INITIALIZER
     init(centerItem: ImageContainerCenterItemsModel, action: @escaping () -> Void) {
@@ -21,7 +21,7 @@ struct ImageContainerOverlayCenterView: View {
     // MARK: - BODY
     var body: some View {
         Button {
-            action()
+            Task { await action() }
         } label: {
             buttonLabel
         }
@@ -39,6 +39,7 @@ struct ImageContainerOverlayCenterView: View {
         }
 }
 
+// MARK: - EXTENSIONS
 extension ImageContainerOverlayCenterView {
     // MARK: - Button Label
     private var buttonLabel:some View {

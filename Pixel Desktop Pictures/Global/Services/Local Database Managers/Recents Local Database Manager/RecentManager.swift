@@ -43,46 +43,24 @@ actor RecentManager {
         try await localDatabaseManager.fetchRecents()
     }
     
-    func getImageTypeEncoded(for type: RecentImage) throws -> Data {
-        let imageTypeEncoded: Data = try JSONEncoder().encode(type)
-        return imageTypeEncoded
-    }
-    
-    func getImageURLs(from item: Recent) async throws -> UnsplashImage {
+    func getImageURLs(from item: Recent) async throws -> UnsplashImageResolution {
         // First, decode data.
-        let imageTypeDecoded: RecentImage = try JSONDecoder().decode(RecentImage.self, from: item.imageTypeEncoded)
+        let imageDecoded: UnsplashImage = try JSONDecoder().decode(UnsplashImage.self, from: item.imageEncoded)
         
-        var imageQualityURLStrings: UnsplashImage = try {
-            switch imageTypeDecoded {
-            case .queryImage:
-                guard let data: Data = item.queryImageEncoded else {
-                    throw URLError(.badURL)
-                }
-                
-                var imageURLs: UnsplashQueryImage = try JSONDecoder().decode(UnsplashQueryImage.self, from: data)
-                return imageURLs.imageQualityURLStrings
-                
-            case .randomImage:
-                guard let data: Data = item.randomImageEncoded else {
-                    throw URLError(.badURL)
-                }
-                
-                let imageURLs: UnsplashRandomImage = try JSONDecoder().decode(UnsplashRandomImage.self, from: data)
-                return imageURLs.imageQualityURLStrings
-            }
-        }()
+        // Assign `imageQualityURLStrings` to a temp property to avoid making changes to local database.
+        var tempImageQualityURLStrings: UnsplashImageResolution = imageDecoded.imageQualityURLStrings
         
         // Then modify thumbnail sizing.
-        let updatedThumbURL: String = imageQualityURLStrings.thumb.replacingOccurrences( // Note: If this 50 width has no impact on UX, remove this line
+        let updatedThumbURL: String = tempImageQualityURLStrings.thumb.replacingOccurrences( // Note: If this 50 width has no impact on UX, remove this line
             of: "(?<=\\b)w=200(?=&|$)",
             with: "w=50",
             options: .regularExpression
         )
         
-        imageQualityURLStrings.thumb = updatedThumbURL
+        tempImageQualityURLStrings.thumb = updatedThumbURL
         
-        // Return modified `UnsplashImage` item.
-        return imageQualityURLStrings
+        // Return modified `UnsplashImageResolution` item.
+        return tempImageQualityURLStrings
     }
     
     // MARK: - Update Operations

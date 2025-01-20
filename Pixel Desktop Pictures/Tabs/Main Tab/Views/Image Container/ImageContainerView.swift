@@ -63,10 +63,13 @@ struct ImageContainerView: View {
 // MARK: EXTENSIONS
 extension ImageContainerView {
     // MARK: - Center Item
+    @ViewBuilder
     private var centerButton: some View {
-        ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) {
-            guard mainTabVM.centerItem == .retryIcon else { return }
-            mainTabVM.nextImage()
+        if let centerItem: ImageContainerCenterItemsModel = mainTabVM.centerItem {
+            ImageContainerOverlayCenterView(centerItem: centerItem) {
+                guard mainTabVM.centerItem == .retryIcon else { return }
+//                await mainTabVM.getNextImage()
+            }
         }
     }
     

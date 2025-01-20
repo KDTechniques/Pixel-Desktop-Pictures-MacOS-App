@@ -68,17 +68,14 @@ final class RecentsTabViewModel {
     /// saving the changes to the local database.
     ///
     /// - Parameters:
-    ///   - type: The type of the recent image, represented by a `RecentImage`.
+    ///   - type: The type of the recent image, represented by a `UnsplashImage`.
     ///   - imageEncoded: The encoded data of the image to be added as a recent item.
     ///
     /// - Note: This function ensures thread safety and handles database updates to maintain the integrity of the recents array.
-    func addRecent(type: RecentImage, imageEncoded: Data) async {
+    func addRecent(imageEncoded: Data) async {
         do {
-            // Encode image type for saving.
-            let imageTypeEncoded: Data = try await recentManager.getImageTypeEncoded(for: type)
-            
             // Create new `Recent` item.
-            let newRecentItem: Recent = .init(imageType: type, imageEncoded: imageEncoded, imageTypeEncoded: imageTypeEncoded)
+            let newRecentItem: Recent = .init(imageEncoded: imageEncoded)
             
             // Get a recents array by appending, inserting, removing, and deleting exceeded items through the local database.
             let adjustedArray: [Recent] = try await insertAndDeleteExceededRecents(newRecentItem)

@@ -44,8 +44,8 @@ actor CollectionManager {
         return collections
     }
     
-    func getImageURLs(from item: Collection) async throws -> UnsplashImage {
-        var imageURLs: UnsplashImage = try JSONDecoder().decode(UnsplashImage.self, from: item.imageQualityURLStringsEncoded)
+    func getImageURLs(from item: Collection) async throws -> UnsplashImageResolution {
+        var imageURLs: UnsplashImageResolution = try JSONDecoder().decode(UnsplashImageResolution.self, from: item.imageQualityURLStringsEncoded)
         let updatedThumbURL: String = imageURLs.thumb.replacingOccurrences( // Note: If this 50 width has no impact on UX, remove this line
             of: "(?<=\\b)w=200(?=&|$)",
             with: "w=50",
@@ -72,7 +72,7 @@ actor CollectionManager {
         
         let nextQueryImages: UnsplashQueryImages = try await imageAPIService.getQueryImages(query: item.name.capitalized, pageNumber: nextPageNumber, imagesPerPage: 1)
         
-        guard let newImageURLs: UnsplashImage = nextQueryImages.results.first?.imageQualityURLStrings else {
+        guard let newImageURLs: UnsplashImageResolution = nextQueryImages.results.first?.imageQualityURLStrings else {
             throw URLError(.badServerResponse)
         }
         
@@ -95,7 +95,7 @@ actor CollectionManager {
     
     // MARK: - PRIVATE FUNCTIONS
     
-    private func setImageURLs(for item: Collection, with imageURLs: UnsplashImage) async throws {
+    private func setImageURLs(for item: Collection, with imageURLs: UnsplashImageResolution) async throws {
         let imageURLsData: Data = try JSONEncoder().encode(imageURLs)
         item.imageQualityURLStringsEncoded = imageURLsData
     }

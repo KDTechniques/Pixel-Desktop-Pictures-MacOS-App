@@ -173,7 +173,7 @@ extension CollectionsTabViewModel {
             }
             
             // Get the first `imageQualityURLStrings` from the image api query image result for the collection.
-            guard let imageQualityURLStrings: UnsplashImage = queryImages.results.first?.imageQualityURLStrings else {
+            guard let imageQualityURLStrings: UnsplashImageResolution = queryImages.results.first?.imageQualityURLStrings else {
                 throw URLError(.badServerResponse)
             }
             
