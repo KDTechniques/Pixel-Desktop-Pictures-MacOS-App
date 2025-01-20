@@ -6,6 +6,7 @@
 //
 
 import SwiftUICore
+import Combine
 
 /**
  The `DesktopPictureScheduler` class is responsible for managing the scheduling of desktop picture updates. It allows for configuring the time intervals for when desktop pictures should be changed and ensures the task is performed in the background using `NSBackgroundActivityScheduler`.
@@ -22,11 +23,20 @@ final class DesktopPictureScheduler {
     
     // MARK: - ASSIGNED PROPERTIES
     private let defaults: UserDefaultsManager = .shared
+    private let networkManager: NetworkManager = .shared
     private let timeIntervalKey: UserDefaultKeys = .timeIntervalDoubleKey
     private let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key
     private let taskIdentifier = "com.kdtechniques.Pixel-Desktop-Pictures.DesktopPictureScheduler.backgroundTask"
     private var scheduler: NSBackgroundActivityScheduler?
     private var currentTimeIntervalSince1970: TimeInterval { return Date().timeIntervalSince1970 }
+    private(set) var didBackgroundTaskFailOnInternetFailure: Bool = false {
+        didSet {
+            guard oldValue != didBackgroundTaskFailOnInternetFailure else { return }
+            Task { await saveFailedBackgroundTaskStateToUserDefaults(from: didBackgroundTaskFailOnInternetFailure) }
+        }
+    }
+    private var cancellables: Set<AnyCancellable> = []
+    
     
     // MARK: - INITIALIZER
     private init(appEnvironmentType: AppEnvironmentModel, mainTabVM: MainTabViewModel) {
@@ -77,6 +87,10 @@ final class DesktopPictureScheduler {
     
     /// Initializes the scheduler by setting the time interval and scheduling the background task.
     private func initializeScheduler() async {
+        networkConnectionSubscriber()
+        
+        didBackgroundTaskFailOnInternetFailure = await getFailedBackgroundTaskStateToUserDefaults()
+        
         // Assign Time Interval Selection Value to A Property to Avoid Using User Defaults Most of the Time
         let timeIntervalSelection: TimeInterval = await getTimeIntervalSelectionFromUserDefaults()
         self.timeIntervalSelection = timeIntervalSelection
@@ -135,12 +149,71 @@ final class DesktopPictureScheduler {
         scheduler = activity
     }
     
-    /// Performs the background task.
+    /// Executes the main background task for updating desktop pictures.
+    ///
+    /// This asynchronous function:
+    /// - Waits for 5 seconds before execution
+    /// - Fetches and sets the next desktop image
+    /// - Handles network connectivity issues with automatic rescheduling
+    ///
+    /// The function includes error handling for:
+    /// - Network connectivity issues (automatically reschedules)
+    /// - General URL errors
+    ///
+    /// - Note: The 5-second delay helps initialize `MainTabViewModel` before calling its functions.
+    /// - Important: Network failures trigger automatic rescheduling of the task.
     private func performBackgroundTask() async {
         print("Progress: Performing background task.")
-        try? await Task.sleep(nanoseconds: 5_000_000_000)
-        await mainTabVM.setNextImage()
-        await mainTabVM.setDesktopPicture()
+        
+        do {
+            try await Task.sleep(nanoseconds: 5_000_000_000)
+            try await mainTabVM.setNextImage()
+            await mainTabVM.setDesktopPicture()
+        } catch {
+            print("❌: Failed to perform background task. \(error.localizedDescription)")
+            guard let urlError: URLError = error as? URLError else { return }
+            
+            switch urlError.code {
+            case .notConnectedToInternet:
+                didBackgroundTaskFailOnInternetFailure = true
+                print("⚠️✅: Background task has been rescheduled to run when connected to the internet properly.")
+            default: ()
+            }
+        }
+    }
+    
+    /// Monitors network connectivity changes and retries failed background tasks.
+    ///
+    /// This function sets up a Combine subscriber that:
+    /// - Observes changes in network connection status
+    /// - Filters out duplicate status updates
+    /// - Retries previously failed background tasks when internet connectivity is restored
+    ///
+    /// The retry mechanism:
+    /// - Only triggers if a previous task failed specifically due to internet connectivity
+    /// - Resets the failure flag after attempting retry
+    /// - Executes the retry on a background task to prevent blocking
+    ///
+    /// - Note: Uses weak references to prevent retain cycles in the closure and task.
+    /// - Important: Only retries tasks that failed due to internet connectivity issues.
+    private func networkConnectionSubscriber() {
+        networkManager.$connectionStatus$
+            .removeDuplicates()
+            .sink { [weak self] status in
+                // Try to perform failed background task due to internet failure again only if the `didBackgroundTaskFailOnInternetFailure` is true.
+                guard let self, didBackgroundTaskFailOnInternetFailure else { return }
+                
+                // Change the state to false
+                self.didBackgroundTaskFailOnInternetFailure = false
+                
+                print("⚠️✅: Performing failed background task on internet failure again.")
+                
+                // Perform the failed background task again.
+                Task { [weak self] in
+                    await self?.performBackgroundTask()
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -245,5 +318,14 @@ extension DesktopPictureScheduler {
     /// - Parameter executionTimeIntervalSince1970: The execution time interval since 1970.
     private func saveExecutionTimeSince1970ToUserDefaults(from executionTimeIntervalSince1970: TimeInterval) async {
         await defaults.save(key: executionTimeKey, value: executionTimeIntervalSince1970)
+    }
+    
+    private func saveFailedBackgroundTaskStateToUserDefaults(from state: Bool) async {
+        await defaults.save(key: .desktopSchedulerBackgroundTaskFailureKey, value: state)
+    }
+    
+    private func getFailedBackgroundTaskStateToUserDefaults() async -> Bool {
+        let state: Bool = await defaults.get(key: .desktopSchedulerBackgroundTaskFailureKey) as? Bool ?? false
+        return state
     }
 }

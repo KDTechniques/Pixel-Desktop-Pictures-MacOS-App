@@ -11,11 +11,13 @@ import Network
 @MainActor
 @Observable
 final class NetworkManager {
-    // MARK: - PROPERTIES
+    // MARK: - ASSIGNED PROPERTIES
+    static let shared: NetworkManager = .init()
     private let monitor = NWPathMonitor()
     private let networkManagerQueue = DispatchQueue(label: "com.kdtechniques.Pixel-Desktop-Pictures.NetworkManager.networkManagerQueue")
     private(set) var connectionStatus: InternetConnectionStatusModel = .noConnection {
         didSet {
+            connectionStatus$ = connectionStatus
             guard oldValue != connectionStatus else { return }
             
             switch connectionStatus {
@@ -26,20 +28,16 @@ final class NetworkManager {
             }
         }
     }
+    @ObservationIgnored @Published private(set) var connectionStatus$: InternetConnectionStatusModel = .noConnection
     
-    // MARK: FUNCTIONS
-    
-    // MARK: INTERNAL FUNCTIONS
-    
-    // MARK: - Initialize Network Manager
-    func initializeNetworkManager() {
+    // MARK: - INITIALIZER
+    private init() {
         startNetworkMonitor()
         print("✅: `Network Manager` has been initialized successfully.")
     }
     
-    // MARK: PRIVATE FUNCTIONS
+    // MARK: - PRIVATE FUNCTIONS
     
-    // MARK: - startNetworkMonitor
     private func startNetworkMonitor() {
         monitor.pathUpdateHandler = { [weak self] path in
             guard let self else { return }
@@ -61,12 +59,10 @@ final class NetworkManager {
         monitor.start(queue: networkManagerQueue)
     }
     
-    // MARK: - handleConnectedStatus
     private func handleConnectedStatus() {
         print("✅🛜: Connected to a Network.")
     }
     
-    // MARK: - handleNoConnectionStatus
     private func handleNoConnectionStatus() {
         print("❌🛜: No Network Connection.")
     }

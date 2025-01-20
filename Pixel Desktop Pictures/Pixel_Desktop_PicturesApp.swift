@@ -12,10 +12,10 @@ import SDWebImageSwiftUI
 @main
 struct Pixel_Desktop_PicturesApp: App {
     // MARK: - PROPERTIES
-    private let appEnvironment: AppEnvironmentModel = .mock // Note: Change to `.production` as needed
+    private let appEnvironment: AppEnvironmentModel = .production // Note: Change to `.production` as needed
     
     // Services
-    @State private var networkManager: NetworkManager = .init()
+    let networkManager: NetworkManager = .shared
     @State private var apiAccessKeyManager: APIAccessKeyManager
     
     // Tabs
@@ -83,7 +83,6 @@ struct Pixel_Desktop_PicturesApp: App {
                 .environment(collectionsTabVM)
                 .onFirstTaskViewModifier {
                     // MARK: - Service Initializations
-                    networkManager.initializeNetworkManager()
                     Task { await apiAccessKeyManager.initializeAPIAccessKeyManager() }
                     
                     // MARK: - Tabs Initializations
