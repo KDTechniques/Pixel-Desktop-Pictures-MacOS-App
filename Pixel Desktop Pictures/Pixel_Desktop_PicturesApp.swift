@@ -65,12 +65,8 @@ struct Pixel_Desktop_PicturesApp: App {
     
     // MARK: - BODY
     var body: some Scene {
-        WindowGroup {
+        MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .logo) {
             TabsView()
-                .windowResizeBehavior(.disabled)
-                .windowMinimizeBehavior(.disabled)
-                .windowFullScreenBehavior(.disabled)
-                .windowDismissBehavior(.disabled)
             // Service Environment Values
                 .environment(\.appEnvironment, appEnvironment)
                 .environment(networkManager)
@@ -92,7 +88,6 @@ struct Pixel_Desktop_PicturesApp: App {
                     Task { await recentsTabVM.initializeRecentsTabViewModel() }
                 }
         }
-        .windowResizability(.contentSize)
-        //        .windowStyle(.hiddenTitleBar)
+        .menuBarExtraStyle(.window)
     }
 }
