@@ -15,6 +15,7 @@ final class MainTabViewModel {
     let recentsTabVM: RecentsTabViewModel
     
     // MARK: - ASSIGNED PROPERTIES
+    private let desktopPictureManager: DesktopPictureManager = .shared
     private(set) var centerItem: ImageContainerCenterItems = .retryIcon
     private let defaults: UserDefaultsManager = .shared
     private(set) var currentImage: UnsplashImage?
@@ -78,7 +79,7 @@ final class MainTabViewModel {
             let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: UnsplashImageDirectoryModel.documentsDirectory)
             
             // Then set the desktop picture.
-            try await DesktopPictureManager.shared.setDesktopPicture(from: savedPath)
+            try await desktopPictureManager.setDesktopPicture(from: savedPath)
             print("✅: Current image has been set as desktop picture successfully.")
         } catch {
             print(vmError.failedToSetDesktopPicture(error).localizedDescription)
