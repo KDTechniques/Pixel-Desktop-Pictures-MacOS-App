@@ -1,5 +1,5 @@
 //
-//  TabItemsModel.swift
+//  TabItem.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-23.
@@ -7,7 +7,7 @@
 
 import SwiftUICore
 
-enum TabItemsModel: String, CaseIterable {
+enum TabItem: String, CaseIterable {
     case main, recents, collections, settings
     
     @ViewBuilder
@@ -50,4 +50,6 @@ enum TabItemsModel: String, CaseIterable {
             return (VGridValuesModel.height*3) + (VGridValuesModel.spacing*2)
         }
     }
+    
+    static let bottomPopupAnimation: Animation = .smooth(duration: 0.4)
 }

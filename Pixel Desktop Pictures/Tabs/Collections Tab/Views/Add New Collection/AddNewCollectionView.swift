@@ -32,7 +32,7 @@ struct AddNewCollectionView: View {
 // MARK: - PREVIEWS
 #Preview("Add New Collection View") {
     AddNewCollectionView()
-        .frame(width: TabItemsModel.allWindowWidth)
+        .frame(width: TabItem.allWindowWidth)
         .environment(
             CollectionsTabViewModel(
                 apiAccessKeyManager: .init(),

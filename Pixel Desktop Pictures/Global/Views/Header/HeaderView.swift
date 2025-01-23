@@ -16,7 +16,7 @@ struct HeaderView: View {
             TabItemsView()
         }
         .padding(.horizontal)
-        .frame(height: TabItemsModel.tabHeaderHeight)
+        .frame(height: TabItem.tabHeaderHeight)
         .background(Color.windowBackground)
     }
 }
@@ -24,7 +24,7 @@ struct HeaderView: View {
 // MARK: - PREVIEWS
 #Preview("Header View") {
     HeaderView()
-        .frame(width: TabItemsModel.allWindowWidth)
+        .frame(width: TabItem.allWindowWidth)
         .background(Color.windowBackground)
         .environment(TabsViewModel())
 }

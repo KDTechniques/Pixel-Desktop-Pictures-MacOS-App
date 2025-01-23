@@ -8,6 +8,7 @@
 import AppKit
 import LaunchAtLogin
 import Combine
+import SwiftUI
 
 @MainActor
 @Observable final class SettingsTabViewModel {
@@ -73,7 +74,9 @@ import Combine
     ///
     /// - Parameter present: A Boolean value that determines whether the popup should be presented (`true`) or hidden (`false`).
     func presentPopup(_ present: Bool) {
-        isPresentedPopup = present
+        withAnimation(TabItem.bottomPopupAnimation) {
+            isPresentedPopup = present
+        }
     }
     
     /// Dismisses the popup and resets related data.

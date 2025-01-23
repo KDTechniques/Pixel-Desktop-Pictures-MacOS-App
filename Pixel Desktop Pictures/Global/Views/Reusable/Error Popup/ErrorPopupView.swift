@@ -22,7 +22,7 @@ struct ErrorPopupView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical)
-                    .padding(.top, TabItemsModel.tabHeaderHeight)
+                    .padding(.top, TabItem.tabHeaderHeight)
                     .background(.ultraThinMaterial)
                     .transition(.move(edge: .top))
             }
@@ -40,7 +40,7 @@ struct ErrorPopupView: View {
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(Color.windowBackground)
-                .frame(height: TabItemsModel.tabHeaderHeight)
+                .frame(height: TabItem.tabHeaderHeight)
         }
         .overlay {
             VStack {

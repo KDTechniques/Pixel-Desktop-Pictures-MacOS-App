@@ -10,10 +10,10 @@ import SwiftUI
 struct TabButtonView: View {
     // MARK: - PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
-    let tab: TabItemsModel
+    let tab: TabItem
     
     // MARK: - INITIALIZER
-    init(tab: TabItemsModel) {
+    init(tab: TabItem) {
         self.tab = tab
     }
     
@@ -37,7 +37,7 @@ struct TabButtonView: View {
 // MARK: EXTENSIONS
 extension View {
     // MARK: - Set Foreground Color
-    fileprivate func setForegroundColor(_ tab: TabItemsModel, _ selectedTab: TabItemsModel) -> some View {
+    fileprivate func setForegroundColor(_ tab: TabItem, _ selectedTab: TabItem) -> some View {
         self
             .foregroundStyle(tab == selectedTab ? Color.tabActive : Color.tabInactive)
     }

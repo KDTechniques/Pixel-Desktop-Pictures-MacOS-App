@@ -11,18 +11,18 @@ struct TabContentWithWindowErrorView<T: View>: View {
     // MARK: - PROPERTIES
     @Environment(NetworkManager.self) private var networkManager
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
-    let tab: TabItemsModel
+    let tab: TabItem
     let content: T
     
     let errorModel = GlobalWindowErrorModel.self
     
     // MARK: - INITIALIZERS
-    init(tab: TabItemsModel, @ViewBuilder _ content: () -> T) {
+    init(tab: TabItem, @ViewBuilder _ content: () -> T) {
         self.tab = tab
         self.content = content()
     }
     
-    init(tab: TabItemsModel, _ content: T) {
+    init(tab: TabItem, _ content: T) {
         self.tab = tab
         self.content = content
     }

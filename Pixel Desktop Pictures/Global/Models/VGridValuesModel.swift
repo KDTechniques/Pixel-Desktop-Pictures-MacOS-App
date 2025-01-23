@@ -19,6 +19,6 @@ struct VGridValuesModel {
     static let height: CGFloat = 70
     private static let horizontalPadding: CGFloat = 16*2
     static var width: CGFloat {
-        (TabItemsModel.allWindowWidth - horizontalPadding - (spacing*2)) / 3
+        (TabItem.allWindowWidth - horizontalPadding - (spacing*2)) / 3
     }
 }

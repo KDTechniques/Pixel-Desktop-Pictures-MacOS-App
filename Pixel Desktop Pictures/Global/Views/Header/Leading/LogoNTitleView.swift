@@ -27,6 +27,6 @@ struct LogoNTitleView: View {
 #Preview("Logo & Title View") {
     LogoNTitleView()
         .padding()
-        .frame(width: TabItemsModel.allWindowWidth)
+        .frame(width: TabItem.allWindowWidth)
         .background(Color.windowBackground)
 }

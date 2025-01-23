@@ -34,7 +34,7 @@ struct CollectionsVGridScrollView: View {
         }
         .scrollPosition($scrollPosition)
         .scrollDisabled(collectionsTabVM.collectionsArray.count <= nonScrollableItemsCount)
-        .frame(height: TabItemsModel.collections.contentHeight)
+        .frame(height: TabItem.collections.contentHeight)
         .padding(.bottom)
         .overlay { CollectionsGridPopupBackgroundView() }
         .overlay(alignment: .bottom) { bottomPopup }

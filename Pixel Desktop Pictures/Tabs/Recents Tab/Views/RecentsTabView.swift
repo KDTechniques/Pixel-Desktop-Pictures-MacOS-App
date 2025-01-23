@@ -24,7 +24,7 @@ struct RecentsTabView: View {
                     RecentsVGridScrollView()
                 }
             }
-            .frame(height: recentsTabVM.recentsArray.isEmpty ? .nan : TabItemsModel.recents.contentHeight)
+            .frame(height: recentsTabVM.recentsArray.isEmpty ? .nan : TabItem.recents.contentHeight)
         }
         .environment(recentsTabVM)
     }

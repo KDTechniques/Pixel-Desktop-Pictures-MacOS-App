@@ -14,32 +14,33 @@ struct SettingsTabView: View {
     
     // MARK: - BODY
     var body: some View {
-        VStack(spacing: 0) {
-            // Title
-            SettingsTitleTextView()
-            
-            VStack(alignment: .leading) {
-                // Launch at Login Checkbox
-                CheckboxTextView(isChecked: settingsTabVM.binding(\.launchAtLogin), text: "Launch at login")
+        TabContentWithWindowErrorView(tab: .settings) {
+            VStack(spacing: 0) {
+                // Title
+                SettingsTitleTextView()
                 
-                // Show on All Spaces Checkbox
-                CheckboxTextView(isChecked: settingsTabVM.binding(\.showOnAllSpaces), text: "Show on all spaces")
-                
-                // Update Time Interval Menu Picker
-                UpdateIntervalSettingView()
-                
-                divider
-                
-                // API Access Key Textfield, and Connect Button
-                apiAccessKey
-                
-                // Restore Default settings, Version and Quit button
-                SettingsFooterView()
+                VStack(alignment: .leading) {
+                    // Launch at Login Checkbox
+                    CheckboxTextView(isChecked: settingsTabVM.binding(\.launchAtLogin), text: "Launch at login")
+                    
+                    // Show on All Spaces Checkbox
+                    CheckboxTextView(isChecked: settingsTabVM.binding(\.showOnAllSpaces), text: "Show on all spaces")
+                    
+                    // Update Time Interval Menu Picker
+                    UpdateIntervalSettingView()
+                    
+                    divider
+                    
+                    // API Access Key Textfield, and Connect Button
+                    apiAccessKey
+                    
+                    // Restore Default settings, Version and Quit button
+                    SettingsFooterView()
+                }
+                .padding([.horizontal, .bottom])
             }
-            .padding([.horizontal, .bottom])
+            .overlay(alignment: .bottom) { bottomPopup }
         }
-        .overlay(alignment: .bottom) { APIAccessKeyPopupView() }
-        .setTabContentHeightToTabsViewModelViewModifier(from: .settings)
     }
 }
 
@@ -50,13 +51,11 @@ struct SettingsTabView: View {
 
 // MARK: EXTENSIONS
 extension SettingsTabView {
-    // MARK: - Divider
     private var divider: some View {
         Divider()
             .padding(.vertical)
     }
     
-    // MARK: - API Access Key
     private var apiAccessKey: some View {
         VStack(alignment: .leading) {
             // API Access key Status
@@ -68,5 +67,13 @@ extension SettingsTabView {
             }
         }
         .padding(.bottom)
+    }
+    
+    @ViewBuilder
+    private var bottomPopup: some View {
+        if settingsTabVM.isPresentedPopup {
+            APIAccessKeyPopupView()
+                .transition(.move(edge: .bottom))
+        }
     }
 }

@@ -80,7 +80,7 @@ extension CollectionsTabViewModel {
     ///   - isPresented: A Boolean indicating whether the popup should be presented (`true`) or dismissed (`false`).
     ///   - type: The type of the popup, represented by `CollectionsViewPopOver`.
     func presentPopup(_ isPresented: Bool, for type: CollectionsViewPopOver) {
-        withAnimation(.smooth(duration: 0.4)) {
+        withAnimation(TabItem.bottomPopupAnimation) {
             setPopOverItem((isPresented, type))
         }
         

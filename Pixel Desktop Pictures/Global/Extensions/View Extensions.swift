@@ -10,7 +10,7 @@ import SwiftData
 
 extension View {
     // MARK: - Set Tab Content Height To Tabs ViewModel View Modifier
-    func setTabContentHeightToTabsViewModelViewModifier(from tab: TabItemsModel) -> some View {
+    func setTabContentHeightToTabsViewModelViewModifier(from tab: TabItem) -> some View {
         return self.modifier(SetTabContentHeightToTabsViewModel(from: tab))
     }
     
@@ -27,7 +27,7 @@ extension View {
     // MARK: - Preview View Modifier
     var previewModifier: some View {
         self
-            .frame(width: TabItemsModel.allWindowWidth)
+            .frame(width: TabItem.allWindowWidth)
             .background(Color.windowBackground)
             .environment(ErrorPopupViewModel.shared)
             .environment(TabsViewModel())
@@ -111,10 +111,10 @@ fileprivate struct OnFirstTask: ViewModifier {
 fileprivate struct SetTabContentHeightToTabsViewModel: ViewModifier {
     // MARK: PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
-    let tab: TabItemsModel
+    let tab: TabItem
     
     // MARK: INITIALIZER
-    init(from tab: TabItemsModel) {
+    init(from tab: TabItem) {
         self.tab = tab
     }
     

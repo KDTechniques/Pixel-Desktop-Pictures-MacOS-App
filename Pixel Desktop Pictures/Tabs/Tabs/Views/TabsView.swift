@@ -18,9 +18,9 @@ struct TabsView: View {
                 .background(alignment: .top) { ErrorPopupView() }
             
             TabView(selection: Binding(get: { tabsVM.tabSelection }, set: { _ in })) {
-                ForEach(TabItemsModel.allCases, id: \.self) { tab in
+                ForEach(TabItem.allCases, id: \.self) { tab in
                     tab.content
-                        .frame(width: TabItemsModel.allWindowWidth)
+                        .frame(width: TabItem.allWindowWidth)
                         .tag(tab)
                 }
                 .background(TabBarHiderView())
@@ -29,7 +29,7 @@ struct TabsView: View {
             .tabViewStyle(.grouped)
             .zIndex(-1)
         }
-        .frame(width: TabItemsModel.allWindowWidth)
+        .frame(width: TabItem.allWindowWidth)
         .background(Color.windowBackground)
     }
 }
