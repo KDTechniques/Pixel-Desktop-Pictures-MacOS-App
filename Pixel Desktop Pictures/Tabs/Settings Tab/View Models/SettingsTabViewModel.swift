@@ -275,6 +275,7 @@ extension SettingsTabViewModel {
     private func launchAtLoginSubscriber() {
         $launchAtLogin$
             .dropFirst(2)
+            .removeDuplicates()
             .sink { boolean in
                 LaunchAtLogin.isEnabled = boolean
                 Task { @MainActor [weak self] in
