@@ -80,7 +80,7 @@ final class DesktopPictureScheduler {
         
         // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
         await calculateScheduleSaveExecutionTimeIntervalSince1970(with: timeIntervalSelection)
-        print("✅: Time interval has been changed by the user successfully. ❤️")
+        print("✅: Time interval has been changed by the user successfully.")
     }
     
     // MARK: - PRIVATE FUNCTIONS

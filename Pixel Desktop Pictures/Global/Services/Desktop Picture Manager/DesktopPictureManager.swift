@@ -95,23 +95,6 @@ actor DesktopPictureManager {
         }
     }
     
-    /// Removes observers for workspace space changes and system wake notifications.
-    ///
-    /// This function:
-    /// - Removes the observer for active space change notifications.
-    /// - Cleans up the system wake notification observer.
-    ///
-    /// - Note: Should be called when cleanup is needed, typically in deinit or when stopping monitoring.
-    func deactivateSpaceDidChangeNotificationObserver() {
-        workspace.notificationCenter.removeObserver(
-            self,
-            name: NSWorkspace.activeSpaceDidChangeNotification,
-            object: nil
-        )
-        
-        deactivateDidWakeNotificationObserver()
-    }
-    
     // MARK: - PRIVATE FUNCTIONS
     
     /// Initializes the desktop picture manager.
@@ -127,7 +110,6 @@ actor DesktopPictureManager {
     /// in place to handle desktop picture management seamlessly.
     private func initializeDesktopPictureManager() async {
         await initializeDesktopPicture()
-        await activateSpaceDidChangeNotificationObserver()
         print("✅: `Desktop Picture Manager` has been initialized successfully.")
     }
     
@@ -171,6 +153,23 @@ actor DesktopPictureManager {
 
 // MARK: - Notification Observers Related
 extension DesktopPictureManager {
+    /// Removes observers for workspace space changes and system wake notifications.
+    ///
+    /// This function:
+    /// - Removes the observer for active space change notifications.
+    /// - Cleans up the system wake notification observer.
+    ///
+    /// - Note: Should be called when cleanup is needed, typically in deinit or when stopping monitoring.
+    func deactivateSpaceDidChangeNotificationObserver() async {
+        workspace.notificationCenter.removeObserver(
+            self,
+            name: NSWorkspace.activeSpaceDidChangeNotification,
+            object: nil
+        )
+        
+        await deactivateDidWakeNotificationObserver()
+    }
+    
     /// Adds an observer for the active space change notification.
     ///
     /// - Purpose: When the user switches between different spaces, this observer ensures that the desktop picture
@@ -207,7 +206,7 @@ extension DesktopPictureManager {
     /// Removes the observer for system wake notifications from the workspace notification center.
     ///
     /// - Note: Called as part of the space change observer cleanup process.
-    private func deactivateDidWakeNotificationObserver() {
+    private func deactivateDidWakeNotificationObserver() async {
         workspace.notificationCenter.removeObserver(
             self,
             name: NSWorkspace.didWakeNotification,
