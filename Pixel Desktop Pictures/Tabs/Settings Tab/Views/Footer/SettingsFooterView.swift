@@ -15,7 +15,7 @@ struct SettingsFooterView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
             HStack {
-                eraseAllDataButton
+//                eraseAllDataButton
                 Spacer()
                 restoreToDefaultButton
             }
