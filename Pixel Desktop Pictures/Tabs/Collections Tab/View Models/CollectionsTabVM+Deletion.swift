@@ -24,7 +24,11 @@ extension CollectionsTabViewModel {
             // First, remove the collection from the local database.
             try await getCollectionManager().deleteCollection(at: item)
             
-            // Then animate the removal of the collection from the collections array.
+            // Dismiss popup and wait for a fully dismiss happens
+            presentPopup(false, for: .collectionUpdatePopOver)
+            try await Task.sleep(nanoseconds: UInt64(TabItem.bottomPopupAnimationDuration * 1_000_000_000))
+            
+            // Then animate the removal of the collection from the collections array with better user experience.
             withAnimation(.smooth(duration: animationDuration)) {
                 removeFromCollectionsArray(item)
             }
@@ -43,8 +47,6 @@ extension CollectionsTabViewModel {
                 await updateCollectionSelection(item: randomCollectionItem)
             }
             
-            // Handle successful deletion
-            presentPopup(false, for: .collectionUpdatePopOver)
             print("✅: `\(item.name)` collection has been deleted successfully.")
         } catch {
             print(getVMError().failedToDeleteCollection(collectionName: item.name, error).localizedDescription)

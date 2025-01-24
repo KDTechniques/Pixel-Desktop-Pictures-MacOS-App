@@ -51,5 +51,6 @@ enum TabItem: String, CaseIterable {
         }
     }
     
-    static let bottomPopupAnimation: Animation = .smooth(duration: 0.4)
+    static let bottomPopupAnimationDuration: TimeInterval = 0.4
+    static let bottomPopupAnimation: Animation = .smooth(duration: bottomPopupAnimationDuration)
 }
