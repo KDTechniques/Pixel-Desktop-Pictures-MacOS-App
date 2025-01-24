@@ -14,33 +14,32 @@ struct SettingsTabView: View {
     
     // MARK: - BODY
     var body: some View {
-        TabContentWithWindowErrorView(tab: .settings) {
-            VStack(spacing: 0) {
-                // Title
-                SettingsTitleTextView()
+        VStack(spacing: 0) {
+            // Title
+            SettingsTitleTextView()
+            
+            VStack(alignment: .leading) {
+                // Launch at Login Checkbox
+                CheckboxTextView(isChecked: settingsTabVM.binding(\.launchAtLogin), text: "Launch at login")
                 
-                VStack(alignment: .leading) {
-                    // Launch at Login Checkbox
-                    CheckboxTextView(isChecked: settingsTabVM.binding(\.launchAtLogin), text: "Launch at login")
-                    
-                    // Show on All Spaces Checkbox
-                    CheckboxTextView(isChecked: settingsTabVM.binding(\.showOnAllSpaces), text: "Show on all spaces")
-                    
-                    // Update Time Interval Menu Picker
-                    UpdateIntervalSettingView()
-                    
-                    divider
-                    
-                    // API Access Key Textfield, and Connect Button
-                    apiAccessKey
-                    
-                    // Restore Default settings, Version and Quit button
-                    SettingsFooterView()
-                }
-                .padding([.horizontal, .bottom])
+                // Show on All Spaces Checkbox
+                CheckboxTextView(isChecked: settingsTabVM.binding(\.showOnAllSpaces), text: "Show on all spaces")
+                
+                // Update Time Interval Menu Picker
+                UpdateIntervalSettingView()
+                
+                divider
+                
+                // API Access Key Textfield, and Connect Button
+                apiAccessKey
+                
+                // Restore Default settings, Version and Quit button
+                SettingsFooterView()
             }
-            .overlay(alignment: .bottom) { bottomPopup }
+            .padding([.horizontal, .bottom])
         }
+        .overlay(alignment: .bottom) { bottomPopup }
+        .setTabContentHeightToTabsViewModelViewModifier(from: .settings)
     }
 }
 
