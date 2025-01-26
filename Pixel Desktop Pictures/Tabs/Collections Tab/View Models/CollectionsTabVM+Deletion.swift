@@ -47,9 +47,9 @@ extension CollectionsTabViewModel {
                 await updateCollectionSelection(item: randomCollectionItem)
             }
             
-            print("✅: `\(item.name)` collection has been deleted successfully.")
+            Logger.log("✅: `\(item.name)` collection has been deleted")
         } catch {
-            print(getVMError().failedToDeleteCollection(collectionName: item.name, error).localizedDescription)
+            Logger.log(getVMError().failedToDeleteCollection(collectionName: item.name, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToDeleteCollection)
         }
     }

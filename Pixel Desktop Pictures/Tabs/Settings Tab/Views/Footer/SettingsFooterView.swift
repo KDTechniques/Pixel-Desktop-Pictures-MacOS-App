@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct SettingsFooterView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
     
     // MARK: - BODY
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
             HStack {
-//                eraseAllDataButton
+                //                eraseAllDataButton
                 Spacer()
                 restoreToDefaultButton
             }
@@ -38,7 +38,6 @@ struct SettingsFooterView: View {
 
 // MARK: EXTENSIONS
 extension SettingsFooterView {
-    // MARK: - Restore to Defaults Button
     private var restoreToDefaultButton: some View {
         Button {
             settingsTabVM.restoreDefaultSettings()
@@ -52,7 +51,6 @@ extension SettingsFooterView {
         .buttonStyle(.plain)
     }
     
-    // MARK: - App Version & Author Text
     private var appVersionNAuthorText: some  View {
         VStack(alignment: .leading, spacing: 2) {
             if let version: String = Utilities.appVersion() {
@@ -63,7 +61,6 @@ extension SettingsFooterView {
         .font(.footnote)
     }
     
-    // MARK: - Quit Button
     private var quitButton: some View {
         Button {
             settingsTabVM.quitApp()
@@ -78,14 +75,13 @@ extension SettingsFooterView {
     }
     
 #if DEBUG
-    // MARK: - Erase All Data Button
     private var eraseAllDataButton: some View {
         Button("Erase All Swift Data") {
             Task {
                 do {
                     try await LocalDatabaseManager(appEnvironment: .production).eraseAllData()
                 } catch {
-                    print("❌: Failed to erase all data from swift data. \(error.localizedDescription)")
+                    Logger.log("❌: Failed to erase all data from swift data. \(error.localizedDescription)")
                 }
             }
         }

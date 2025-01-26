@@ -14,14 +14,14 @@ struct RecentsVGridImageView: View {
     @Environment(MainTabViewModel.self) private var mainTabVM
     let item: Recent
     
-    // MARK: - ASSIGNED PROPERTIES
-    @State private var imageQualitiesURLStrings: UnsplashImageResolution?
-    let vGridValues = VGridValuesModel.self
-    
     // MARK: - INITIALIZER
     init(item: Recent) {
         self.item = item
     }
+    
+    // MARK: - ASSIGNED PROPERTIES
+    @State private var imageQualitiesURLStrings: UnsplashImageResolution?
+    private let vGridValues: VGridValues.Type = VGridValues.self
     
     // MARK: - BODY
     var body: some View {
@@ -57,6 +57,7 @@ extension RecentsVGridImageView {
     }
     
     // MARK: - FUNCTIONS
+    
     private func handleOnFirstTaskModifier() async {
         imageQualitiesURLStrings = try? await recentsTabVM
             .recentManager

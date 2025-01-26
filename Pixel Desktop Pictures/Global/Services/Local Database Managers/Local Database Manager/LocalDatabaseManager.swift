@@ -8,36 +8,46 @@
 import Foundation
 import SwiftData
 
+/**
+ A thread-safe actor responsible for managing the local database operations.
+ It provides methods for initializing the database, erasing all data, and saving changes to the context.
+ This actor ensures that all database operations are performed in a thread-safe manner, leveraging Swift's concurrency model.
+ */
 actor LocalDatabaseManager {
     // MARK: - INJECTED PROPERTIES
     private(set) var container: ModelContainer
     
     // MARK: - INITIALIZER
     
-    init(appEnvironment: AppEnvironmentModel) throws {
+    init(appEnvironment: AppEnvironment) throws {
         do {
             container = try ModelContainer(
                 for: Collection.self, QueryImage.self, Recent.self,
                 configurations: .init(isStoredInMemoryOnly: appEnvironment == .mock)
             )
-            print("✅: `LocalDatabaseManager` has been initialized successfully.")
+            Logger.log("✅: `LocalDatabaseManager` has been initialized")
         } catch {
-            print(LocalDatabaseManagerErrorModel.failedToInitializeModelContainer(error).localizedDescription)
+            Logger.log(LocalDatabaseManagerError.failedToInitializeModelContainer(error).localizedDescription)
             throw error
         }
     }
     
     // MARK: INTERNAL FUNCTIONS
     
+    /// Erases all data from the local database.
+    /// - Throws: An error if the operation fails, such as if the database cannot be erased.
     func eraseAllData() async throws {
         do {
             try container.erase()
         } catch {
-            print(LocalDatabaseManagerErrorModel.failedToEraseAllData(error).localizedDescription)
+            Logger.log(LocalDatabaseManagerError.failedToEraseAllData(error).localizedDescription)
             throw error
         }
     }
     
+    /// Saves changes made to the local database context.
+    /// - Throws: An error if the operation fails, such as if the context cannot be saved.
+    /// - Note: If saving fails, the context will roll back any unsaved changes.
     @MainActor
     func saveContext() async throws {
         do {
@@ -45,7 +55,7 @@ actor LocalDatabaseManager {
         } catch {
             // Rollback changes to the context if saving fails
             await container.mainContext.rollback() // Rollback any unsaved changes
-            print(LocalDatabaseManagerErrorModel.failedToSaveContext(error).localizedDescription)
+            Logger.log(LocalDatabaseManagerError.failedToSaveContext(error).localizedDescription)
             throw error
         }
     }

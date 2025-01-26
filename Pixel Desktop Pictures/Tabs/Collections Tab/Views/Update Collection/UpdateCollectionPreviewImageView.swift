@@ -13,16 +13,16 @@ struct UpdateCollectionPreviewImageView: View {
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let item: Collection
     
-    // MARK: - ASSIGNED PROPERTIES
-    let vGridValues = VGridValuesModel.self
-    var collectionModelManager: CollectionManager { collectionsTabVM.getCollectionManager() }
-    @State private var imageURLString: String?
-    @State private var showImage: Bool = false
-    
     // MARK: - INITIALIZER
     init(item: Collection) {
         self.item = item
     }
+    
+    // MARK: - ASSIGNED PROPERTIES
+    private let vGridValues: VGridValues.Type = VGridValues.self
+    private var collectionModelManager: CollectionManager { collectionsTabVM.getCollectionManager() }
+    @State private var imageURLString: String?
+    @State private var showImage: Bool = false
     
     // MARK: - BODY
     var body: some View {
@@ -58,23 +58,20 @@ struct UpdateCollectionPreviewImageView: View {
 
 // MARK: EXTENSIONS
 extension UpdateCollectionPreviewImageView {
-    // MARK: - Image Overlay Text
     private func imageOverlayText() -> String {
         return collectionsTabVM.renameTextfieldText.isEmpty
         ? item.name
         : collectionsTabVM.renameTextfieldText.capitalized
     }
     
-    // MARK: FUNCTIONS
+    // MARK: - FUNCTIONS
     
-    // MARK: - Handle `imageURLsData` Change
     private func handleImageURLsDataChange() {
         Task {
             imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
         }
     }
     
-    // MARK: - Handle Task
     private func handleTask() async {
         imageURLString = try? await collectionModelManager.getImageURLs(from: item).small
         try? await Task.sleep(nanoseconds: 500_000_000)

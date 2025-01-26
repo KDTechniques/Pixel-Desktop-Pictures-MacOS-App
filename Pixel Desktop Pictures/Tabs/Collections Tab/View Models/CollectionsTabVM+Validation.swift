@@ -26,10 +26,11 @@ extension CollectionsTabViewModel {
             setShowCreateButtonProgress(false)
             setShowRenameButtonProgress(false)
             
-            print(getVMError().duplicateCollectionName.localizedDescription)
+            Logger.log(getVMError().duplicateCollectionName.localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().duplicateCollectionNameFound)
             throw getVMError().duplicateCollectionName
         }
+        Logger.log("✅: Collection name duplications have been validated.")
     }
     
     /// Checks if a `QueryImage` exists in the local database for a given collection name.
@@ -48,6 +49,8 @@ extension CollectionsTabViewModel {
     /// - Important: This function ensures that duplicate or redundant `QueryImage` creation is avoided.
     func isQueryImageExistInLocalDatabase(for collectionName: String) async throws -> Bool {
         let isExist: Bool = try await !getQueryImageManager().fetchQueryImages(for: [collectionName]).isEmpty
+        
+        Logger.log("✅: Query image existence has been returned.")
         return isExist
     }
     
@@ -70,6 +73,7 @@ extension CollectionsTabViewModel {
             return false
         }
         
+        Logger.log("✅: Empty collection name has been validated.")
         return true
     }
 }

@@ -46,10 +46,10 @@ extension CollectionsTabViewModel {
             // Handle successful creation.
             setShowCreateButtonProgress(false)
             presentPopup(false, for: .collectionCreationPopOver)
-            print("✅: `\(collectionName)` collection has been created successfully.")
+            Logger.log("✅: `\(collectionName)` collection has been created")
         } catch {
             setShowCreateButtonProgress(false)
-            print(getVMError().failedToCreateCollection(collectionName: collectionName, error).localizedDescription)
+            Logger.log(getVMError().failedToCreateCollection(collectionName: collectionName, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToCreateCollection(error))
             getAPIAccessKeyManager().handleURLError(error)
         }
@@ -74,12 +74,12 @@ extension CollectionsTabViewModel {
                     taskGroup.addTask { [weak self] in
                         // Fetch image api query images for each collection name.
                         do {
-                            print("🤞: Fetching image api query images for \(collectionName)...")
+                            Logger.log("🤞: Fetching image api query images for \(collectionName)...")
                             let queryImages: UnsplashQueryImages = try await imageAPIService.getQueryImages(query: collectionName, pageNumber: 1)
-                            print("✅: Successfully fetched image api query images for \(collectionName).")
+                            Logger.log("✅: Successfully fetched image api query images for \(collectionName).")
                             return (collectionName, queryImages)
                         } catch {
-                            await print(self?.getVMError().failedToFetchQueryImages(collectionName: collectionName, error).localizedDescription as Any)
+                            await Logger.log((self?.getVMError().failedToFetchQueryImages(collectionName: collectionName, error).localizedDescription as? String ?? "UNKNOWN ERROR"))
                             throw error
                         }
                     }
@@ -94,7 +94,7 @@ extension CollectionsTabViewModel {
                 return tempQueryImagesArray
             }
             
-            print("✅: All image api query images tasks have been completed. Results count: \(queryImagesWithCollectionNamesArray.count)")
+            Logger.log("✅: All image api query images tasks have been completed. Results count: \(queryImagesWithCollectionNamesArray.count)")
             
             // Create `QueryImage` items once all image api query images tasks are completed.
             var tempQueryImagesArray: [QueryImage] = []
@@ -108,9 +108,9 @@ extension CollectionsTabViewModel {
             
             // Save created `QueryImage`s array to local database.
             try await getQueryImageManager().addQueryImages(tempQueryImagesArray)
-            print("✅: Initial `QueryImage`s array has been created and saved successfully to local database.")
+            Logger.log("✅: Initial `QueryImage`s array has been created and saved successfully to local database.")
         } catch {
-            print(getVMError().failedToFetchInitialQueryImages(collectionNames: collectionNames, error).localizedDescription)
+            Logger.log(getVMError().failedToFetchInitialQueryImages(collectionNames: collectionNames, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedSomethingOnQueryImages)
             throw error
         }

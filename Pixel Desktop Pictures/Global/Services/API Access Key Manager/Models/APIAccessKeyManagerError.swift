@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyManagerErrorModel.swift
+//  APIAccessKeyManagerError.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-16.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum APIAccessKeyManagerErrorModel: LocalizedError {
+enum APIAccessKeyManagerError: LocalizedError {
     case apiAccessKeyNotFound
     case EmptyAPIAccessKey
     case apiAccessKeyCheckupFailed

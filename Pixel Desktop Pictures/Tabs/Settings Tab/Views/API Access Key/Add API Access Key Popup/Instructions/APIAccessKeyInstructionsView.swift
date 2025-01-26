@@ -38,7 +38,6 @@ struct APIAccessKeyInstructionsView: View {
 
 // MARK: EXTENSIONS
 extension APIAccessKeyInstructionsView {
-    // MARK: - First Instruction
     private var first: some View {
         APIAccessKeyInstructionItemView {
             Text("1. Visit Unsplash Developers")
@@ -46,7 +45,6 @@ extension APIAccessKeyInstructionsView {
         }
     }
     
-    // MARK: - Second Instruction
     private var second: some View {
         APIAccessKeyInstructionItemView {
             Text("2. Log In or Sign Up")
@@ -55,7 +53,6 @@ extension APIAccessKeyInstructionsView {
         }
     }
     
-    // MARK: - Third Instruction
     private var third: some View {
         APIAccessKeyInstructionItemView {
             Text("3. Create a New Application")
@@ -64,7 +61,6 @@ extension APIAccessKeyInstructionsView {
         }
     }
     
-    // MARK: - Fourth Instruction
     private var fourth: some View {
         APIAccessKeyInstructionItemView {
             Text("4. Fill Out Application Details")
@@ -90,7 +86,6 @@ extension APIAccessKeyInstructionsView {
         }
     }
     
-    // MARK: - Fifth Instruction
     private var fifth: some View {
         APIAccessKeyInstructionItemView {
             Text("5. Submit Your Application")
@@ -98,7 +93,6 @@ extension APIAccessKeyInstructionsView {
         }
     }
     
-    // MARK: - Sixth Instruction
     private var sixth: some View {
         APIAccessKeyInstructionItemView {
             Text("6. Get Your API Key")
@@ -107,7 +101,6 @@ extension APIAccessKeyInstructionsView {
         }
     }
     
-    // MARK: - Background
     private var background: some View {
         Color.textfieldBackground
             .clipShape(.rect(cornerRadius: 5))

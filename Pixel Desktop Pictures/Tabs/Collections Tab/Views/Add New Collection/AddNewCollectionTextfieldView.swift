@@ -38,7 +38,6 @@ struct AddNewCollectionTextfieldView: View {
 
 // MARK: - EXTENSIONS
 extension AddNewCollectionTextfieldView {
-    // MARK: - handleOnAppear
     private func handleOnAppear() {
         isFocused = true
     }

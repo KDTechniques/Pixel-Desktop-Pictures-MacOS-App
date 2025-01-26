@@ -9,20 +9,20 @@ import Foundation
 
 @MainActor
 @Observable final class TabsViewModel {
-    // MARK: - PROPERTIES
+    // MARK: - ASSIGNED PROPERTIES
     private(set) var tabSelection: TabItem = .main
     private(set) var selectedTabContentHeight: CGFloat = .infinity
     
-    // MARK: FUNCTIONS
+    // MARK: - INTERNAL FUNCTIONS
     
-    // MARK: - Set Tab Selection
     func setTabSelection(_ tab: TabItem) {
         tabSelection = tab
+        Logger.log("✅: Tab selection has been assigned.")
     }
     
-    // MARK: - Set Tab Content Height
     func setTabContentHeight(height: CGFloat, from tab: TabItem) {
         guard tab == tabSelection else { return }
         selectedTabContentHeight = height
+        Logger.log("✅: Tab content has been assigned.")
     }
 }

@@ -28,10 +28,10 @@ import SwiftUI
     }
     @ObservationIgnored @Published private var showOnAllSpaces$: Bool = true
     
-    var updateIntervalSelection: DesktopPictureSchedulerIntervalsModel = .defaultTimeInterval {
+    var updateIntervalSelection: DesktopPictureSchedulerInterval = .defaultTimeInterval {
         didSet { updateIntervalSelection$ = updateIntervalSelection }
     }
-    @ObservationIgnored @Published private var updateIntervalSelection$: DesktopPictureSchedulerIntervalsModel = .defaultTimeInterval
+    @ObservationIgnored @Published private var updateIntervalSelection$: DesktopPictureSchedulerInterval = .defaultTimeInterval
     
     private(set) var isPresentedPopup: Bool = false
     var apiAccessKeyTextfieldText: String = ""
@@ -40,7 +40,7 @@ import SwiftUI
     @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
-    init(appEnvironment: AppEnvironmentModel, mainTabVM: MainTabViewModel) {
+    init(appEnvironment: AppEnvironment, mainTabVM: MainTabViewModel) {
         desktopPictureScheduler = .shared(appEnvironmentType: appEnvironment, mainTabVM: mainTabVM)
         Task { await initializeSettingsTabVM() }
     }
@@ -61,9 +61,9 @@ import SwiftUI
             showOnAllSpacesSubscriber()
             launchAtLoginSubscriber()
             try await getSettingsFromUserDefaults()
-            print("✅: `Settings Tab View Model` has been initialized successfully.")
+            Logger.log("✅: `Settings Tab View Model` has been initialized")
         } catch {
-            print(vmError.failedToInitializeSettingsTabViewModel(error).localizedDescription)
+            Logger.log(vmError.failedToInitializeSettingsTabViewModel(error).localizedDescription)
         }
     }
     
@@ -77,6 +77,7 @@ import SwiftUI
         withAnimation(TabItem.bottomPopupAnimation) {
             isPresentedPopup = present
         }
+        Logger.log("✅: Bottom popup has been presented/dismissed.")
     }
     
     /// Dismisses the popup and resets related data.
@@ -86,6 +87,7 @@ import SwiftUI
     func dismissPopUp() {
         presentPopup(false)
         apiAccessKeyTextfieldText = ""
+        Logger.log("✅: Bottom popup has been dismissed and reset the api access key textfield.")
     }
     
     /// Pastes the API access key from the clipboard into the text field.
@@ -95,6 +97,7 @@ import SwiftUI
     func pasteAPIAccessKeyFromClipboard() {
         guard let clipboardString = NSPasteboard.general.string(forType: .string) else { return }
         apiAccessKeyTextfieldText = clipboardString
+        Logger.log("✅: A text has been pasted from the clipboard.")
     }
     
     /// Restores the default settings and saves them to UserDefaults.
@@ -107,6 +110,7 @@ import SwiftUI
         launchAtLogin = true
         showOnAllSpaces = true
         updateIntervalSelection = .defaultTimeInterval
+        Logger.log("✅: Defaults settings have been restored.")
     }
     
     /// Quits the application.
@@ -115,6 +119,7 @@ import SwiftUI
     /// on the shared `NSApplication` instance.
     func quitApp() {
         NSApplication.shared.terminate(nil)
+        Logger.log("✅: App has been quit.")
     }
     
     // MARK: - PRIVATE FUNCTIONS
@@ -124,6 +129,7 @@ import SwiftUI
     /// This function clears the text in the API access key text field by setting it to an empty string.
     private func resetAPIAccessKeyTextfieldText() {
         apiAccessKeyTextfieldText = ""
+        Logger.log("✅: API access key textfield has been reset.")
     }
     
     /// Handles changes to the update interval setting.
@@ -131,9 +137,10 @@ import SwiftUI
     /// This asynchronous function is called when the update interval setting is changed. It updates
     /// the `desktopPictureScheduler` with the new interval value.
     ///
-    /// - Parameter value: The new `DesktopPictureSchedulerIntervalsModel` representing the updated update interval selection.
-    private func onUpdateIntervalChange(_ value: DesktopPictureSchedulerIntervalsModel) async {
+    /// - Parameter value: The new `DesktopPictureSchedulerInterval` representing the updated update interval selection.
+    private func onUpdateIntervalChange(_ value: DesktopPictureSchedulerInterval) async {
         await desktopPictureScheduler.onChangeOfTimeIntervalSelection(from: value)
+        Logger.log("✅: Change on update interval occurred.")
     }
 }
 
@@ -144,39 +151,40 @@ extension SettingsTabViewModel {
     /// Saves the `launchAtLogin` setting to UserDefaults.
     ///
     /// This asynchronous function saves the given Boolean value for the `launchAtLogin` setting
-    /// to UserDefaults using a specific key. It also prints a message confirming that the value has been saved.
+    /// to UserDefaults using a specific key. It also Logger.logs a message confirming that the value has been saved.
     ///
     /// - Parameter value: A Boolean indicating whether the app should launch at login.
     /// `true` enables the setting, while `false` disables it.
     private func saveLaunchAtLoginToUserDefaults(_ value: Bool) async {
         await defaults.save(key: .launchAtLoginKey, value: value)
-        print("✅: Launch at login state `\(value)` has been saved to user defaults successfully.")
+        Logger.log("✅: Launch at login state `\(value)` has been saved to user defaults")
     }
     
     /// Saves the `showOnAllSpaces` setting to UserDefaults.
     ///
     /// This asynchronous function saves the given Boolean value for the `showOnAllSpaces` setting
-    /// to UserDefaults using a specific key. It also prints a message confirming that the value has been saved.
+    /// to UserDefaults using a specific key. It also Logger.logs a message confirming that the value has been saved.
     ///
     /// - Parameter value: A Boolean indicating whether the app should be shown on all spaces.
     /// `true` enables the setting, while `false` disables it.
     private func saveShowOnAllSpacesToUserDefaults(_ value: Bool) async {
         await defaults.save(key: .showOnAllSpacesKey, value: value)
-        print("✅: Show on all spaces state `\(value)` has been saved to user defaults successfully.")
+        Logger.log("✅: Show on all spaces state `\(value)` has been saved to user defaults")
     }
     
     /// Saves the update interval setting to UserDefaults.
     ///
     /// This asynchronous function saves the `updateIntervalSelection` setting, represented
-    /// by a `DesktopPictureSchedulerIntervalsModel`, to UserDefaults using a specific key.
-    /// It also handles potential errors and prints a message confirming whether the save was successful.
+    /// by a `DesktopPictureSchedulerInterval`, to UserDefaults using a specific key.
+    /// It also handles potential errors and Logger.logs a message confirming whether the save was successful.
     ///
-    /// - Parameter value: The `DesktopPictureSchedulerIntervalsModel` representing the selected update interval.
-    private func saveUpdateIntervalToUserDefaults(_ value: DesktopPictureSchedulerIntervalsModel) async {
+    /// - Parameter value: The `DesktopPictureSchedulerInterval` representing the selected update interval.
+    private func saveUpdateIntervalToUserDefaults(_ value: DesktopPictureSchedulerInterval) async {
         do {
             try await defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
+            Logger.log("✅: Update interval has been saved to user defaults.")
         } catch {
-            print(vmError.failedToSaveUpdateIntervalsToUserDefaults(error).localizedDescription)
+            Logger.log(vmError.failedToSaveUpdateIntervalsToUserDefaults(error).localizedDescription)
         }
     }
     
@@ -188,6 +196,7 @@ extension SettingsTabViewModel {
         await saveLaunchAtLoginToUserDefaults(launchAtLogin)
         await saveShowOnAllSpacesToUserDefaults(showOnAllSpaces)
         await saveUpdateIntervalToUserDefaults(updateIntervalSelection)
+        Logger.log("✅: Settings has been saved to user defaults.")
     }
     
     /// Retrieves settings from UserDefaults and updates the current settings.
@@ -204,16 +213,19 @@ extension SettingsTabViewModel {
             guard
                 let savedLaunchAtLogin: Bool = await defaults.get(key: .launchAtLoginKey) as? Bool,
                 let savedShowOnAllSpaces: Bool = await defaults.get(key: .showOnAllSpacesKey) as? Bool,
-                let savedUpdateInterval: DesktopPictureSchedulerIntervalsModel = try await defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerIntervalsModel.self) else {
+                let savedUpdateInterval: DesktopPictureSchedulerInterval = try await defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerInterval.self) else {
                 await saveSettingsToUserDefaults()
+                
+                Logger.log("✅: Initial settings have been saved to user defaults.")
                 return
             }
             
             self.launchAtLogin = savedLaunchAtLogin
             self.showOnAllSpaces = savedShowOnAllSpaces
             self.updateIntervalSelection = savedUpdateInterval
+            Logger.log("✅: Settings have been retrieved from user defaults.")
         } catch {
-            print(vmError.failedToGetSettingsFromUserDefaults(error).localizedDescription)
+            Logger.log(vmError.failedToGetSettingsFromUserDefaults(error).localizedDescription)
             throw error
         }
     }
@@ -240,6 +252,8 @@ extension SettingsTabViewModel {
             .dropFirst(2)
             .removeDuplicates()
             .sink { interval in
+                Logger.log("✅: Update interval selection subscriber has been triggered.")
+                
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     
@@ -260,6 +274,8 @@ extension SettingsTabViewModel {
             .dropFirst()
             .removeDuplicates()
             .sink { boolean in
+                Logger.log("✅: Show on all spaces subscriber has been triggered.")
+                
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     
@@ -280,6 +296,8 @@ extension SettingsTabViewModel {
             .dropFirst(2)
             .removeDuplicates()
             .sink { boolean in
+                Logger.log("✅: Launch at login subscriber has been triggered.")
+                
                 LaunchAtLogin.isEnabled = boolean
                 Task { @MainActor [weak self] in
                     await self?.saveLaunchAtLoginToUserDefaults(boolean)

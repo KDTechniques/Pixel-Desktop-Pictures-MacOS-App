@@ -12,7 +12,7 @@ struct RecentsVGridScrollView: View {
     @Environment(RecentsTabViewModel.self) private var recentsTabVM
     
     // MARK: - ASSGNED PROPERTIES
-    let vGridValues: VGridValuesModel.Type = VGridValuesModel.self
+    private let vGridValues: VGridValues.Type = VGridValues.self
     
     // MARK: - BODY
     var body: some View {

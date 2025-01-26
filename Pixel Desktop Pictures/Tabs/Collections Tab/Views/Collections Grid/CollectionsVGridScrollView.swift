@@ -12,14 +12,14 @@ struct CollectionsVGridScrollView: View {
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @Binding var scrollPosition: ScrollPosition
     
-    // MARK: - ASSIGNED PROPERTIES
-    let vGridValues = VGridValuesModel.self
-    let nonScrollableItemsCount: Int = 8
-    
     // MARK: - INITIALIZER
     init(scrollPosition: Binding<ScrollPosition>) {
         _scrollPosition = scrollPosition
     }
+    
+    // MARK: - ASSIGNED PROPERTIES
+    let vGridValues: VGridValues.Type = VGridValues.self
+    let nonScrollableItemsCount: Int = 8
     
     // MARK: - BODY
     var body: some View {
@@ -44,11 +44,11 @@ struct CollectionsVGridScrollView: View {
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Scroll View") {
     CollectionsVGridScrollView(scrollPosition: .constant(.init(edge: .top)))
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS
 extension CollectionsVGridScrollView {
-    // MARK: - bottomPopup
     @ViewBuilder
     private var bottomPopup: some View {
         if collectionsTabVM.popOverItem == (true, .collectionCreationPopOver) {

@@ -20,7 +20,7 @@ extension CollectionsTabViewModel {
         
         // Exit early if the updating item is nil.
         guard let updatingCollectionItem: Collection = updatingItem else {
-            print(getVMError().updatingItemFoundNil.localizedDescription)
+            Logger.log(getVMError().updatingItemFoundNil.localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().somethingWentWrong)
             return
         }
@@ -46,10 +46,10 @@ extension CollectionsTabViewModel {
             setShowRenameButtonProgress(false)
             resetTextfieldTexts()
             try await getAndSetQueryImagesArray()
-            print("✅: Collection has been renamed to `\(newCollectionName)` successfully.")
+            Logger.log("✅: Collection has been renamed to `\(newCollectionName)`")
         } catch {
             setShowRenameButtonProgress(false)
-            print(getVMError().failedToRenameCollection(error).localizedDescription)
+            Logger.log(getVMError().failedToRenameCollection(error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionName(error))
             getAPIAccessKeyManager().handleURLError(error)
         }
@@ -74,10 +74,10 @@ extension CollectionsTabViewModel {
             
             // Handle successful image update
             setShowChangeThumbnailButtonProgress(false)
-            print("✅: Thumbnail image has been updated successfully.")
+            Logger.log("✅: Thumbnail image has been updated")
         } catch {
             setShowChangeThumbnailButtonProgress(false)
-            print(getVMError().failedToUpdateCollectionThumbnailImage(collectionName: item.name, error).localizedDescription)
+            Logger.log(getVMError().failedToUpdateCollectionThumbnailImage(collectionName: item.name, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionThumbnailImage)
             getAPIAccessKeyManager().handleURLError(error)
         }
@@ -118,9 +118,9 @@ extension CollectionsTabViewModel {
             
             // Update the query images array
             try await getAndSetQueryImagesArray()
-            print("✅: Collection selection has been updated successfully.")
+            Logger.log("✅: Collection selection has been updated")
         } catch {
-            print(getVMError().failedToUpdateCollectionSelection(collectionName: item.name, error).localizedDescription)
+            Logger.log(getVMError().failedToUpdateCollectionSelection(collectionName: item.name, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionSelection)
         }
     }
@@ -148,9 +148,9 @@ extension CollectionsTabViewModel {
             
             // Then set the query images array.
             try await getAndSetQueryImagesArray()
-            print("✅: Collection selections has been updated to false successfully, except `\(excludedItem.name)` collection.")
+            Logger.log("✅: Collection selections has been updated to false successfully, except `\(excludedItem.name)` collection.")
         } catch {
-            print(getVMError().failedToUpdateCollectionSelections(collectionName: excludedItem.name, error).localizedDescription)
+            Logger.log(getVMError().failedToUpdateCollectionSelections(collectionName: excludedItem.name, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionSelection)
         }
     }
@@ -216,10 +216,10 @@ extension CollectionsTabViewModel {
             let imageQualityURLStringsEncoded: Data = try getJSONEncoder().encode(imageQualityURLStrings)
             
             // Return encoded `imageQualityURLStrings` data for saving.
-            print("✅: Collection update has been prepared successfully.")
+            Logger.log("✅: Collection update has been prepared")
             return imageQualityURLStringsEncoded
         } catch {
-            print(getVMError().failedToPrepareCollectionUpdate(for: usage, error).localizedDescription)
+            Logger.log(getVMError().failedToPrepareCollectionUpdate(for: usage, error).localizedDescription)
             throw error
         }
     }

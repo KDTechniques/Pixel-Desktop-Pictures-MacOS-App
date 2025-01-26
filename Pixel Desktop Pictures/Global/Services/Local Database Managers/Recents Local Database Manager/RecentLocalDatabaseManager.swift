@@ -28,7 +28,7 @@ actor RecentLocalDatabaseManager {
         do {
             try await localDatabaseManager.saveContext()
         } catch {
-            print(CollectionLocalDatabaseManagerErrors.failedToCreateCollection(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerError.failedToCreateCollection(error).localizedDescription)
             throw error
         }
     }
@@ -49,7 +49,7 @@ actor RecentLocalDatabaseManager {
             
             return recentsArray
         } catch {
-            print(CollectionLocalDatabaseManagerErrors.failedToFetchCollections(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerError.failedToFetchCollections(error).localizedDescription)
             throw error
         }
     }
@@ -60,7 +60,7 @@ actor RecentLocalDatabaseManager {
         do {
             try await localDatabaseManager.saveContext()
         } catch {
-            print(QueryImageLocalDatabaseManagerErrors.failedToUpdateQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerError.failedToUpdateQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -76,7 +76,7 @@ actor RecentLocalDatabaseManager {
         do {
             try await localDatabaseManager.saveContext()
         } catch {
-            print(CollectionLocalDatabaseManagerErrors.failedToDeleteCollection(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerError.failedToDeleteCollection(error).localizedDescription)
             throw error
         }
     }

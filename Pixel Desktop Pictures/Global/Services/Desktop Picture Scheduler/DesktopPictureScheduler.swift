@@ -9,7 +9,8 @@ import SwiftUICore
 import Combine
 
 /**
- The `DesktopPictureScheduler` class is responsible for managing the scheduling of desktop picture updates. It allows for configuring the time intervals for when desktop pictures should be changed and ensures the task is performed in the background using `NSBackgroundActivityScheduler`.
+ The `DesktopPictureScheduler` class is responsible for managing the scheduling of desktop picture updates.
+ It allows for configuring the time intervals for when desktop pictures should be changed and ensures the task is performed in the background using `NSBackgroundActivityScheduler`.
  */
 @MainActor
 final class DesktopPictureScheduler {
@@ -17,9 +18,18 @@ final class DesktopPictureScheduler {
     private static var singleton: DesktopPictureScheduler?
     
     // MARK: - INJECTED PROPERTIES
-    private let appEnvironmentType: AppEnvironmentModel
+    private let appEnvironmentType: AppEnvironment
     private var timeIntervalSelection: TimeInterval
     private let mainTabVM: MainTabViewModel
+    
+    // MARK: - INITIALIZER
+    private init(appEnvironmentType: AppEnvironment, mainTabVM: MainTabViewModel) {
+        self.appEnvironmentType = appEnvironmentType
+        timeIntervalSelection = DesktopPictureSchedulerInterval.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
+        self.mainTabVM = mainTabVM
+        
+        Task { await initializeScheduler() }
+    }
     
     // MARK: - ASSIGNED PROPERTIES
     private let defaults: UserDefaultsManager = .shared
@@ -35,15 +45,6 @@ final class DesktopPictureScheduler {
     @ObservationIgnored @Published private var didBackgroundTaskFailOnInternetFailure$: Bool = false
     private var cancellables: Set<AnyCancellable> = []
     
-    // MARK: - INITIALIZER
-    private init(appEnvironmentType: AppEnvironmentModel, mainTabVM: MainTabViewModel) {
-        self.appEnvironmentType = appEnvironmentType
-        timeIntervalSelection = DesktopPictureSchedulerIntervalsModel.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
-        self.mainTabVM = mainTabVM
-        
-        Task { await initializeScheduler() }
-    }
-    
     // MARK: - INTERNAL FUNCTIONS
     
     /// Returns the shared singleton instance of `DesktopPictureScheduler`.
@@ -57,7 +58,7 @@ final class DesktopPictureScheduler {
     ///   `DesktopPictureScheduler` initializer to configure the scheduler for the correct environment.
     ///
     /// - Returns: The shared `DesktopPictureScheduler` instance.
-    static func shared(appEnvironmentType: AppEnvironmentModel, mainTabVM: MainTabViewModel) -> DesktopPictureScheduler {
+    static func shared(appEnvironmentType: AppEnvironment, mainTabVM: MainTabViewModel) -> DesktopPictureScheduler {
         guard singleton == nil else {
             return singleton!
         }
@@ -70,14 +71,14 @@ final class DesktopPictureScheduler {
     /// Handles changes to the time interval selection.
     ///
     /// - Parameter timeInterval: The new time interval selection.
-    func onChangeOfTimeIntervalSelection(from timeInterval: DesktopPictureSchedulerIntervalsModel) async {
+    func onChangeOfTimeIntervalSelection(from timeInterval: DesktopPictureSchedulerInterval) async {
         // Save Time Interval Selection Value to User Defaults
         let timeIntervalSelection: TimeInterval = timeInterval.timeInterval(environment: appEnvironmentType)
         await saveTimeIntervalSelectionToUserDefaults(from: timeIntervalSelection)
         
         // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
         await calculateScheduleSaveExecutionTimeIntervalSince1970(with: timeIntervalSelection)
-        print("✅: Time interval has been changed by the user successfully.")
+        Logger.log("✅: Time interval has been changed by the user.")
     }
     
     // MARK: - PRIVATE FUNCTIONS
@@ -96,10 +97,10 @@ final class DesktopPictureScheduler {
         let timeIntervalForScheduler: TimeInterval? = await calculateTimeIntervalForScheduler()
         
         do {
-            print("✅: `Desktop Picture Scheduler` has been initialized successfully.")
+            Logger.log("✅: `Desktop Picture Scheduler` has been initialized")
             try await scheduleBackgroundTask(with: timeIntervalForScheduler)
         } catch {
-            print("\(String(describing: DesktopPictureSchedulerErrorModel.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
+            Logger.log("\(String(describing: DesktopPictureSchedulerError.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
         }
     }
     
@@ -115,6 +116,7 @@ final class DesktopPictureScheduler {
             .sink { boolean in
                 Task { @MainActor [weak self] in
                     guard let self else { return }
+                    Logger.log("✅: Did background task fail on internet failure subscriber got triggered.")
                     await saveFailedBackgroundTaskStateToUserDefaults(from: boolean)
                 }
             }
@@ -127,7 +129,7 @@ final class DesktopPictureScheduler {
     /// - Parameter timeInterval: The time interval (in seconds) for the scheduler.
     ///   - If `timeInterval` is `nil`, it implies that the user has triggered the task manually by opening the app.
     ///
-    /// - Throws: `DesktopPictureSchedulerErrorModel.taskDeallocated`: If the task instance is deallocated during execution.
+    /// - Throws: `DesktopPictureSchedulerError.taskDeallocated`: If the task instance is deallocated during execution.
     private func scheduleBackgroundTask(with timeInterval: TimeInterval?) async throws {
         guard let timeInterval: TimeInterval else {
             // Nil `timeInterval` Value Means User Has Passed the Execution Time and Opened the App
@@ -136,6 +138,7 @@ final class DesktopPictureScheduler {
             
             // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
             await calculateScheduleSaveExecutionTimeIntervalSince1970(with: timeIntervalSelection)
+            Logger.log("✅: Background task has been scheduled.")
             return
         }
         
@@ -146,14 +149,14 @@ final class DesktopPictureScheduler {
         activity.schedule { completion in
             Task { [weak self] in
                 guard let self else {
-                    print("❌: `NSBackgroundActivityScheduler` task is deallocated.")
+                    Logger.log(DesktopPictureSchedulerError.taskDeallocated.localizedDescription)
                     completion(.deferred)
-                    throw DesktopPictureSchedulerErrorModel.taskDeallocated
+                    throw DesktopPictureSchedulerError.taskDeallocated
                 }
                 
                 await performBackgroundTask()
                 completion(.finished)
-                print("Success: `NSBackgroundActivityScheduler` task is finished.")
+                Logger.log("Success: `NSBackgroundActivityScheduler` task is finished.")
                 
                 // Rescheduling Upon Completion as We Don't Repeat the Scheduler
                 // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
@@ -179,20 +182,20 @@ final class DesktopPictureScheduler {
     /// - Note: The 5-second delay helps initialize `MainTabViewModel` before calling its functions.
     /// - Important: Network failures trigger automatic rescheduling of the task.
     private func performBackgroundTask() async {
-        print("Progress: Performing background task.")
+        Logger.log("Progress: Performing background task.")
         
         do {
             try await Task.sleep(nanoseconds: 5_000_000_000)
             try await mainTabVM.setNextImage()
-            try await mainTabVM.setDesktopPicture()
+            try await mainTabVM.setDesktopPicture(environment: appEnvironmentType)
         } catch {
-            print("❌: Failed to perform background task. \(error.localizedDescription)")
+            Logger.log("❌: Failed to perform background task. \(error.localizedDescription)")
             guard let urlError: URLError = error as? URLError else { return }
             
             switch urlError.code {
             case .notConnectedToInternet:
                 didBackgroundTaskFailOnInternetFailure = true
-                print("⚠️✅: Background task has been rescheduled to run when connected to the internet properly.")
+                Logger.log("⚠️✅: Background task has been rescheduled to run when connected to the internet properly.")
             default: ()
             }
         }
@@ -222,7 +225,7 @@ final class DesktopPictureScheduler {
                 // Change the state to false
                 self.didBackgroundTaskFailOnInternetFailure = false
                 
-                print("⚠️✅: Performing failed background task on internet failure again.")
+                Logger.log("⚠️✅: Performing failed background task on internet failure again.")
                 
                 // Perform the failed background task again.
                 Task { [weak self] in
@@ -250,8 +253,9 @@ extension DesktopPictureScheduler {
             
             // Save Execution Time Interval Since 1970 to User Defaults
             await saveExecutionTimeSince1970ToUserDefaults(from: executionTimeIntervalSince1970)
+            Logger.log("✅: Calculated, scheduled, and saved execution time interval since 1970 to user defaults.")
         } catch {
-            print("\(String(describing: DesktopPictureSchedulerErrorModel.executionTimeProcessingFailed.errorDescription)) \(error.localizedDescription)")
+            Logger.log("\(String(describing: DesktopPictureSchedulerError.executionTimeProcessingFailed.errorDescription)) \(error.localizedDescription)")
         }
     }
     
@@ -262,6 +266,8 @@ extension DesktopPictureScheduler {
     private func calculateExecutionTimeIntervalSince1970(from timeIntervalSelection: TimeInterval) -> TimeInterval {
         // Add Time Interval Selection Value to Current Date to get the Execution Time in the Future
         let executionTimeIntervalSince1970: TimeInterval = Date().addingTimeInterval(timeIntervalSelection).timeIntervalSince1970
+        
+        Logger.log("✅: Calculated execution time interval since 1970 has been returned.")
         return executionTimeIntervalSince1970
     }
     
@@ -279,6 +285,8 @@ extension DesktopPictureScheduler {
             return nil
         }
         
+        Logger.log("✅: Calculated timer interval for the scheduler has been returned.")
+        
         // Return Positive `activityTimeInterval` Value When User Opens the App Before the Execution Time
         return activityTimeInterval
     }
@@ -292,11 +300,13 @@ extension DesktopPictureScheduler {
     private func getTimeIntervalSelectionFromUserDefaults() async -> TimeInterval {
         // Try to Get Time Interval Selection Value from User Defaults
         guard let timeIntervalSelection: TimeInterval = await defaults.get(key: timeIntervalKey) as? TimeInterval else {
-            // Get the Default Time Interval Value from `DesktopPictureSchedulerIntervalsModel`
-            let defaultTimeInterval: TimeInterval = DesktopPictureSchedulerIntervalsModel.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
+            // Get the Default Time Interval Value from `DesktopPictureSchedulerInterval`
+            let defaultTimeInterval: TimeInterval = DesktopPictureSchedulerInterval.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
             
             return defaultTimeInterval
         }
+        
+        Logger.log("✅: Time interval selection has been retrieved from user defaults.")
         
         // Return Saved Time Interval Selection Value from User Defaults
         return timeIntervalSelection
@@ -317,6 +327,8 @@ extension DesktopPictureScheduler {
             return newExecutionTimeIntervalSince1970
         }
         
+        Logger.log("✅: Execution time interval since 1970 has been retrieved from user defaults.")
+        
         // Return Saved Execution Time Interval Since 1970 Value from User Defaults
         return savedExecutionTimeIntervalSince1970
     }
@@ -327,6 +339,7 @@ extension DesktopPictureScheduler {
     private func saveTimeIntervalSelectionToUserDefaults(from timeIntervalSelection: TimeInterval) async {
         await defaults.save(key: timeIntervalKey, value: timeIntervalSelection)
         self.timeIntervalSelection = timeIntervalSelection
+        Logger.log("✅: Time interval selection has been saved to user defaults.")
     }
     
     /// Saves the execution time interval since 1970 to User Defaults.
@@ -334,14 +347,23 @@ extension DesktopPictureScheduler {
     /// - Parameter executionTimeIntervalSince1970: The execution time interval since 1970.
     private func saveExecutionTimeSince1970ToUserDefaults(from executionTimeIntervalSince1970: TimeInterval) async {
         await defaults.save(key: executionTimeKey, value: executionTimeIntervalSince1970)
+        Logger.log("✅: Execution time since 1970 has ben saved to user defaults.")
     }
     
+    /// Saves the background task failure state to UserDefaults.
+    ///
+    /// - Parameter state: Boolean indicating whether the background task failed.
     private func saveFailedBackgroundTaskStateToUserDefaults(from state: Bool) async {
         await defaults.save(key: .desktopSchedulerBackgroundTaskFailureKey, value: state)
+        print("✅: Failed background task state has been saved to user defaults.")
     }
     
+    /// Retrieves the state of failed background tasks from UserDefaults asynchronously.
+    /// - Returns: A Boolean value indicating the state of failed background tasks.
     private func getFailedBackgroundTaskStateToUserDefaults() async -> Bool {
         let state: Bool = await defaults.get(key: .desktopSchedulerBackgroundTaskFailureKey) as? Bool ?? false
+        
+        Logger.log("✅: Failed background task state has been returned.")
         return state
     }
 }

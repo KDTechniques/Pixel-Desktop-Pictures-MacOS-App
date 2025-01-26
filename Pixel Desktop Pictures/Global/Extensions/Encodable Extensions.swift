@@ -8,20 +8,28 @@
 import Foundation
 
 extension Encodable {
-    // MARK: - Print Line Description
+    /// Prints a JSON representation of the current model using pretty-Logger.loged formatting.
+    ///
+    /// Encodes the model to JSON, handles potential encoding errors, and Logger.logs the result.
+    ///
+    /// - Note: Provides a formatted JSON string for debugging and logging purposes.
     func printLineDescription() {
         do {
             let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted  // Makes the output pretty (indented)
+            encoder.outputFormatting = .prettyPrinted
             
             let jsonData = try encoder.encode(self)
             
-            // Convert Data to a JSON string
+            guard !jsonData.isEmpty else {
+                Logger.log("Empty JSON data.")
+                return
+            }
+            
             if let jsonString = String(data: jsonData, encoding: .utf8) {
-                print(jsonString)
+                Logger.log(jsonString)
             }
         } catch {
-            print("Error encoding model: \(error)")
+            Logger.log("Error encoding model: \(error)")
         }
     }
 }

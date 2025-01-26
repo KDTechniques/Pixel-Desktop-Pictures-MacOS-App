@@ -8,7 +8,6 @@
 import SwiftUICore
 
 extension Color {
-    // MARK: - Debug Random Color
     static var debug: Self {
         return .init(
             red: .random(in: 0...1),

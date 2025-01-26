@@ -43,7 +43,7 @@ actor DesktopPictureManager {
             name: NSWorkspace.didWakeNotification,
             object: nil
         )
-        print("✅: `Desktop Picture Manager` has been Deinitialized successfully.")
+        Logger.log("✅: `Desktop Picture Manager` has been Deinitialized.")
     }
     
     // MARK: - INTERNAL FUNCTIONS
@@ -62,7 +62,7 @@ actor DesktopPictureManager {
     ///
     /// - Note:
     ///   - If the current desktop picture is the same as the provided image, no changes are made.
-    ///   - The function ensures each screen's desktop picture is updated independently and prints success or failure for each screen.
+    ///   - The function ensures each screen's desktop picture is updated independently and Logger.logs success or failure for each screen.
     func setDesktopPicture(from imageFileURLString: String) async throws {
         // Safely Unwrap URL String to URL
         guard let imageFileURL: URL = .init(string: imageFileURLString) else {
@@ -79,7 +79,7 @@ actor DesktopPictureManager {
                 
                 // Check If the Current Desktop Picture is the Same as the Provided Image File URL
                 guard currentImageFileURL != imageFileURL else {
-                    print("⚠️: No need to change the desktop picture.")
+                    Logger.log("⚠️: No need to change the desktop picture.")
                     return
                 }
                 
@@ -88,9 +88,9 @@ actor DesktopPictureManager {
                 
                 // Set & Save Current Desktop Picture File URL to User Defaults
                 await setNSaveCurrentDesktopPictureFileURLStringToUserDefaults(from: imageFileURLString)
-                print("✅: Wallpaper has been changed & saved for screen: \(screen.localizedName) successfully.")
+                Logger.log("✅: Wallpaper has been changed & saved for screen: \(screen.localizedName).")
             } catch {
-                print(managerError.failedToSetDesktopPictureForScreens(screen: screen.localizedName, error).localizedDescription)
+                Logger.log(managerError.failedToSetDesktopPictureForScreens(screen: screen.localizedName, error).localizedDescription)
             }
         }
     }
@@ -103,20 +103,20 @@ actor DesktopPictureManager {
     /// 1. Initializes the desktop picture settings.
     /// 2. Adds observers for active space changes and wake-from-sleep notifications.
     ///
-    /// Once the initialization is complete, it prints a confirmation message indicating
+    /// Once the initialization is complete, it Logger.logs a confirmation message indicating
     /// that the desktop picture manager has been successfully initialized.
     ///
     /// - Note: This function ensures that necessary system notifications and observers are
     /// in place to handle desktop picture management seamlessly.
     private func initializeDesktopPictureManager() async {
         await initializeDesktopPicture()
-        print("✅: `Desktop Picture Manager` has been initialized successfully.")
+        Logger.log("✅: `Desktop Picture Manager` has been initialized.")
     }
     
     /// Initializes the desktop picture by retrieving the saved image file URL from User Defaults and setting it.
     ///
     /// - Purpose: This function fetches the stored desktop picture URL from User Defaults and attempts to set the desktop picture
-    /// accordingly. If an error occurs while setting the image, it prints an error message to the console.
+    /// accordingly. If an error occurs while setting the image, it Logger.logs an error message to the console.
     private func initializeDesktopPicture() async {
         guard let imageFileURL: String = await getNSetCurrentDesktopPictureFileURLStringFromUserDefaults() else {
             return
@@ -124,27 +124,27 @@ actor DesktopPictureManager {
         
         do {
             try await setDesktopPicture(from: imageFileURL)
-            print("✅: Current desktop picture url has been retrieved successfully.")
+            Logger.log("✅: Current desktop picture url has been retrieved.")
         } catch {
-            print(managerError.failedToPrepareAndSetDesktopPicture(error).localizedDescription)
+            Logger.log(managerError.failedToPrepareAndSetDesktopPicture(error).localizedDescription)
         }
     }
     
     /// Updates the desktop picture by setting the current image file URL.
     ///
     /// - Purpose: This function attempts to set the desktop picture using the current image file URL stored in the `currentDesktopPictureFileURLString` property.
-    /// If an error occurs while setting the image, it prints an error message to the console.
+    /// If an error occurs while setting the image, it Logger.logs an error message to the console.
     private func updateDesktopPicture() async {
         guard let currentDesktopPictureFileURLString else {
-            print(managerError.currentDesktopPictureFileURLStringFoundNil.localizedDescription)
+            Logger.log(managerError.currentDesktopPictureFileURLStringFoundNil.localizedDescription)
             return
         }
         
         do {
             try await setDesktopPicture(from: currentDesktopPictureFileURLString)
-            print("✅: Desktop picture has been updated successfully.")
+            Logger.log("✅: Desktop picture has been updated.")
         } catch {
-            print(managerError.failedToUpdateDesktopPicture(error).localizedDescription)
+            Logger.log(managerError.failedToUpdateDesktopPicture(error).localizedDescription)
         }
     }
 }
@@ -168,6 +168,7 @@ extension DesktopPictureManager {
         )
         
         await deactivateDidWakeNotificationObserver()
+        Logger.log("✅: Space did change notification has been deactivated.")
     }
     
     /// Adds an observer for the active space change notification.
@@ -186,6 +187,7 @@ extension DesktopPictureManager {
         )
         
         await activateDidWakeNotificationObserver()
+        Logger.log("✅: Did wake notification observer has been activated.")
     }
     
     /// Adds an observer for the system wake notification.
@@ -223,8 +225,8 @@ extension DesktopPictureManager {
     /// `updateDesktopPicture` to set the wallpaper accordingly.
     @MainActor
     @objc private func onSpaceDidChange(notification: NSNotification) {
-        print("Notification: `SpaceDidChange`")
         Task { await updateDesktopPicture() }
+        Logger.log("✅: Space did change.")
     }
     
     /// Handles the system wake event by updating the desktop picture.
@@ -236,8 +238,8 @@ extension DesktopPictureManager {
     /// `updateDesktopPicture` to set the wallpaper accordingly.
     @MainActor
     @objc private func onSystemDidWake(notification: NSNotification) {
-        print("Notification: `SystemDidWake`")
         Task { await updateDesktopPicture() }
+        Logger.log("✅: System did wake.")
     }
 }
 
@@ -252,12 +254,12 @@ extension DesktopPictureManager {
     /// It also updates the `currentDesktopPictureFileURLString` property with the retrieved URL.
     private func getNSetCurrentDesktopPictureFileURLStringFromUserDefaults() async -> String? {
         guard let imageFileURLString: String = await defaults.get(key: currentDesktopPictureFileURLStringKey) as? String else {
-            print(managerError.currentDesktopPictureFileURLStringFoundNilInUserDefaults.localizedDescription)
+            Logger.log(managerError.currentDesktopPictureFileURLStringFoundNilInUserDefaults.localizedDescription)
             return nil
         }
         
         self.currentDesktopPictureFileURLString = imageFileURLString
-        print("✅: Current desktop picture file url string has been retrieved successfully.")
+        Logger.log("✅: Current desktop picture file url string has been retrieved.")
         
         return imageFileURLString
     }
@@ -271,6 +273,6 @@ extension DesktopPictureManager {
     private func setNSaveCurrentDesktopPictureFileURLStringToUserDefaults(from imageFileURLString: String) async {
         await defaults.save(key: currentDesktopPictureFileURLStringKey, value: imageFileURLString)
         currentDesktopPictureFileURLString = imageFileURLString
-        print("✅: Current desktop picture file url string has been updated and saved to user defaults successfully.")
+        Logger.log("✅: Current desktop picture file url string has been updated and saved to user defaults.")
     }
 }

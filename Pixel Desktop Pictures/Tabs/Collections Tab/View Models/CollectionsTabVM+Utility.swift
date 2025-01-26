@@ -42,7 +42,7 @@ extension CollectionsTabViewModel {
                 
                 // Then prepare the collections array.
                 setCollectionsArray(defaultCollectionsArray)
-                print("✅: Initial default collections array has been added to local database successfully.")
+                Logger.log("✅: Initial default collections array has been added to local database")
                 return
             }
             
@@ -52,18 +52,18 @@ extension CollectionsTabViewModel {
             // Prepare query images array with selected collections fetched from the local database.
             try await getAndSetQueryImagesArray()
             
-            print("✅: Collections has been fetched from the local database successfully.")
-            print("✅: `Collections Tab View Model` has been initialized!")
+            Logger.log("✅: Collections has been fetched from the local database")
+            Logger.log("✅: `Collections Tab View Model` has been initialized!")
         } catch {
-            print(getVMError().failedToInitializeCollectionsTabVM(error).localizedDescription)
+            Logger.log(getVMError().failedToInitializeCollectionsTabVM(error).localizedDescription)
             
             do {
                 let defaultCollectionsArray: [Collection] = try Collection.getDefaultCollectionsArray()
                 setCollectionsArray(defaultCollectionsArray)
-                print("⚠️: Default collections array has been added.")
+                Logger.log("⚠️: Default collections array has been added.")
             } catch {
                 setCollectionsArray([]) // The window error will be taken care of from view level
-                print("⚠️: Empty collections array has been assigned.")
+                Logger.log("⚠️: Empty collections array has been assigned.")
             }
             
             await getErrorPopupVM().addError(getErrorPopup().somethingWentWrong)
@@ -92,6 +92,7 @@ extension CollectionsTabViewModel {
             try? await Task.sleep(nanoseconds: 400_000_000)
             resetUpdatingItem()
         }
+        Logger.log("✅: Bottom popup has been presented/dismissed.")
     }
     
     /// Handles the scroll position when the collection items array changes.
@@ -109,6 +110,7 @@ extension CollectionsTabViewModel {
         withAnimation {
             scrollPosition.wrappedValue.scrollTo(edge: .bottom)
         }
+        Logger.log("✅: Scroll position has been animated on collection items array change.")
     }
     
     /// Retrieves an instance of `UnsplashImageAPIService` configured with the API access key.
@@ -120,11 +122,13 @@ extension CollectionsTabViewModel {
     /// - Throws: An error if the API access key is not found.
     func getImageAPIServiceInstance() async throws -> UnsplashImageAPIService {
         guard let apiAccessKey: String = await getAPIAccessKeyManager().getAPIAccessKey() else {
-            print(getVMError().apiAccessKeyNotFound.localizedDescription)
+            Logger.log(getVMError().apiAccessKeyNotFound.localizedDescription)
             throw getVMError().apiAccessKeyNotFound
         }
         
         let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        
+        Logger.log("✅: Image api instance has been returned.")
         return imageAPIService
     }
 }

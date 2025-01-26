@@ -15,6 +15,7 @@ extension CollectionsTabViewModel {
     func resetTextfieldTexts() {
         setNameTextfieldText("")
         setRenameTextfieldText("")
+        Logger.log("✅: Textfields has been reset.")
     }
     
     /// Resets the updating collection item to `nil` to prevent data corruption.
@@ -23,5 +24,6 @@ extension CollectionsTabViewModel {
     /// no stale data remains associated with the updating item.
     func resetUpdatingItem() {
         setUpdatingItem(nil)
+        Logger.log("✅: Updating item has been set to nil.")
     }
 }

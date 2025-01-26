@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct APIAccessKeyInstructionItemView<T: View>: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     let content: T
     
     // MARK: - INITIALIZER

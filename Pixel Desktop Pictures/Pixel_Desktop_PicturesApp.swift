@@ -11,15 +11,13 @@ import SDWebImageSwiftUI
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
-    // MARK: - PROPERTIES
-    private let appEnvironment: AppEnvironmentModel = .production // Note: Change to `.production` as needed
-    
-    // Services
+    // MARK: - ASSIGNED PROPERTIES
+    private let appEnvironment: AppEnvironment = .production // Note: Change to `.production` as needed
     let networkManager: NetworkManager = .shared
-    @State private var apiAccessKeyManager: APIAccessKeyManager
-    
-    // Tabs
     @State private var tabsVM: TabsViewModel = .init()
+    
+    // MARK: - INJECTED PROPETIES
+    @State private var apiAccessKeyManager: APIAccessKeyManager
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel
     @State private var recentsTabVM: RecentsTabViewModel
@@ -58,7 +56,7 @@ struct Pixel_Desktop_PicturesApp: App {
             // Settings Tab Related
             settingsTabVM = .init(appEnvironment: appEnvironment, mainTabVM: mainTabVMInstance)
         } catch {
-            print("❌: Unable to initialize the app properly. Due to local database initialization. \(error.localizedDescription)")
+            Logger.log("❌: Unable to initialize the app properly. Due to local database initialization. \(error.localizedDescription)")
             fatalError()
         }
     }

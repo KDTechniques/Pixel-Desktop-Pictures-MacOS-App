@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct AppEnvironmentKey: EnvironmentKey {
-    static let defaultValue: AppEnvironmentModel = .mock
+    static let defaultValue: AppEnvironment = .mock
 }
 
 extension EnvironmentValues {
-    var appEnvironment: AppEnvironmentModel {
+    var appEnvironment: AppEnvironment {
         get { self[AppEnvironmentKey.self] }
         set { self[AppEnvironmentKey.self] = newValue }
     }

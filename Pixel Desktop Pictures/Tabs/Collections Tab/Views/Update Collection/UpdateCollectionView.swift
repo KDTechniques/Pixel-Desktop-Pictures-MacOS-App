@@ -9,9 +9,11 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct UpdateCollectionView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
-    let vGridValues = VGridValuesModel.self
+    
+    // MARK: - ASSIGNED PROPERTIES
+    private let vGridValues: VGridValues.Type = VGridValues.self
     
     // MARK: - BODY
     var body: some View {
@@ -60,12 +62,10 @@ struct UpdateCollectionView: View {
 
 // MARK: EXTENSIONS
 extension UpdateCollectionView {
-    // MARK: - Preview Image
     private func previewImage(item: Collection) -> some View {
         UpdateCollectionPreviewImageView(item: item)
     }
     
-    // MARK: - Change Thumbnail Button
     private func changeThumbnailButton(item: Collection) -> some View {
         CollectionPopOverSecondaryButtonView(
             title: "Change Thumbnail",
@@ -78,7 +78,6 @@ extension UpdateCollectionView {
             }
     }
     
-    // MARK: - Delete Button
     private func deleteButton(item: Collection) -> some View {
         CollectionPopOverSecondaryButtonView(
             title: "Delete",

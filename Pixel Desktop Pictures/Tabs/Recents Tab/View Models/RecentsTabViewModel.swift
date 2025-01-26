@@ -13,15 +13,15 @@ final class RecentsTabViewModel {
     // MARK: - INJECTED PROPERTIES
     let recentManager: RecentManager
     
-    // MARK: - ASSIGNED PROPERTIES
-    private(set) var recentsArray: [Recent] = []
-    private let maxRecentsCount: Int = 102
-    let vmError: RecentsTabViewModelError.Type = RecentsTabViewModelError.self
-    
     // MARK: - INITIALIZER
     init(recentManager: RecentManager) {
         self.recentManager = recentManager
     }
+    
+    // MARK: - ASSIGNED PROPERTIES
+    private(set) var recentsArray: [Recent] = []
+    private let maxRecentsCount: Int = 102
+    private let vmError: RecentsTabViewModelError.Type = RecentsTabViewModelError.self
     
     // MARK: - INTERNAL FUNCTIONS
     
@@ -38,7 +38,7 @@ final class RecentsTabViewModel {
         do {
             // First fetch the `Recent` items from local database
             var tempRecentsArray: [Recent] = try await recentManager.getRecents()
-          
+            
             let recentsArrayCount: Int = tempRecentsArray.count
             
             // Make sure not to exceed 102 max items.
@@ -46,6 +46,7 @@ final class RecentsTabViewModel {
                 // Remove the exceeded items from the temp recents array.
                 let exceededItemsCount: Int = recentsArrayCount - maxRecentsCount
                 tempRecentsArray.removeLast(exceededItemsCount)
+                print("✅: Exceeded recent items have been removed from recents array.")
             }
             
             // First, assign the modified array to recents array.
@@ -53,10 +54,9 @@ final class RecentsTabViewModel {
             
             // Then save the changes to local database.
             try await recentManager.updateRecents()
-            
-            print("✅: `Recents Tab View Model` has been initialized successfully.")
+            Logger.log("✅: `Recents Tab View Model` has been initialized")
         } catch {
-            print(vmError.initializationFailed(error).localizedDescription)
+            Logger.log(vmError.initializationFailed(error).localizedDescription)
         }
     }
     
@@ -80,8 +80,9 @@ final class RecentsTabViewModel {
             // Get a recents array by appending, inserting, removing, and deleting exceeded items through the local database.
             let adjustedArray: [Recent] = try await insertAndDeleteExceededRecents(newRecentItem)
             recentsArray = adjustedArray
+            Logger.log("✅: New recent image item has been created and saved to local database.")
         } catch {
-            print(vmError.failedToAddRecentsArray(error).localizedDescription)
+            Logger.log(vmError.failedToAddRecentsArray(error).localizedDescription)
         }
     }
     
@@ -113,17 +114,17 @@ final class RecentsTabViewModel {
                 
                 // Then delete the exceeded items from the local database.
                 try await recentManager.deleteRecents(at: exceededRecentItemsArray)
-                print("✅: Exceeded recent items has been removed successfully.")
+                Logger.log("✅: Exceeded recent items has been removed")
             }
             
             // Add the new recent item to local database.
             try await recentManager.addRecent(newItem)
-            print("✅: A `Recent` item has been added to local database successfully.")
+            Logger.log("✅: A `Recent` item has been added to local database")
             
             // Finally, return the adjusted array.
             return tempRecentsArray
         } catch {
-            print(vmError.failedToValidateExceededRecentItems(error).localizedDescription)
+            Logger.log(vmError.failedToValidateExceededRecentItems(error).localizedDescription)
             throw error
         }
     }

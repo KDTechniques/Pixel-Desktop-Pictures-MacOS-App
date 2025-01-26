@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct UpdateIntervalSettingView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
     
     // MARK: - BODY
     var body: some View {
         Picker("Update", selection: settingsTabVM.binding(\.updateIntervalSelection)) {
-            ForEach(DesktopPictureSchedulerIntervalsModel.allCases, id: \.self) { interval in
+            ForEach(DesktopPictureSchedulerInterval.allCases, id: \.self) { interval in
                 Text(interval.timeIntervalName)
             }
         }

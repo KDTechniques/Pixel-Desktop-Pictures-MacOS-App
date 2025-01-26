@@ -46,22 +46,25 @@ final class MainTabViewModel {
         do {
             guard let randomQueryImageItem: QueryImage = collectionsTabVM.queryImagesArray.randomElement() else {
                 // Random element must not fail, but if it does, fallback to next image conforming to `UnsplashRandomImage`.
-                print("❌: Query images array is empty for some unknown reason.")
+                Logger.log("❌: Query images array is empty for some unknown reason.")
                 try await setNextRandomImage()
+                Logger.log("✅: Next random image has been generated.")
                 return
             }
             
             // Handle case when the random element is the `RANDOM` query.
             guard randomQueryImageItem.query != Collection.randomKeywordString else {
                 try await setNextRandomImage()
+                Logger.log("✅: Next random image has been generated.")
                 return
             }
             
             // Handle case when the random element is a non-random query. ex: Nature
             try await setNextQueryImage(from: randomQueryImageItem)
+            Logger.log("✅: Next query image has been generated.")
         } catch {
             setCenterItem(.retryIcon)
-            print(vmError.failedToSetNextImage(error).localizedDescription)
+            Logger.log(vmError.failedToSetNextImage(error).localizedDescription)
             await errorPopupVM.addError(errorPopup.failedToGenerateNextImage(error))
             throw error
         }
@@ -70,19 +73,29 @@ final class MainTabViewModel {
     /// Sets the current image as the desktop wallpaper.
     ///
     /// - Note: Downloads the image to the documents directory and applies it as the desktop wallpaper.
-    func setDesktopPicture() async throws {
+    func setDesktopPicture(environment: AppEnvironment) async throws {
         // Early exit if the current image is not available.
         guard let currentImage else { return }
         
         do {
+            // Get the documents directory based on app environment
+            var documentsDirectory: UnsplashImageDirectoryProtocol {
+                switch environment {
+                case .production:
+                    return UnsplashImageDirectory.documentsDirectory
+                case .mock:
+                    return MockUnsplashImageDirectory.documentsDirectory
+                }
+            }
+            
             // Download the image to documents directory
-            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: UnsplashImageDirectoryModel.documentsDirectory)
+            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: documentsDirectory)
             
             // Then set the desktop picture.
             try await desktopPictureManager.setDesktopPicture(from: savedPath)
-            print("✅: Current image has been set as desktop picture successfully.")
+            Logger.log("✅: Current image has been set as desktop picture")
         } catch {
-            print(vmError.failedToSetDesktopPicture(error).localizedDescription)
+            Logger.log(vmError.failedToSetDesktopPicture(error).localizedDescription)
             await errorPopupVM.addError(errorPopup.failedToSetDesktopPicture)
             throw error
         }
@@ -91,16 +104,26 @@ final class MainTabViewModel {
     /// Downloads the current image to the device's downloads directory.
     ///
     /// - Throws: An error if the download operation fails.
-    func downloadImageToDevice() async throws {
+    func downloadImageToDevice(environment: AppEnvironment) async throws {
         // Early exit if the current image is not available.
         guard let currentImage else { return }
         
+        // Get the downloads directory based on app environment
+        var downloadsDirectory: UnsplashImageDirectoryProtocol {
+            switch environment {
+            case .production:
+                return UnsplashImageDirectory.downloadsDirectory
+            case .mock:
+                return MockUnsplashImageDirectory.downloadsDirectory
+            }
+        }
+        
         do {
             // Download the image to downloads directory
-            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.links.downloadURL, to: UnsplashImageDirectoryModel.downloadsDirectory)
-            print("✅: Current image has been downloaded to `Downloads` folder path: `\(savedPath)` successfully.")
+            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.links.downloadURL, to: downloadsDirectory)
+            Logger.log("✅: Current image has been downloaded to `Downloads` folder path: `\(savedPath)`")
         } catch {
-            print(vmError.failedToDownloadImageToDevice(error).localizedDescription)
+            Logger.log(vmError.failedToDownloadImageToDevice(error).localizedDescription)
             await errorPopupVM.addError(errorPopup.failedToDownloadImageToDevice)
             throw error
         }
@@ -113,7 +136,11 @@ final class MainTabViewModel {
         currentImage = item
         
         // Save the current image to user defaults every time.
-        if let item { try? await saveCurrentImageToUserDefaults(item) }
+        if let item {
+            try? await saveCurrentImageToUserDefaults(item)
+            Logger.log("✅: Current image has been saved to user defaults.")
+        }
+        Logger.log("✅: Current image has been assigned.")
     }
     
     /// Updates the center item (e.g., progress indicator or retry icon).
@@ -121,6 +148,7 @@ final class MainTabViewModel {
     /// - Parameter item: The new item to display in the center.
     func setCenterItem(_ item: ImageContainerCenterItems) {
         centerItem = item
+        Logger.log("Center item has been assigned.")
     }
     
     // MARK: - PRIVATE FUNCTIONS
@@ -142,9 +170,9 @@ final class MainTabViewModel {
             // Then encode and add the current image to recents
             let imageEncoded: Data = try JSONEncoder().encode(convertedImage)
             await recentsTabVM.addRecent(imageEncoded: imageEncoded)
-            print("✅: Next random image has been set and added to recents successfully.")
+            Logger.log("✅: Next random image has been set and added to recents")
         } catch {
-            print(vmError.failedToGenerateNextRandomImage(error).localizedDescription)
+            Logger.log(vmError.failedToGenerateNextRandomImage(error).localizedDescription)
             throw error
         }
     }
@@ -167,9 +195,9 @@ final class MainTabViewModel {
             // Then encode and add the current image to recents
             let imageEncoded: Data = try JSONEncoder().encode(convertedImage)
             await recentsTabVM.addRecent(imageEncoded: imageEncoded)
-            print("✅: Next query image has been set and added to recents successfully.")
+            Logger.log("✅: Next query image has been set and added to recents")
         } catch {
-            print(vmError.failedToGenerateNextQueryImage(error).localizedDescription)
+            Logger.log(vmError.failedToGenerateNextQueryImage(error).localizedDescription)
             throw error
         }
     }
@@ -180,9 +208,9 @@ final class MainTabViewModel {
     private func saveCurrentImageToUserDefaults(_ currentImage: UnsplashImage) async throws {
         do {
             try await defaults.saveModel(key: .currentImageKey, value: currentImage)
-            print("✅: Current image has been saved to user defaults successfully.")
+            Logger.log("✅: Current image has been saved to user defaults")
         } catch {
-            print(vmError.failedToSaveCurrentImageToUserDefaults(error).localizedDescription)
+            Logger.log(vmError.failedToSaveCurrentImageToUserDefaults(error).localizedDescription)
             throw error
         }
     }
@@ -200,9 +228,9 @@ final class MainTabViewModel {
             }
             
             await setCurrentImage(image)
-            print("✅: Current image has been fetched from user defaults successfully.")
+            Logger.log("✅: Current image has been fetched from user defaults")
         } catch {
-            print(vmError.failedToGetCurrentImageFromUserDefaults(error).localizedDescription)
+            Logger.log(vmError.failedToGetCurrentImageFromUserDefaults(error).localizedDescription)
             try? await setNextRandomImage()
         }
     }

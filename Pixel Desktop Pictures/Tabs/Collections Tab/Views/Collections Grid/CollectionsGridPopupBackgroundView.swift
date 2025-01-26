@@ -31,8 +31,8 @@ struct CollectionsGridPopupBackgroundView: View {
         )
 }
 
+// MARK: - EXTENSIONS
 extension CollectionsGridPopupBackgroundView {
-    // MARK: - Handle Tap
     private func handleTap() {
         collectionsTabVM.presentPopup(false, for: collectionsTabVM.popOverItem.type)
     }

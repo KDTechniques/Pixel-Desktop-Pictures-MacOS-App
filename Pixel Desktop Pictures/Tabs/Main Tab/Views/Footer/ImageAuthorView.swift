@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ImageAuthorView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     let name: String
     
     // MARK: - INITIALIZER

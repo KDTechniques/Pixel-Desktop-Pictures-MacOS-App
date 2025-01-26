@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TabsView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     
     // MARK: - BODY

@@ -1,5 +1,5 @@
 //
-//  MockUnsplashImageDirectoryModel.swift
+//  MockUnsplashImageDirectory.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-03.
@@ -7,7 +7,11 @@
 
 import Foundation
 
-enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
+/**
+ An enumeration representing mock directories for Unsplash images, conforming to the `UnsplashImageDirectoryProtocol`.
+ This is used to simulate the Downloads and Documents directories for testing purposes.
+ */
+enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
     case downloadsDirectory, documentsDirectory
     
     var directory: FileManager.SearchPathDirectory {
@@ -37,11 +41,14 @@ enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
         }
     }
     
+    /// Creates the directory if it does not exist and returns its URL.
+    /// - Throws: An error if the directory path cannot be read or the directory creation fails.
+    /// - Returns: The URL of the created directory.
     func createDirectoryIfNeeded() throws -> URL {
         guard let directoryURL = FileManager.default
             .urls(for: directory, in: .userDomainMask)
             .first else {
-            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
+            throw UnsplashImageDirectoryModelError.unableToReadDirectoryPath(directory: directory)
         }
         
         let folderURL: URL = directoryURL.appending(path: folderName)
@@ -51,18 +58,20 @@ enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
             
             return folderURL
         } catch {
-            print("❌: Creating Folder Directory in \(directory).")
+            Logger.log("❌: Creating Folder Directory in \(directory).")
             throw error
         }
     }
     
+    /// Deletes all previous desktop pictures in the directory.
+    /// - Throws: An error if the directory path cannot be read.
     func deletePreviousDesktopPictures() throws {
         let fileManager: FileManager = .default
         
         guard let directoryURL = fileManager
             .urls(for: directory, in: .userDomainMask)
             .first else {
-            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
+            throw UnsplashImageDirectoryModelError.unableToReadDirectoryPath(directory: directory)
         }
         
         let folderURL: URL = directoryURL.appending(path: folderName)
@@ -80,16 +89,20 @@ enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
                 
                 do {
                     try fileManager.removeItem(at: fileURL)
-                    print("Deleted: \(fileURL.lastPathComponent)")
+                    Logger.log("Deleted: \(fileURL.lastPathComponent)")
                 } catch {
-                    print("Failed to delete: \(fileURL.lastPathComponent) - Error: \(error.localizedDescription)")
+                    Logger.log("Failed to delete: \(fileURL.lastPathComponent) - Error: \(error.localizedDescription)")
                 }
             }
         } catch {
-            print("Error accessing directory: \(error.localizedDescription)")
+            Logger.log("Error accessing directory: \(error.localizedDescription)")
         }
     }
     
+    /// Constructs the full file URL for a file with the given extension.
+    /// - Parameter fileExtension: The file extension to append to the file name.
+    /// - Throws: An error if the directory cannot be created or the URL construction fails.
+    /// - Returns: The full file URL including the extension.
     func fileURL(extension fileExtension: String) throws -> URL {
         do {
             let fileURL: URL = try createDirectoryIfNeeded()
@@ -98,8 +111,8 @@ enum MockUnsplashImageDirectoryModel: UnsplashImageDirectoryModelProtocol {
             
             return fileURL
         } catch {
-            print("❌: Constructing file url in \(directory). \(error.localizedDescription)")
-            throw UnsplashImageDirectoryModelErrorModel.fileURLConstructionFailed(directory: directory, error: error)
+            Logger.log("❌: Constructing file url in \(directory). \(error.localizedDescription)")
+            throw UnsplashImageDirectoryModelError.fileURLConstructionFailed(directory: directory, error: error)
         }
     }
 }
