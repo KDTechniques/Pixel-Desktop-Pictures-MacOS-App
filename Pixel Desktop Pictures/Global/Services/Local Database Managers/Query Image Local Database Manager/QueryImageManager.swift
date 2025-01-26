@@ -7,6 +7,11 @@
 
 import Foundation
 
+/**
+ A thread-safe actor responsible for managing `QueryImage` entities and their associated operations.
+ It provides methods for adding, fetching, and retrieving `QueryImage` items, as well as handling pagination and image retrieval.
+ This actor ensures that all operations are performed in a thread-safe manner, leveraging Swift's concurrency model.
+ */
 actor QueryImageManager {
     // MARK: - SINGLETON
     private static var singleton: QueryImageManager?
@@ -21,6 +26,9 @@ actor QueryImageManager {
     
     // MARK: - INTERNAL FUNCTIONS
     
+    /// Returns a shared singleton instance of `QueryImageManager`.
+    /// - Parameter localDatabaseManager: An instance of `QueryImageLocalDatabaseManager` to manage local database operations.
+    /// - Returns: The shared `QueryImageManager` instance.
     static func shared(localDatabaseManager: QueryImageLocalDatabaseManager) -> QueryImageManager {
         guard singleton == nil else {
             return singleton!
@@ -33,19 +41,33 @@ actor QueryImageManager {
     
     // MARK: - Create Operations
     
+    /// Adds a list of `QueryImage` items to the local database.
+    /// - Parameter newItems: An array of `QueryImage` objects to be added to the database.
+    /// - Throws: An error if the operation fails, such as if the context cannot be saved.
     func addQueryImages(_ newItems: [QueryImage]) async throws {
         try await localDatabaseManager.addQueryImages(newItems)
     }
     
     // MARK: - Read Operations
     
+    /// Fetches `QueryImage` items from the local database for the specified collection names.
+    /// - Parameter collectionNames: An array of collection names (queries) to filter the `QueryImage` items.
+    /// - Returns: An array of `QueryImage` objects that match the specified collection names.
+    /// - Throws: An error if the operation fails, such as if the fetch request cannot be executed.
     func fetchQueryImages(for collectionNames: [String]) async throws -> [QueryImage] {
         try await localDatabaseManager.fetchQueryImages(for: collectionNames)
     }
     
+    /// Retrieves the next or current `UnsplashQueryImage` for a given `QueryImage` item.
+    /// - Parameters:
+    ///   - item: The `QueryImage` object for which to retrieve the image.
+    ///   - isCurrentImage: A boolean indicating whether to retrieve the current image or the next image.
+    ///   - imageAPIService: The service used to fetch new image data from the API.
+    /// - Returns: An `UnsplashQueryImage` object representing the next or current image.
+    /// - Throws: An error if the operation fails, such as if the API request fails or the data cannot be decoded.
     func getQueryImage(item: QueryImage, isCurrentImage: Bool = false, imageAPIService: UnsplashImageAPIService) async throws -> UnsplashQueryImage {
         let nextImageIndex: Int = isCurrentImage ? item.currentImageIndex : item.currentImageIndex + 1
-       
+        
         let nextQueryImage: UnsplashQueryImage = try await checkNFetchNextQueryImage(
             item: item,
             index: nextImageIndex,
@@ -57,6 +79,10 @@ actor QueryImageManager {
     
     // MARK: - PRIVATE FUNCTIONS
     
+    /// Decodes and retrieves the `UnsplashQueryImages` data for a given `QueryImage` item.
+    /// - Parameter item: The `QueryImage` object for which to retrieve the encoded images.
+    /// - Returns: An `UnsplashQueryImages` object containing the decoded image data.
+    /// - Throws: An error if the operation fails, such as if the data cannot be decoded.
     private func getQueryImages(item: QueryImage) async throws -> UnsplashQueryImages {
         let queryImages: UnsplashQueryImages =  try JSONDecoder()
             .decode(
@@ -67,6 +93,13 @@ actor QueryImageManager {
         return queryImages
     }
     
+    /// Checks if the next image exists in the current query results or fetches new results from the API if necessary.
+    /// - Parameters:
+    ///   - item: The `QueryImage` object for which to retrieve the next image.
+    ///   - index: The index of the next image to retrieve.
+    ///   - imageAPIService: The service used to fetch new image data from the API.
+    /// - Returns: An `UnsplashQueryImage` object representing the next image.
+    /// - Throws: An error if the operation fails, such as if the API request fails or the data cannot be decoded.
     private func checkNFetchNextQueryImage(
         item: QueryImage,
         index: Int,

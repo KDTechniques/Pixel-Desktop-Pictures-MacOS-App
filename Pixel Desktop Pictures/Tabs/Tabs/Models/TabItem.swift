@@ -45,9 +45,9 @@ enum TabItem: String, CaseIterable {
         case .main, .settings:
             return CGFloat.nan // Placeholder for dynamic sizing via GeometryReader
         case .recents:
-            return (VGridValuesModel.height*4) + (VGridValuesModel.spacing*3) + (VGridValuesModel.spacing/2)
+            return (VGridValues.height*4) + (VGridValues.spacing*3) + (VGridValues.spacing/2)
         case .collections:
-            return (VGridValuesModel.height*3) + (VGridValuesModel.spacing*2)
+            return (VGridValues.height*3) + (VGridValues.spacing*2)
         }
     }
     

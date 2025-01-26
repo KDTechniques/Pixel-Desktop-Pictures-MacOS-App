@@ -35,7 +35,7 @@ struct ImageContainerOverlayCenterView: View {
     Color.debug
         .overlay {
             ImageContainerOverlayCenterView(centerItem: .random()) {
-                print("Button Clicked!")
+                Logger.log("Button Clicked!")
             }
             .previewModifier
         }

@@ -24,9 +24,9 @@ extension CollectionsTabViewModel {
             // Fetch `QueryImage` items for the selected collection names from the local database.
             let queryImagesArray: [QueryImage] = try await getQueryImageManager().fetchQueryImages(for: selectedCollectionNamesArray)
             setQueryImagesArray(queryImagesArray)
-            print(queryImagesArray.isEmpty ? "⚠️: Fetched query images array found empty." : "✅: Query images array has been fetched successfully.")
+            Logger.log(queryImagesArray.isEmpty ? "⚠️: Fetched query images array found empty." : "✅: Query images array has been fetched")
         } catch {
-            print(CollectionsViewModelError.failedSomethingOnQueryImages(error).localizedDescription)
+            Logger.log(CollectionsViewModelError.failedSomethingOnQueryImages(error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedSomethingOnQueryImages)
             throw error
         }

@@ -14,7 +14,7 @@ struct UpdateCollectionPreviewImageView: View {
     let item: Collection
     
     // MARK: - ASSIGNED PROPERTIES
-    let vGridValues = VGridValuesModel.self
+    let vGridValues = VGridValues.self
     var collectionModelManager: CollectionManager { collectionsTabVM.getCollectionManager() }
     @State private var imageURLString: String?
     @State private var showImage: Bool = false

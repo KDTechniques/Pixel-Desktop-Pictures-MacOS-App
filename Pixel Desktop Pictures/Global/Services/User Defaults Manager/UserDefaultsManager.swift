@@ -7,17 +7,23 @@
 
 import Foundation
 
+/**
+ A thread-safe actor responsible for managing User Defaults operations.
+ It provides methods for saving, retrieving, and clearing data in User Defaults, as well as encoding and decoding model objects.
+ This actor ensures that all operations are performed in a thread-safe manner, leveraging Swift's concurrency model.
+ */
 actor UserDefaultsManager {
-    // MARK: - PROPERTIES
+    // MARK: - SINGLETON
     static let shared: UserDefaultsManager = .init()
-    private let defaults = UserDefaults.standard
     
     // MARK: - INITIALIZER
     private init() {}
     
-    // MARK: FUNCTIONS
+    // MARK: - ASSIGNED PROPERTIES
+    private let defaults = UserDefaults.standard
     
-    // MARK: - Save Value to User Defaults
+    // MARK: - INTERNAL FUNCTIONS
+    
     /// Saves a value to User Defaults under the specified key.
     ///
     /// - Parameters:
@@ -27,7 +33,6 @@ actor UserDefaultsManager {
         defaults.set(value, forKey: key.rawValue)
     }
     
-    // MARK: - Get Value from User Defaults
     /// Retrieves a value from User Defaults for the specified key.
     ///
     /// - Parameter key: A `UserDefaultKeys` enum value representing the key for which the value will be retrieved.
@@ -36,7 +41,6 @@ actor UserDefaultsManager {
         return defaults.object(forKey: key.rawValue)
     }
     
-    // MARK: - Save Model Object to User Defaults
     /// Encodes and saves a model object to User Defaults under the specified key.
     ///
     /// - Parameters:
@@ -48,12 +52,11 @@ actor UserDefaultsManager {
             let encodedData: Data = try JSONEncoder().encode(value)
             await self.save(key: key, value: encodedData)
         } catch {
-            print("❌: Saving `\(T.self)` object to user defaults.")
+            Logger.log("❌: Saving `\(T.self)` object to user defaults.")
             throw error
         }
     }
     
-    // MARK: - Get Model Object from User Defaults
     /// Retrieves and decodes a model object from User Defaults for the specified key.
     ///
     /// - Parameters:
@@ -70,12 +73,11 @@ actor UserDefaultsManager {
             let loadedModel: T = try JSONDecoder().decode(type, from: jsonData)
             return loadedModel
         } catch {
-            print("❌: Retrieving `\(T.self)` object from user defaults.")
+            Logger.log("❌: Retrieving `\(T.self)` object from user defaults.")
             throw error
         }
     }
     
-    // MARK: - Clear All User Defaults
     /// Clears all values stored in User Defaults.
     static func clearAllUserDefaults() {
         let defaults = UserDefaults.standard

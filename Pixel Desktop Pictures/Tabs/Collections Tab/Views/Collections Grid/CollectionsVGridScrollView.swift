@@ -13,7 +13,7 @@ struct CollectionsVGridScrollView: View {
     @Binding var scrollPosition: ScrollPosition
     
     // MARK: - ASSIGNED PROPERTIES
-    let vGridValues = VGridValuesModel.self
+    let vGridValues = VGridValues.self
     let nonScrollableItemsCount: Int = 8
     
     // MARK: - INITIALIZER

@@ -9,6 +9,11 @@ import Foundation
 import Network
 import Combine
 
+/**
+ A main-actor-bound, observable class responsible for monitoring and managing the device's network connection status.
+ It provides real-time updates on the internet connection status and handles changes in connectivity.
+ This class leverages `NWPathMonitor` to monitor network paths and uses Combine to publish connection status updates.
+ */
 @MainActor
 @Observable
 final class NetworkManager {
@@ -16,21 +21,22 @@ final class NetworkManager {
     static let shared: NetworkManager = .init()
     private let monitor = NWPathMonitor()
     private let networkManagerQueue = DispatchQueue(label: "com.kdtechniques.Pixel-Desktop-Pictures.NetworkManager.networkManagerQueue")
-    private(set) var connectionStatus: InternetConnectionStatusModel = .noConnection {
+    private(set) var connectionStatus: InternetConnectionStatus = .noConnection {
         didSet { connectionStatus$ = connectionStatus }
     }
-    @ObservationIgnored @Published private(set) var connectionStatus$: InternetConnectionStatusModel = .noConnection
+    @ObservationIgnored @Published private(set) var connectionStatus$: InternetConnectionStatus = .noConnection
     private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
     private init() {
         connectionStatusSubscriber()
         startNetworkMonitor()
-        print("✅: `Network Manager` has been initialized successfully.")
+        Logger.log("✅: `Network Manager` has been initialized")
     }
     
     // MARK: - PRIVATE FUNCTIONS
     
+    /// Subscribes to changes in the `connectionStatus$` property and handles updates accordingly.
     private func connectionStatusSubscriber() {
         $connectionStatus$
             .removeDuplicates()
@@ -47,6 +53,7 @@ final class NetworkManager {
             .store(in: &cancellables)
     }
     
+    /// Starts monitoring the network path for changes in connectivity.
     private func startNetworkMonitor() {
         monitor.pathUpdateHandler = { [weak self] path in
             guard let self else { return }
@@ -68,11 +75,13 @@ final class NetworkManager {
         monitor.start(queue: networkManagerQueue)
     }
     
+    /// Handles actions when the device is connected to a network.
     private func handleConnectedStatus() {
-        print("✅🛜: Connected to a Network.")
+        Logger.log("✅🛜: Connected to a Network.")
     }
     
+    /// Handles actions when the device loses network connectivity.
     private func handleNoConnectionStatus() {
-        print("❌🛜: No Network Connection.")
+        Logger.log("❌🛜: No Network Connection.")
     }
 }

@@ -13,6 +13,7 @@ fileprivate enum DownloadState: CaseIterable {
 
 struct DownloadButtonView: View {
     // MARK: - INJECTED PROPERTIES
+    @Environment(\.appEnvironment) private var appEnvironment
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
@@ -69,7 +70,7 @@ extension DownloadButtonView {
         downloadState = .downloading
         
         do {
-            try await mainTabVM.downloadImageToDevice()
+            try await mainTabVM.downloadImageToDevice(environment: appEnvironment)
             downloadState = .downloaded
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             downloadState = .none

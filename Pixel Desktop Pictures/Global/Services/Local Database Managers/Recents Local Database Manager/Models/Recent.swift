@@ -8,6 +8,11 @@
 import Foundation
 import SwiftData
 
+/**
+ A model class representing a recently viewed image in the local database.
+ It stores information about the image, including its unique ID, timestamp, and encoded image data.
+ This class is marked as `@Model` to enable SwiftData persistence.
+ */
 @Model
 final class Recent {
     // MARK: - PROPERTIES

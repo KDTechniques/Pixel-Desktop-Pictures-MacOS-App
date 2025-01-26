@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - INJECTED PROPERTIES
+    @Environment(\.appEnvironment) private var appEnvironment
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
@@ -73,7 +74,7 @@ extension MainTabView {
     // MARK: - FUNCTIONS
     private func setDesktopPicture() async {
         showProgress = true
-        try? await mainTabVM.setDesktopPicture()
+        try? await mainTabVM.setDesktopPicture(environment: appEnvironment)
         showProgress = false
     }
 }

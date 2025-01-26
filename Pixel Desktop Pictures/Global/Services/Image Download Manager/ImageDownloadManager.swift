@@ -17,9 +17,8 @@ actor ImageDownloadManager {
     // MARK: - INITIALIZER
     private init() {}
     
-    // MARK: FUNCTIONS
+    // MARK: - INTERNAL FUNCTIONS
     
-    // MARK: - Download Image
     /// Downloads an image from a given URL and saves it to the specified directory.
     ///
     /// - Parameters:
@@ -27,11 +26,11 @@ actor ImageDownloadManager {
     ///   - directory: An enum representing the target directory (`downloadsDirectory` or `documentsDirectory`) where the image will be saved.
     ///
     /// - Throws: `URLError`: If the URL string is invalid or there are issues during the network request or response handling.
-    /// `UnsplashImageDirectoryModelErrorModel`: If there is an issue with constructing the file URL or saving the image to the directory.
+    /// `UnsplashImageDirectoryModelError`: If there is an issue with constructing the file URL or saving the image to the directory.
     ///
     /// - Returns:
     ///   A `URL` object representing the location where the image file has been saved.
-    func downloadImage(url: String, to directory: UnsplashImageDirectoryModelProtocol) async throws -> String {
+    func downloadImage(url: String, to directory: UnsplashImageDirectoryProtocol) async throws -> String {
         // Safe Unwrapping of URL String to URL
         guard let url: URL = URL(string: url) else {
             throw URLError(.badURL)
@@ -57,7 +56,7 @@ actor ImageDownloadManager {
         // Save the File in the Desired Directory Path
         try data.write(to: fileURL)
         
-        print("Image file is successfully downloaded to \(fileURL.path())")
+        Logger.log("✅: Image file has been downloaded to \(fileURL.path()), and returned.")
         return fileURL.absoluteString
     }
 }

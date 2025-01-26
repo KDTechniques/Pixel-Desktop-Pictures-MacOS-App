@@ -72,7 +72,7 @@ struct ButtonView: View {
 // MARK: - PREVIEWS
 #Preview("Button View") {
     ButtonView(title: "Done", showProgress: .random(), type: .random()) {
-        print("Action triggered!")
+        Logger.log("Action triggered!")
     }
     .padding()
     .previewModifier

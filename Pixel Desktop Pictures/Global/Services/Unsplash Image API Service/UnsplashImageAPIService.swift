@@ -32,14 +32,15 @@ struct UnsplashImageAPIService {
     /// It attempts to fetch a random image using the provided API Access Key.
     /// If the call is successful, the key is considered valid. If it fails, an error is thrown.
     ///
-    /// - Throws: `UnsplashImageAPIServiceErrorModel.apiAccessKeyValidationFailed`: If the API call fails,
+    /// - Throws: `UnsplashImageAPIServiceError.apiAccessKeyValidationFailed`: If the API call fails,
     /// the function wraps the underlying error in this custom error type to indicate
     /// that the access key validation was unsuccessful.
     func validateAPIAccessKey() async throws {
         do {
             let _ = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImage.self)
+            Logger.log("✅: API access key has been validated.")
         } catch {
-            print(UnsplashImageAPIServiceErrorModel.failedToFetchAPIAccessKey(error))
+            Logger.log(UnsplashImageAPIServiceError.failedToFetchAPIAccessKey(error).localizedDescription)
             throw error
         }
     }
@@ -48,16 +49,17 @@ struct UnsplashImageAPIService {
     /// This function performs a network call to retrieve a random image and returns the corresponding model.
     ///
     /// - Returns: An `UnsplashRandomImage` object representing the fetched random image.
-    /// - Throws: `UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceError.randomImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
     func getRandomImage() async throws -> UnsplashRandomImage {
         do {
-            let randomImageModel: UnsplashRandomImage = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImage.self)
-            return randomImageModel
+            let randomImage: UnsplashRandomImage = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImage.self)
+            Logger.log("✅: Random image has been returned.")
+            return randomImage
         } catch {
-            print(UnsplashImageAPIServiceErrorModel.failedToFetchRandomImage(error))
+            Logger.log(UnsplashImageAPIServiceError.failedToFetchRandomImage(error).localizedDescription)
             throw error
         }
     }
@@ -72,7 +74,7 @@ struct UnsplashImageAPIService {
     ///
     /// - Returns: An `UnsplashQueryImages` object containing the query-based image results.
     ///
-    /// - Throws: `UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceError.queryImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
@@ -82,10 +84,11 @@ struct UnsplashImageAPIService {
         
         do {
             // Fetch and decode the data into an `UnsplashQueryImages`.
-            let model: UnsplashQueryImages = try await fetchDataNDecode(for: queryURLString, in: UnsplashQueryImages.self)
-            return model
+            let queryImages: UnsplashQueryImages = try await fetchDataNDecode(for: queryURLString, in: UnsplashQueryImages.self)
+            Logger.log("✅: Query images has been returned.")
+            return queryImages
         } catch {
-            print(UnsplashImageAPIServiceErrorModel.failedToFetchQueryImages(error))
+            Logger.log(UnsplashImageAPIServiceError.failedToFetchQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -103,6 +106,7 @@ struct UnsplashImageAPIService {
         let capitalizedQueryText: String = queryText.capitalized
         let queryURLString: String = "https://api.unsplash.com/search/photos?orientation=landscape&page=\(pageNumber)&per_page=\(imagesPerPage)&query=\(capitalizedQueryText)"
         
+        Logger.log("✅: Query url string has been constructed.")
         return queryURLString
     }
     
@@ -141,6 +145,7 @@ struct UnsplashImageAPIService {
         // Decode JSON Data into Desired Model
         let model: T = try JSONDecoder().decode(T.self, from: data)
         
+        Logger.log("✅: Data has been fetched and decoded.")
         // Return Model Object
         return model
     }
@@ -155,24 +160,24 @@ struct UnsplashImageAPIService {
     private func parseHTTPResponseStatusCode(_ response: HTTPURLResponse) throws {
         switch response.statusCode {
         case 200:
-            print("Everything worked as expected. Status code: 200 - OK")
+            Logger.log("Everything worked as expected. Status code: 200 - OK")
         case 400:
-            print("The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
+            Logger.log("The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
             throw URLError(.badURL)
         case 401:
-            print("Invalid Access Token. Status code: 401 - Unauthorized") // This occurs when the API Access Key is invalid
+            Logger.log("Invalid Access Token. Status code: 401 - Unauthorized") // This occurs when the API Access Key is invalid
             throw URLError(.userAuthenticationRequired)
         case 403:
-            print("Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
+            Logger.log("Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
             throw URLError(.clientCertificateRejected)
         case 404:
-            print("Resource not found. Status code: 404")
+            Logger.log("Resource not found. Status code: 404")
             throw URLError(.fileDoesNotExist)
         case 500, 503:
-            print("Something went wrong on Unsplash server side. Status code: 500, 503")
+            Logger.log("Something went wrong on Unsplash server side. Status code: 500, 503")
             throw URLError(.badServerResponse)
         default:
-            print("Request failed with status code: \(response.statusCode)")
+            Logger.log("Request failed with status code: \(response.statusCode)")
             throw URLError(.badServerResponse)
         }
     }

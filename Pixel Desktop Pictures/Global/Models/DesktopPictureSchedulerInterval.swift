@@ -1,5 +1,5 @@
 //
-//  DesktopPictureSchedulerIntervalsModel.swift
+//  DesktopPictureSchedulerInterval.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-28.
@@ -7,14 +7,19 @@
 
 import Foundation
 
-enum DesktopPictureSchedulerIntervalsModel: String, Codable, CaseIterable {
+/**
+ Represents desktop picture update scheduler intervals with associated time calculations.
+ Supports different intervals for production and mock environments with specific time calculations.
+ - Note: Follows Apple's guidelines for activity scheduling intervals.
+ */
+enum DesktopPictureSchedulerInterval: String, Codable, CaseIterable {
     case hourly, daily, weekly
     
     var timeIntervalName: String {
         return self.rawValue.capitalized
     }
     
-    func timeInterval(environment: AppEnvironmentModel) -> TimeInterval {
+    func timeInterval(environment: AppEnvironment) -> TimeInterval {
         switch environment {
         case .production:
             switch self {

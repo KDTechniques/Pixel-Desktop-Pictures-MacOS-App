@@ -34,7 +34,7 @@ struct APIAccessKeyStatusView: View {
 // MARK: EXTENSIONS
 extension APIAccessKeyStatusView {
     // MARK: - On Change of Internet Connection
-    private func onChangeOfInternetConnection(_ status: InternetConnectionStatusModel) {
+    private func onChangeOfInternetConnection(_ status: InternetConnectionStatus) {
         guard apiAccessKeyManager.apiAccessKeyStatus == .failed,
               status == .connected else {
             return

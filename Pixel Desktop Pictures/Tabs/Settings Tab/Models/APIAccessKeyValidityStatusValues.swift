@@ -7,7 +7,7 @@
 
 import SwiftUICore
 
-extension APIAccessKeyValidityStatusModel {
+extension APIAccessKeyValidityStatus {
     var status: some View {
         switch self {
         case .notFound:

@@ -16,7 +16,7 @@ struct RecentsVGridImageView: View {
     
     // MARK: - ASSIGNED PROPERTIES
     @State private var imageQualitiesURLStrings: UnsplashImageResolution?
-    let vGridValues = VGridValuesModel.self
+    let vGridValues = VGridValues.self
     
     // MARK: - INITIALIZER
     init(item: Recent) {

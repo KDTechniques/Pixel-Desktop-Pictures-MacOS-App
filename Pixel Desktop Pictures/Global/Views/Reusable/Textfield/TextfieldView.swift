@@ -39,7 +39,7 @@ struct TextfieldView: View {
 #Preview("Textfield View") {
     @Previewable @State var textfieldText: String = ""
     TextfieldView(textfieldText: $textfieldText, localizedKey: "", prompt: "Type here...") {
-        print("Submitted!")
+        Logger.log("Submitted!")
     }
     .padding()
 }

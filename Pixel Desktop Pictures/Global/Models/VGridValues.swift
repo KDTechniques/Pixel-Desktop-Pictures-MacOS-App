@@ -1,5 +1,5 @@
 //
-//  VGridValuesModel.swift
+//  VGridValues.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-23.
@@ -7,8 +7,11 @@
 
 import SwiftUI
 
-struct VGridValuesModel {
-    
+/**
+ Provides static values for vertical grid configuration in SwiftUI.
+ Centralizes grid-related constants for consistent UI layout.
+ */
+struct VGridValues {
     static let spacing: CGFloat = 8
     static var columns: [GridItem] {
         .init(

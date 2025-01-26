@@ -11,7 +11,7 @@ import SDWebImageSwiftUI
 struct UpdateCollectionView: View {
     // MARK: - PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
-    let vGridValues = VGridValuesModel.self
+    let vGridValues = VGridValues.self
     
     // MARK: - BODY
     var body: some View {

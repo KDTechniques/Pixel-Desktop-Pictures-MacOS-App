@@ -85,7 +85,7 @@ extension SettingsFooterView {
                 do {
                     try await LocalDatabaseManager(appEnvironment: .production).eraseAllData()
                 } catch {
-                    print("❌: Failed to erase all data from swift data. \(error.localizedDescription)")
+                    Logger.log("❌: Failed to erase all data from swift data. \(error.localizedDescription)")
                 }
             }
         }

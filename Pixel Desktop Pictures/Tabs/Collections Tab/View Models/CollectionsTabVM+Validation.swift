@@ -26,7 +26,7 @@ extension CollectionsTabViewModel {
             setShowCreateButtonProgress(false)
             setShowRenameButtonProgress(false)
             
-            print(getVMError().duplicateCollectionName.localizedDescription)
+            Logger.log(getVMError().duplicateCollectionName.localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().duplicateCollectionNameFound)
             throw getVMError().duplicateCollectionName
         }

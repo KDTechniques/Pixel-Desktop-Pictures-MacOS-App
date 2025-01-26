@@ -10,6 +10,10 @@ import SwiftData
 
 fileprivate let randomKeyword: String = "RANDOM"
 
+/**
+ A model class representing a collection of images.
+ This class is designed to store collection-related properties, such as name, page number, and image quality URL strings.
+ */
 @Model
 final class Collection {
     // MARK: - PROPERTIES

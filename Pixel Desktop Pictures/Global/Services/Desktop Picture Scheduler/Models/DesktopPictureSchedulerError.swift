@@ -1,5 +1,5 @@
 //
-//  DesktopPictureSchedulerErrorModel.swift
+//  DesktopPictureSchedulerError.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-31.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum DesktopPictureSchedulerErrorModel: LocalizedError {
+enum DesktopPictureSchedulerError: LocalizedError {
     case activitySchedulingFailed
     case executionTimeProcessingFailed
     case taskDeallocated
