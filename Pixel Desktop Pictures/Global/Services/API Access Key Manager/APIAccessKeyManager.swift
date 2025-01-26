@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 /**
  A class responsible for managing the API access key, its validation, and status updates.
@@ -14,24 +15,23 @@ import Foundation
 @MainActor
 @Observable
 final class APIAccessKeyManager {
-    // MARK: - PROPERTIES
+    // MARK: - ASSIGNED PROPERTIES
     private let defaults: UserDefaultsManager = .shared
+    private var cancellables: Set<AnyCancellable> = []
     
     /// Current status of the API access key, which updates and triggers status change handling logic.
     var apiAccessKeyStatus: APIAccessKeyValidityStatusModel = .notFound {
-        didSet {
-            guard oldValue != apiAccessKeyStatus else { return }
-            Task { await onAPIAccessKeyStatusChange(apiAccessKeyStatus) }
-        }
+        didSet { apiAccessKeyStatus$ = apiAccessKeyStatus }
     }
+    @ObservationIgnored @Published private var apiAccessKeyStatus$: APIAccessKeyValidityStatusModel = .notFound
     
-    @ObservationIgnored
-    private var apiAccessKey: String?
+    @ObservationIgnored private var apiAccessKey: String?
     private let errorModel: APIAccessKeyManagerErrorModel.Type = APIAccessKeyManagerErrorModel.self
     
     // MARK: - INTERNAL FUNCTIONS
     
     func initializeAPIAccessKeyManager() async {
+        apiAccessKeyStatusSubscriber()
         await getNAssignAPIAccessKeyStatusFromUserDefaults()
         print("✅: `API Access Key Manager` has been initialized successfully.")
     }
@@ -98,6 +98,19 @@ final class APIAccessKeyManager {
     }
     
     // MARK: - PRIVATE FUNCTIONS
+    
+    private func apiAccessKeyStatusSubscriber() {
+        $apiAccessKeyStatus$
+            .dropFirst(2)
+            .removeDuplicates()
+            .sink { status in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    await onAPIAccessKeyStatusChange(status)
+                }
+            }
+            .store(in: &cancellables)
+    }
     
     private func getAPIAccessKeyFromUserDefaults() async -> String? {
         guard let apiAccessKey: String = await defaults.get(key: .apiAccessKey) as? String else {

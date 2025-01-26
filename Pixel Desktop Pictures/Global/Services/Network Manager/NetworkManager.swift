@@ -7,6 +7,7 @@
 
 import Foundation
 import Network
+import Combine
 
 @MainActor
 @Observable
@@ -16,27 +17,35 @@ final class NetworkManager {
     private let monitor = NWPathMonitor()
     private let networkManagerQueue = DispatchQueue(label: "com.kdtechniques.Pixel-Desktop-Pictures.NetworkManager.networkManagerQueue")
     private(set) var connectionStatus: InternetConnectionStatusModel = .noConnection {
-        didSet {
-            connectionStatus$ = connectionStatus
-            guard oldValue != connectionStatus else { return }
-            
-            switch connectionStatus {
-            case .connected:
-                handleConnectedStatus()
-            case .noConnection:
-                handleNoConnectionStatus()
-            }
-        }
+        didSet { connectionStatus$ = connectionStatus }
     }
     @ObservationIgnored @Published private(set) var connectionStatus$: InternetConnectionStatusModel = .noConnection
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
     private init() {
+        connectionStatusSubscriber()
         startNetworkMonitor()
         print("✅: `Network Manager` has been initialized successfully.")
     }
     
     // MARK: - PRIVATE FUNCTIONS
+    
+    private func connectionStatusSubscriber() {
+        $connectionStatus$
+            .removeDuplicates()
+            .sink { [weak self] status in
+                guard let self else { return }
+                
+                switch status {
+                case .connected:
+                    handleConnectedStatus()
+                case .noConnection:
+                    handleNoConnectionStatus()
+                }
+            }
+            .store(in: &cancellables)
+    }
     
     private func startNetworkMonitor() {
         monitor.pathUpdateHandler = { [weak self] path in
