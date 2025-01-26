@@ -50,7 +50,7 @@ extension CollectionsTabViewModel {
         } catch {
             setShowRenameButtonProgress(false)
             print(getVMError().failedToRenameCollection(error).localizedDescription)
-            await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionName)
+            await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionName(error))
             getAPIAccessKeyManager().handleURLError(error)
         }
     }
@@ -189,8 +189,13 @@ extension CollectionsTabViewModel {
             let queryImages: UnsplashQueryImages = try await imageAPIService.getQueryImages(
                 query: name,
                 pageNumber: 1,
-                imagesPerPage: isQueryImageExist ? 1 : UnsplashImageAPIService.imagesPerPage
+                imagesPerPage: UnsplashImageAPIService.imagesPerPage
             )
+            
+            // Early exit if the the fetched results array count is less than 2 and empty.
+            guard !queryImages.results.isEmpty, queryImages.results.count > 1  else {
+                throw URLError(.resourceUnavailable)
+            }
             
             // Handle when there's no saved `QueryImage` item for the given collection name in the local database.
             if !isQueryImageExist {

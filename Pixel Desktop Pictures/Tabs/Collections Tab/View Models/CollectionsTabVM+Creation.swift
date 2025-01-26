@@ -50,7 +50,7 @@ extension CollectionsTabViewModel {
         } catch {
             setShowCreateButtonProgress(false)
             print(getVMError().failedToCreateCollection(collectionName: collectionName, error).localizedDescription)
-            await getErrorPopupVM().addError(getErrorPopup().failedToCreateCollection)
+            await getErrorPopupVM().addError(getErrorPopup().failedToCreateCollection(error))
             getAPIAccessKeyManager().handleURLError(error)
         }
     }
