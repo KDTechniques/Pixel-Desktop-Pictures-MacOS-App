@@ -28,8 +28,10 @@ struct UnsplashImageLocation: Codable {
 
 struct UnsplashImageLink: Codable {
     let downloadURL: String
+    let webLinkURL: String
     
     enum CodingKeys: String, CodingKey {
         case downloadURL = "download"
+        case webLinkURL = "html"
     }
 }

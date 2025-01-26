@@ -60,15 +60,17 @@ extension MainTabView {
     @ViewBuilder
     private var footer: some View {
         let authorName: String? = mainTabVM.currentImage?.user.firstNLastName
+        let link: String? = mainTabVM.currentImage?.links.webLinkURL
+        let condition: Bool = authorName == nil || link == nil
         
         HStack {
-            ImageAuthorView(name: authorName ?? "")
+            ImageAuthorView(name: authorName ?? "Unknown", link: link ?? "")
             Spacer()
             DownloadButtonView()
         }
         .padding(.top)
-        .opacity(authorName == nil ? 0 : 1)
-        .disabled(authorName == nil)
+        .opacity(condition ? 0 : 1)
+        .disabled(condition)
     }
     
     // MARK: - FUNCTIONS
