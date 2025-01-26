@@ -9,8 +9,8 @@ import Foundation
 
 enum CollectionsTabErrorPopup: ErrorPopupProtocol {
     case duplicateCollectionNameFound
-    case failedToCreateCollection
-    case failedToUpdateCollectionName
+    case failedToCreateCollection(_ error: Error)
+    case failedToUpdateCollectionName(_ error: Error)
     case failedToUpdateCollectionThumbnailImage
     case failedToUpdateCollectionSelection
     case failedToDeleteCollection
@@ -22,10 +22,10 @@ enum CollectionsTabErrorPopup: ErrorPopupProtocol {
         switch self {
         case .duplicateCollectionNameFound:
             return "Duplicate collection name found. Please choose a unique name."
-        case .failedToCreateCollection:
-            return "Failed to create collection."
-        case .failedToUpdateCollectionName:
-            return "Failed to update collection name."
+        case .failedToCreateCollection(let error):
+            return "Failed to create collection.\(getReason(for: error))"
+        case .failedToUpdateCollectionName(let error):
+            return "Failed to update collection name.\(getReason(for: error))"
         case .failedToUpdateCollectionThumbnailImage:
             return "Failed to update collection thumbnail image."
         case .failedToUpdateCollectionSelection:
@@ -39,5 +39,21 @@ enum CollectionsTabErrorPopup: ErrorPopupProtocol {
         case .somethingWentWrong:
             return "Something went wrong. Please try again later."
         }
+    }
+    
+    private func getReason(for error: Error) -> String {
+        var reason: String {
+            let defaultReason: String = "\nSomething went wrong. Please try again later."
+            guard let urlError: URLError = error as? URLError else { return defaultReason }
+            
+            switch urlError.code {
+            case .resourceUnavailable:
+                return " Please enter a valid noun."
+            default:
+                return defaultReason
+            }
+        }
+        
+        return reason
     }
 }

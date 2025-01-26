@@ -47,14 +47,14 @@ struct ErrorPopupView: View {
                 Button("Trigger") {
                     Task {
                         await errorPopupVM.addError(CollectionsTabErrorPopup.duplicateCollectionNameFound)
-                        await errorPopupVM.addError(CollectionsTabErrorPopup.failedToCreateCollection
+                        await errorPopupVM.addError(CollectionsTabErrorPopup.duplicateCollectionNameFound
                         )
                         await errorPopupVM.addError(CollectionsTabErrorPopup.somethingWentWrong)
                     }
                 }
                 
                 Button("Trigger") {
-                    Task { await errorPopupVM.addError(CollectionsTabErrorPopup.failedToCreateCollection
+                    Task { await errorPopupVM.addError(CollectionsTabErrorPopup.duplicateCollectionNameFound
                     ) }
                 }
                 

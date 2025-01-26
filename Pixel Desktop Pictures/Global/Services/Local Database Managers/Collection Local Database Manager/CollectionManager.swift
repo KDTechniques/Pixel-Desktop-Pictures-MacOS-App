@@ -76,7 +76,7 @@ actor CollectionManager {
             throw URLError(.badServerResponse)
         }
         
-        try await setImageURLs(for: item, with: newImageURLs)
+        try await setEncodedImageURLs(for: item, with: newImageURLs)
         item.pageNumber = nextPageNumber
         try await localDatabaseManager.updateCollection()
     }
@@ -106,7 +106,7 @@ actor CollectionManager {
     
     // MARK: - PRIVATE FUNCTIONS
     
-    private func setImageURLs(for item: Collection, with imageURLs: UnsplashImageResolution) async throws {
+    private func setEncodedImageURLs(for item: Collection, with imageURLs: UnsplashImageResolution) async throws {
         let imageURLsData: Data = try JSONEncoder().encode(imageURLs)
         item.imageQualityURLStringsEncoded = imageURLsData
     }

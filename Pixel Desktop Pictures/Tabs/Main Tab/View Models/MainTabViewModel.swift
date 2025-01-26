@@ -62,7 +62,7 @@ final class MainTabViewModel {
         } catch {
             setCenterItem(.retryIcon)
             print(vmError.failedToSetNextImage(error).localizedDescription)
-            await errorPopupVM.addError(errorPopup.failedToGenerateNextImage)
+            await errorPopupVM.addError(errorPopup.failedToGenerateNextImage(error))
             throw error
         }
     }
