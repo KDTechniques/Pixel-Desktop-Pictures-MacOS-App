@@ -20,22 +20,27 @@ struct ImageContainerView: View {
     var body: some View {
         let imageURLString: String = mainTabVM.currentImage?.imageQualityURLStrings.regular ?? ""
         
-        WebImage(
-            url: .init(string: imageURLString),
-            options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
-        )
-        .onSuccess { _, _, _ in handleOnSuccess() }
-        .onProgress { _, _ in handleOnProgress() }
-        .resizable()
-        .scaledToFill()
-        .frame(maxWidth: .infinity)
-        .frame(height: imageHeight)
-        .clipped()
-        .opacity(isImageLoaded ? 1 : 0)
-        .overlay { placeholder.opacity(isImageLoaded ? 0 : 1) }
-        .animation(.default, value: isImageLoaded)
-        .overlay(centerButton)
-        .overlay(alignment: .bottomLeading) { locationText }
+        Button{
+            handleImageRefresh()
+        } label: {
+            WebImage(
+                url: .init(string: imageURLString),
+                options: [.retryFailed, .continueInBackground, .highPriority, .scaleDownLargeImages]
+            )
+            .onSuccess { _, _, _ in handleOnSuccess() }
+            .onProgress { _, _ in handleOnProgress() }
+            .resizable()
+            .scaledToFill()
+            .frame(maxWidth: .infinity)
+            .frame(height: imageHeight)
+            .clipped()
+            .opacity(isImageLoaded ? 1 : 0)
+            .overlay { placeholder.opacity(isImageLoaded ? 0 : 1) }
+            .animation(.default, value: isImageLoaded)
+            .overlay(centerButton)
+            .overlay(alignment: .bottomLeading) { locationText }
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -48,10 +53,7 @@ struct ImageContainerView: View {
 // MARK: EXTENSIONS
 extension ImageContainerView {
     private var centerButton: some View {
-        ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) {
-            guard mainTabVM.centerItem == .retryIcon else { return }
-            try? await mainTabVM.setNextImage()
-        }
+        ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) { handleImageRefresh() }
     }
     
     private var placeholder: some View {
@@ -73,6 +75,7 @@ extension ImageContainerView {
     }
     
     // MARK: - FUNCTIONS
+    
     private func handleOnSuccess() {
         isImageLoaded = true
         mainTabVM.setCenterItem(.retryIcon)
@@ -80,5 +83,12 @@ extension ImageContainerView {
     
     private func handleOnProgress() {
         isImageLoaded = false
+    }
+    
+    private func handleImageRefresh() {
+        Task {
+            guard mainTabVM.centerItem == .retryIcon else { return }
+            try? await mainTabVM.setNextImage()
+        }
     }
 }
