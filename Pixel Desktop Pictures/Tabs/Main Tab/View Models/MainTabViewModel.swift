@@ -70,7 +70,7 @@ final class MainTabViewModel {
     /// Sets the current image as the desktop wallpaper.
     ///
     /// - Note: Downloads the image to the documents directory and applies it as the desktop wallpaper.
-    func setDesktopPicture() async {
+    func setDesktopPicture() async throws {
         // Early exit if the current image is not available.
         guard let currentImage else { return }
         
@@ -84,6 +84,7 @@ final class MainTabViewModel {
         } catch {
             print(vmError.failedToSetDesktopPicture(error).localizedDescription)
             await errorPopupVM.addError(errorPopup.failedToSetDesktopPicture)
+            throw error
         }
     }
     
