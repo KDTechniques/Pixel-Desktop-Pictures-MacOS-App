@@ -184,7 +184,7 @@ final class DesktopPictureScheduler {
         do {
             try await Task.sleep(nanoseconds: 5_000_000_000)
             try await mainTabVM.setNextImage()
-            await mainTabVM.setDesktopPicture()
+            try await mainTabVM.setDesktopPicture()
         } catch {
             print("❌: Failed to perform background task. \(error.localizedDescription)")
             guard let urlError: URLError = error as? URLError else { return }

@@ -73,7 +73,7 @@ extension MainTabView {
     // MARK: - FUNCTIONS
     private func setDesktopPicture() async {
         showProgress = true
-        await mainTabVM.setDesktopPicture()
+        try? await mainTabVM.setDesktopPicture()
         showProgress = false
     }
 }
