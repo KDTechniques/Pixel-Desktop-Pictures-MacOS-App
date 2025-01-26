@@ -30,13 +30,10 @@ final class DesktopPictureScheduler {
     private var scheduler: NSBackgroundActivityScheduler?
     private var currentTimeIntervalSince1970: TimeInterval { return Date().timeIntervalSince1970 }
     private(set) var didBackgroundTaskFailOnInternetFailure: Bool = false {
-        didSet {
-            guard oldValue != didBackgroundTaskFailOnInternetFailure else { return }
-            Task { await saveFailedBackgroundTaskStateToUserDefaults(from: didBackgroundTaskFailOnInternetFailure) }
-        }
+        didSet { didBackgroundTaskFailOnInternetFailure$ = didBackgroundTaskFailOnInternetFailure }
     }
+    @ObservationIgnored @Published private var didBackgroundTaskFailOnInternetFailure$: Bool = false
     private var cancellables: Set<AnyCancellable> = []
-    
     
     // MARK: - INITIALIZER
     private init(appEnvironmentType: AppEnvironmentModel, mainTabVM: MainTabViewModel) {
@@ -87,6 +84,7 @@ final class DesktopPictureScheduler {
     
     /// Initializes the scheduler by setting the time interval and scheduling the background task.
     private func initializeScheduler() async {
+        didBackgroundTaskFailOnInternetFailureSubscriber()
         networkConnectionSubscriber()
         
         didBackgroundTaskFailOnInternetFailure = await getFailedBackgroundTaskStateToUserDefaults()
@@ -103,6 +101,24 @@ final class DesktopPictureScheduler {
         } catch {
             print("\(String(describing: DesktopPictureSchedulerErrorModel.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
         }
+    }
+    
+    /// Subscribes to changes in the background task internet failure state.
+    ///
+    /// Saves the updated failure state to UserDefaults when changes occur.
+    ///
+    /// - Note: Uses `@MainActor` to ensure UserDefaults update happens on the main thread.
+    private func didBackgroundTaskFailOnInternetFailureSubscriber() {
+        $didBackgroundTaskFailOnInternetFailure$
+            .dropFirst(2)
+            .removeDuplicates()
+            .sink { boolean in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    await saveFailedBackgroundTaskStateToUserDefaults(from: boolean)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     /// This function schedules a background task with the specified time interval.
