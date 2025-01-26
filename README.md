@@ -13,12 +13,15 @@
 
 
 > [!Important]
-> Please use the following public key as your API Access Key and inject it into the API Access Key text field in the Settings tab.
-> Otherwise create your API Access Key by following the guidelines in the API Access Key injection sheet in the Settings tab.
+> Please use the following public key as your API access key and inject it into the API access key text field in the Settings tab.
+> Otherwise create your API access key by following the guidelines in the API access key injection sheet in the Settings tab.
 >
 > *Public API Access Key `7ej27jdK3xA-t6PhPiFYfPts0jUsv-WLQxa61g0gDrI`*
 
-
-
+> [!Tip]
+> The above public API access key may be rate-limited(reached maximum requests per hour), allowing only 50 requests per hour.
+> Therefore, it’s always recommended to create your API access key.
+>
+> First, try using the public API key. If you encounter an error on the app interface, create your API access key.
 
 
