@@ -11,15 +11,13 @@ import SDWebImageSwiftUI
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
-    // MARK: - PROPERTIES
+    // MARK: - ASSIGNED PROPERTIES
     private let appEnvironment: AppEnvironment = .production // Note: Change to `.production` as needed
-    
-    // Services
     let networkManager: NetworkManager = .shared
-    @State private var apiAccessKeyManager: APIAccessKeyManager
-    
-    // Tabs
     @State private var tabsVM: TabsViewModel = .init()
+    
+    // MARK: - INJECTED PROPETIES
+    @State private var apiAccessKeyManager: APIAccessKeyManager
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel
     @State private var recentsTabVM: RecentsTabViewModel

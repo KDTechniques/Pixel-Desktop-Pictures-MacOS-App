@@ -48,17 +48,20 @@ final class MainTabViewModel {
                 // Random element must not fail, but if it does, fallback to next image conforming to `UnsplashRandomImage`.
                 Logger.log("❌: Query images array is empty for some unknown reason.")
                 try await setNextRandomImage()
+                Logger.log("✅: Next random image has been generated.")
                 return
             }
             
             // Handle case when the random element is the `RANDOM` query.
             guard randomQueryImageItem.query != Collection.randomKeywordString else {
                 try await setNextRandomImage()
+                Logger.log("✅: Next random image has been generated.")
                 return
             }
             
             // Handle case when the random element is a non-random query. ex: Nature
             try await setNextQueryImage(from: randomQueryImageItem)
+            Logger.log("✅: Next query image has been generated.")
         } catch {
             setCenterItem(.retryIcon)
             Logger.log(vmError.failedToSetNextImage(error).localizedDescription)
@@ -133,7 +136,11 @@ final class MainTabViewModel {
         currentImage = item
         
         // Save the current image to user defaults every time.
-        if let item { try? await saveCurrentImageToUserDefaults(item) }
+        if let item {
+            try? await saveCurrentImageToUserDefaults(item)
+            Logger.log("✅: Current image has been saved to user defaults.")
+        }
+        Logger.log("✅: Current image has been assigned.")
     }
     
     /// Updates the center item (e.g., progress indicator or retry icon).
@@ -141,6 +148,7 @@ final class MainTabViewModel {
     /// - Parameter item: The new item to display in the center.
     func setCenterItem(_ item: ImageContainerCenterItems) {
         centerItem = item
+        Logger.log("Center item has been assigned.")
     }
     
     // MARK: - PRIVATE FUNCTIONS

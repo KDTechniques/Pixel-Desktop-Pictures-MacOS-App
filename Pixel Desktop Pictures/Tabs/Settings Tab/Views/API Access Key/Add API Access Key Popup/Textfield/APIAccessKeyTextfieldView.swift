@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct APIAccessKeyTextfieldView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
@@ -37,12 +37,10 @@ struct APIAccessKeyTextfieldView: View {
 
 // MARK: EXTENSIONS
 extension APIAccessKeyTextfieldView {
-    // MARK: - Header
     private var header: some View {
         Text("Copy, Paste your Unsplash API Access Key here:")
     }
     
-    // MARK: - Paste from Clipboard Button
     @ViewBuilder
     private var pasteFromClipboardButton: some View {
         if settingsTabVM.apiAccessKeyTextfieldText.isEmpty {
@@ -57,9 +55,8 @@ extension APIAccessKeyTextfieldView {
         }
     }
     
-    // MARK: FUNCTIONS
+    // MARK: - FUNCTIONS
     
-    // MARK: - On Textfield Submission
     private func onTextfieldSubmission() {
         Task {
             let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText

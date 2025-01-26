@@ -12,18 +12,16 @@ struct CollectionsVGridImageView: View {
     // MARK: - INJECTED PROPERTIES
     let item: Collection
     
-    // MARK: - ASSIGNED PROPERTIES
-    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
-    @State private var showEditButton: Bool = false
-    @State private var imageURLString: String?
-    
     // MARK: - INITIALIZER
     init(item: Collection) {
         self.item = item
     }
     
-    // MARK: - PRIVATE PROPERTIES
-    let vGridValues = VGridValues.self
+    // MARK: - ASSIGNED PROPERTIES
+    @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
+    @State private var showEditButton: Bool = false
+    @State private var imageURLString: String?
+    private let vGridValues: VGridValues.Type = VGridValues.self
     
     // MARK: - BODY
     var body: some View {
@@ -63,7 +61,6 @@ struct CollectionsVGridImageView: View {
 
 // MARK: EXTENSIONS
 extension CollectionsVGridImageView {
-    // MARK: - Placeholder
     @ViewBuilder
     private var placeholder: some View {
         if item.name != Collection.randomKeywordString {
@@ -71,7 +68,6 @@ extension CollectionsVGridImageView {
         }
     }
     
-    // MARK: - Checkmark
     private var checkmark: some View {
         Image(systemName: "checkmark")
             .font(.subheadline.bold())
@@ -80,7 +76,6 @@ extension CollectionsVGridImageView {
             .opacity(item.isSelected ? 1 : 0)
     }
     
-    // MARK: - Edit Button
     private var editButton: some View {
         Button {
             Task {
@@ -100,7 +95,6 @@ extension CollectionsVGridImageView {
         .disabled(!item.isEditable)
     }
     
-    // MARK: - Overlay
     private var overlay: some View {
         Group {
             checkmark
@@ -110,7 +104,7 @@ extension CollectionsVGridImageView {
         .foregroundStyle(.white)
     }
     
-    // MARK: FUNCTIONS
+    // MARK: - FUNCTIONS
     private func handleTap() {
         Task {
             await collectionsTabVM.updateCollectionSelection(item: item)

@@ -92,6 +92,7 @@ extension CollectionsTabViewModel {
             try? await Task.sleep(nanoseconds: 400_000_000)
             resetUpdatingItem()
         }
+        Logger.log("✅: Bottom popup has been presented/dismissed.")
     }
     
     /// Handles the scroll position when the collection items array changes.
@@ -109,6 +110,7 @@ extension CollectionsTabViewModel {
         withAnimation {
             scrollPosition.wrappedValue.scrollTo(edge: .bottom)
         }
+        Logger.log("✅: Scroll position has been animated on collection items array change.")
     }
     
     /// Retrieves an instance of `UnsplashImageAPIService` configured with the API access key.
@@ -125,6 +127,8 @@ extension CollectionsTabViewModel {
         }
         
         let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        
+        Logger.log("✅: Image api instance has been returned.")
         return imageAPIService
     }
 }

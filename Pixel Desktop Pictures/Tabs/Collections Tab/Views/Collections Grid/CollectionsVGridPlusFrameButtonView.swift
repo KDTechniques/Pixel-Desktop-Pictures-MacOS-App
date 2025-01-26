@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollectionsVGridPlusFrameButtonView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let collectionName: String
     
@@ -17,8 +17,8 @@ struct CollectionsVGridPlusFrameButtonView: View {
         self.collectionName = collectionName
     }
     
-    // MARK: - PRIVATE PROPERTIES
-    let vGridValues = VGridValues.self
+    // MARK: - ASSIGNED PROPERTIES
+    private let vGridValues: VGridValues.Type = VGridValues.self
     
     // MARK: - BODY
     var body: some View {
@@ -50,16 +50,14 @@ struct CollectionsVGridPlusFrameButtonView: View {
 
 // MARK: EXTENSIONS
 extension CollectionsVGridPlusFrameButtonView {
-    // MARK: - overlay
     private var overlay: some View {
         Image(systemName: "plus")
             .font(.title)
             .foregroundStyle(Color.collectionPlusIcon)
     }
     
-    // MARK: FUNCTIONS
+    // MARK: - FUNCTIONS
     
-    // MARK: - Can Show Plus Button
     private func canShowPlusButton() -> Bool {
         let firstItemCollectionNameMatch: Bool = collectionName == collectionsTabVM.collectionsArray.first?.name
         let isEmptyItemsArray: Bool = collectionsTabVM.collectionsArray.isEmpty

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TabButtonView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     let tab: TabItem
     
@@ -36,7 +36,6 @@ struct TabButtonView: View {
 
 // MARK: EXTENSIONS
 extension View {
-    // MARK: - Set Foreground Color
     fileprivate func setForegroundColor(_ tab: TabItem, _ selectedTab: TabItem) -> some View {
         self
             .foregroundStyle(tab == selectedTab ? Color.tabActive : Color.tabInactive)

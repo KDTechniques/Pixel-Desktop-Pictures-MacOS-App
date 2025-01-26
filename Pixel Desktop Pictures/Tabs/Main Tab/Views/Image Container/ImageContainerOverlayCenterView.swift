@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ImageContainerOverlayCenterView: View {
+    // MARK: - INJECTED PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabsVM
-    // MARK: - PROPERTIES
     let centerItem: ImageContainerCenterItems
     let action: () async -> Void
     
@@ -43,7 +43,6 @@ struct ImageContainerOverlayCenterView: View {
 
 // MARK: - EXTENSIONS
 extension ImageContainerOverlayCenterView {
-    // MARK: - Button Label
     private var buttonLabel:some View {
         Group {
             switch centerItem {

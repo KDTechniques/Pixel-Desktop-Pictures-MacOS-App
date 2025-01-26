@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct CollectionsTabView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
+    
+    // MARK: - ASSIGNED PROPERTIES
     @State private var scrollPosition: ScrollPosition = .init()
     
     // MARK: - BODY

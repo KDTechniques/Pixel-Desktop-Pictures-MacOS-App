@@ -77,6 +77,7 @@ import SwiftUI
         withAnimation(TabItem.bottomPopupAnimation) {
             isPresentedPopup = present
         }
+        Logger.log("✅: Bottom popup has been presented/dismissed.")
     }
     
     /// Dismisses the popup and resets related data.
@@ -86,6 +87,7 @@ import SwiftUI
     func dismissPopUp() {
         presentPopup(false)
         apiAccessKeyTextfieldText = ""
+        Logger.log("✅: Bottom popup has been dismissed and reset the api access key textfield.")
     }
     
     /// Pastes the API access key from the clipboard into the text field.
@@ -95,6 +97,7 @@ import SwiftUI
     func pasteAPIAccessKeyFromClipboard() {
         guard let clipboardString = NSPasteboard.general.string(forType: .string) else { return }
         apiAccessKeyTextfieldText = clipboardString
+        Logger.log("✅: A text has been pasted from the clipboard.")
     }
     
     /// Restores the default settings and saves them to UserDefaults.
@@ -107,6 +110,7 @@ import SwiftUI
         launchAtLogin = true
         showOnAllSpaces = true
         updateIntervalSelection = .defaultTimeInterval
+        Logger.log("✅: Defaults settings have been restored.")
     }
     
     /// Quits the application.
@@ -115,6 +119,7 @@ import SwiftUI
     /// on the shared `NSApplication` instance.
     func quitApp() {
         NSApplication.shared.terminate(nil)
+        Logger.log("✅: App has been quit.")
     }
     
     // MARK: - PRIVATE FUNCTIONS
@@ -124,6 +129,7 @@ import SwiftUI
     /// This function clears the text in the API access key text field by setting it to an empty string.
     private func resetAPIAccessKeyTextfieldText() {
         apiAccessKeyTextfieldText = ""
+        Logger.log("✅: API access key textfield has been reset.")
     }
     
     /// Handles changes to the update interval setting.
@@ -134,6 +140,7 @@ import SwiftUI
     /// - Parameter value: The new `DesktopPictureSchedulerInterval` representing the updated update interval selection.
     private func onUpdateIntervalChange(_ value: DesktopPictureSchedulerInterval) async {
         await desktopPictureScheduler.onChangeOfTimeIntervalSelection(from: value)
+        Logger.log("✅: Change on update interval occurred.")
     }
 }
 
@@ -175,6 +182,7 @@ extension SettingsTabViewModel {
     private func saveUpdateIntervalToUserDefaults(_ value: DesktopPictureSchedulerInterval) async {
         do {
             try await defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
+            Logger.log("✅: Update interval has been saved to user defaults.")
         } catch {
             Logger.log(vmError.failedToSaveUpdateIntervalsToUserDefaults(error).localizedDescription)
         }
@@ -188,6 +196,7 @@ extension SettingsTabViewModel {
         await saveLaunchAtLoginToUserDefaults(launchAtLogin)
         await saveShowOnAllSpacesToUserDefaults(showOnAllSpaces)
         await saveUpdateIntervalToUserDefaults(updateIntervalSelection)
+        Logger.log("✅: Settings has been saved to user defaults.")
     }
     
     /// Retrieves settings from UserDefaults and updates the current settings.
@@ -206,12 +215,15 @@ extension SettingsTabViewModel {
                 let savedShowOnAllSpaces: Bool = await defaults.get(key: .showOnAllSpacesKey) as? Bool,
                 let savedUpdateInterval: DesktopPictureSchedulerInterval = try await defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerInterval.self) else {
                 await saveSettingsToUserDefaults()
+                
+                Logger.log("✅: Initial settings have been saved to user defaults.")
                 return
             }
             
             self.launchAtLogin = savedLaunchAtLogin
             self.showOnAllSpaces = savedShowOnAllSpaces
             self.updateIntervalSelection = savedUpdateInterval
+            Logger.log("✅: Settings have been retrieved from user defaults.")
         } catch {
             Logger.log(vmError.failedToGetSettingsFromUserDefaults(error).localizedDescription)
             throw error
@@ -240,6 +252,8 @@ extension SettingsTabViewModel {
             .dropFirst(2)
             .removeDuplicates()
             .sink { interval in
+                Logger.log("✅: Update interval selection subscriber has been triggered.")
+                
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     
@@ -260,6 +274,8 @@ extension SettingsTabViewModel {
             .dropFirst()
             .removeDuplicates()
             .sink { boolean in
+                Logger.log("✅: Show on all spaces subscriber has been triggered.")
+                
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     
@@ -280,6 +296,8 @@ extension SettingsTabViewModel {
             .dropFirst(2)
             .removeDuplicates()
             .sink { boolean in
+                Logger.log("✅: Launch at login subscriber has been triggered.")
+                
                 LaunchAtLogin.isEnabled = boolean
                 Task { @MainActor [weak self] in
                     await self?.saveLaunchAtLoginToUserDefaults(boolean)

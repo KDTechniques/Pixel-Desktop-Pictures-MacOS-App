@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollectionPopupDismissButtonView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let popOverType: CollectionsViewPopOver
     

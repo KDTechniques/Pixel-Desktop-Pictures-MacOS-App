@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct APIAccessKeyStatusView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsVM
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     @Environment(NetworkManager.self) private var networkManager
@@ -33,7 +33,8 @@ struct APIAccessKeyStatusView: View {
 
 // MARK: EXTENSIONS
 extension APIAccessKeyStatusView {
-    // MARK: - On Change of Internet Connection
+    // MARK: - FUNCTIONS
+    
     private func onChangeOfInternetConnection(_ status: InternetConnectionStatus) {
         guard apiAccessKeyManager.apiAccessKeyStatus == .failed,
               status == .connected else {

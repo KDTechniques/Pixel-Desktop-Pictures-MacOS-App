@@ -72,6 +72,7 @@ extension MainTabView {
     }
     
     // MARK: - FUNCTIONS
+    
     private func setDesktopPicture() async {
         showProgress = true
         try? await mainTabVM.setDesktopPicture(environment: appEnvironment)

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UpdateIntervalSettingView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
     
     // MARK: - BODY

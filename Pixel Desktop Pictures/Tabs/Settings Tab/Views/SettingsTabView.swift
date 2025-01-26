@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsTabView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
@@ -48,7 +48,7 @@ struct SettingsTabView: View {
     PreviewView { SettingsTabView() }
 }
 
-// MARK: EXTENSIONS
+// MARK: - EXTENSIONS
 extension SettingsTabView {
     private var divider: some View {
         Divider()

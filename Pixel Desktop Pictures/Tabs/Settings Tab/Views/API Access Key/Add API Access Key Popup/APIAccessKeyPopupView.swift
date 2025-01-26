@@ -13,7 +13,7 @@ struct APIAccessKeyPopupView: View {
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - ASSIGNED PROPERTIES
-    let dismissButtonFrameHeight: CGFloat = 30
+    private let dismissButtonFrameHeight: CGFloat = 30
     
     // MARK: - BODY
     var body: some View {
@@ -61,7 +61,6 @@ struct APIAccessKeyPopupView: View {
 
 // MARK: EXTENSIONS
 extension APIAccessKeyPopupView {
-    // MARK: - Dismiss Button
     private var dismissButton: some View {
         Button {
             settingsTabVM.presentPopup(false)
@@ -78,6 +77,7 @@ extension APIAccessKeyPopupView {
     }
     
     // MARK: - FUNCTIONS
+    
     private func handleConnect() async {
         let tempAPIAccessKey: String = settingsTabVM.apiAccessKeyTextfieldText
         settingsTabVM.dismissPopUp()

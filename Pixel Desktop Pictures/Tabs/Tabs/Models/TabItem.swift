@@ -7,6 +7,14 @@
 
 import SwiftUICore
 
+/**
+ An enum representing the different tab items in the app.
+ Each case corresponds to a specific tab, providing:
+ - A `View` for the tab's content.
+ - A system image (SF Symbol) for the tab's icon.
+ - A calculated height for the tab's content area.
+ This enum also includes shared constants for UI layout and animations.
+ */
 enum TabItem: String, CaseIterable {
     case main, recents, collections, settings
     
