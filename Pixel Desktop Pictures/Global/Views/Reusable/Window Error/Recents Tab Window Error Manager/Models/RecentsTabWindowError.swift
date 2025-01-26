@@ -9,24 +9,31 @@ import SwiftUICore
 
 enum RecentsTabWindowError: CaseIterable, WindowErrorProtocol {
     case recentsTabViewModelInitializationFailed
+    case firstTimeEmptyRecents
     
     var title: String {
         switch self {
         case .recentsTabViewModelInitializationFailed:
             return "Failed to Fetch Recent Pictures"
+            
+        case .firstTimeEmptyRecents:
+            return "Recent Images are Unavailable"
         }
     }
     
+    @ViewBuilder
     var messageView: some View {
         switch self {
         case .recentsTabViewModelInitializationFailed:
-            return SomethingWentWrongWindowErrorMessageView()
+            SomethingWentWrongWindowErrorMessageView()
+        case .firstTimeEmptyRecents:
+            FirstTimeEmptyRecentsWindowErrorMessageView()
         }
     }
     
     var withBottomPadding: Bool {
         switch self {
-        case .recentsTabViewModelInitializationFailed:
+        case . firstTimeEmptyRecents, .recentsTabViewModelInitializationFailed:
             return true
         }
     }

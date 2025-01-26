@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct APIAccessKeyInvalidWindowErrorMessageView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
+    
     // MARK: - BODY
     var body: some View {
         VStack(spacing: 30) {
@@ -26,6 +27,7 @@ struct APIAccessKeyInvalidWindowErrorMessageView: View {
 
 // MARK: - PREVIEWS
 #Preview("API Access Key Invalid Window Error Message View") {
-    APIAccessKeyInvalidWindowErrorMessageView()
+    WindowErrorView(model: GlobalWindowError.apiAccessKeyInvalid)
+        .padding()
         .previewModifier
 }

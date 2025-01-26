@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct APIAccessKeyNotFoundWindowErrorMessageView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     
     // MARK: - BODY
@@ -30,13 +30,12 @@ struct APIAccessKeyNotFoundWindowErrorMessageView: View {
             
             Text("tab to add one.")
         }
-        .foregroundStyle(.secondary)
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("APIAccessKeyNotFoundWindowErrorMessageView") {
-    APIAccessKeyNotFoundWindowErrorMessageView()
+    WindowErrorView(model: GlobalWindowError.apiAccessKeyNotFound)
         .padding()
         .previewModifier
 }

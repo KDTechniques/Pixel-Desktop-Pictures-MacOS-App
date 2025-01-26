@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct NotConnectedToInternetWindowErrorMessageView: View {
-    // MARK: - BODY
+    // MARK: - INJECTED BODY
     var body: some View {
         Text("Make sure the Mac is connected to the internet.")
-            .foregroundStyle(.secondary)
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Not Connected to Internet Window Error Message View") {
-    NotConnectedToInternetWindowErrorMessageView()
+    WindowErrorView(model: GlobalWindowError.notConnectedToInternet)
+        .padding()
         .previewModifier
 }

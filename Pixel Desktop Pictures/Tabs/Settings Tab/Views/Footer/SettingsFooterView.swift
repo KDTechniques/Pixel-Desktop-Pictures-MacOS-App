@@ -15,7 +15,7 @@ struct SettingsFooterView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
             HStack {
-                //                eraseAllDataButton
+//                eraseAllDataButton
                 Spacer()
                 restoreToDefaultButton
             }
@@ -80,6 +80,7 @@ extension SettingsFooterView {
             Task {
                 do {
                     try await LocalDatabaseManager(appEnvironment: .production).eraseAllData()
+                    UserDefaultsManager.clearAllUserDefaults()
                 } catch {
                     Logger.log("❌: Failed to erase all data from swift data. \(error.localizedDescription)")
                 }

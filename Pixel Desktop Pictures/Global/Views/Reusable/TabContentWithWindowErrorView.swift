@@ -14,7 +14,7 @@ struct TabContentWithWindowErrorView<T: View>: View {
     let tab: TabItem
     let content: T
     
-    let errorModel = GlobalWindowErrorModel.self
+    let errorModel = GlobalWindowError.self
     
     // MARK: - INITIALIZERS
     init(tab: TabItem, @ViewBuilder _ content: () -> T) {

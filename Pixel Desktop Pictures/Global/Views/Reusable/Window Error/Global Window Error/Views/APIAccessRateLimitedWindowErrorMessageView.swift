@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct APIAccessRateLimitedWindowErrorMessageView: View {
-    // MARK: - PROPERTIES
+    // MARK: - INJECTED PROPERTIES
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - BODY
@@ -27,7 +27,7 @@ struct APIAccessRateLimitedWindowErrorMessageView: View {
 
 // MARK: - PREVIEWS
 #Preview("API Access Rate Limited Window Error Message View") {
-    WindowErrorView(model: GlobalWindowErrorModel.apiAccessRateLimited)
+    WindowErrorView(model: GlobalWindowError.apiAccessRateLimited)
         .padding()
         .previewModifier
 }

@@ -10,21 +10,30 @@ import SwiftUI
 struct RecentsTabView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(RecentsTabViewModel.self) private var recentsTabVM
+    @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
-    let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues: VGridValues.Type = VGridValues.self
+    private var condition1: Bool { mainTabVM.currentImage != nil && recentsTabVM.recentsArray.isEmpty }
+    private var condition2: Bool { mainTabVM.currentImage == nil && recentsTabVM.recentsArray.isEmpty }
+    private var condition3: Bool { recentsTabVM.recentsArray.count <= 12 }
+    private var recentItemsCount: Int { recentsTabVM.recentsArray.count }
     
     // MARK: - BODY
     var body: some View {
         TabContentWithWindowErrorView(tab: .recents) {
+            
             Group {
-                if recentsTabVM.recentsArray.isEmpty {
+                if condition1 {
                     WindowErrorView(model: RecentsTabWindowError.recentsTabViewModelInitializationFailed)
+                } else if condition2 {
+                    WindowErrorView(model: RecentsTabWindowError.firstTimeEmptyRecents)
                 } else {
                     RecentsVGridScrollView()
+                        .scrollDisabled(condition3)
                 }
             }
-            .frame(height: recentsTabVM.recentsArray.isEmpty ? .nan : TabItem.recents.contentHeight)
+            .frame(height: getHeight())
         }
         .environment(recentsTabVM)
     }
@@ -42,4 +51,14 @@ struct RecentsTabView: View {
         .onFirstTaskViewModifier {
             await apiAccessKeyManager.apiAccessKeyCheckup()
         }
+}
+
+// MARK: - EXTENSIONS
+extension RecentsTabView {
+    // MARK: - FUNCTIONS
+    private func getHeight() -> CGFloat {
+        return (condition1 || condition2)
+        ? .nan
+        : condition3 ? TabItem.recents.getRecentsDynamicContentHeight(itemsCount: recentItemsCount) : TabItem.recents.contentHeight
+    }
 }

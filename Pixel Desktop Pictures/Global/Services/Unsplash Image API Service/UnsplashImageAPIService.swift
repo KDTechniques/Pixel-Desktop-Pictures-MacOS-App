@@ -160,24 +160,24 @@ struct UnsplashImageAPIService {
     private func parseHTTPResponseStatusCode(_ response: HTTPURLResponse) throws {
         switch response.statusCode {
         case 200:
-            Logger.log("Everything worked as expected. Status code: 200 - OK")
+            Logger.log("✅: Everything worked as expected. Status code: 200 - OK")
         case 400:
-            Logger.log("The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
+            Logger.log("❌: The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
             throw URLError(.badURL)
         case 401:
-            Logger.log("Invalid Access Token. Status code: 401 - Unauthorized") // This occurs when the API Access Key is invalid
+            Logger.log("❌: Invalid Access Token. Status code: 401 - Unauthorized") // This occurs when the API Access Key is invalid
             throw URLError(.userAuthenticationRequired)
         case 403:
-            Logger.log("Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
+            Logger.log("❌: Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
             throw URLError(.clientCertificateRejected)
         case 404:
-            Logger.log("Resource not found. Status code: 404")
+            Logger.log("❌: Resource not found. Status code: 404")
             throw URLError(.fileDoesNotExist)
         case 500, 503:
-            Logger.log("Something went wrong on Unsplash server side. Status code: 500, 503")
+            Logger.log("❌: Something went wrong on Unsplash server side. Status code: 500, 503")
             throw URLError(.badServerResponse)
         default:
-            Logger.log("Request failed with status code: \(response.statusCode)")
+            Logger.log("❌: Request failed with status code: \(response.statusCode)")
             throw URLError(.badServerResponse)
         }
     }

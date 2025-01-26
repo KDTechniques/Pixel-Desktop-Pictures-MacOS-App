@@ -59,6 +59,15 @@ enum TabItem: String, CaseIterable {
         }
     }
     
+    func getRecentsDynamicContentHeight(itemsCount: Int) -> CGFloat {
+        let rowsCount: CGFloat = CGFloat(itemsCount / 3) + (itemsCount % 3 > 0 ? 1 : 0)
+        let totalFramesHeight: CGFloat = VGridValues.height * rowsCount
+        let totalVerticalSpacings: CGFloat = VGridValues.spacing * rowsCount
+        let bottomExtraSpacing: CGFloat = VGridValues.spacing
+        
+        return totalFramesHeight + totalVerticalSpacings + bottomExtraSpacing
+    }
+    
     static let bottomPopupAnimationDuration: TimeInterval = 0.4
     static let bottomPopupAnimation: Animation = .smooth(duration: bottomPopupAnimationDuration)
 }

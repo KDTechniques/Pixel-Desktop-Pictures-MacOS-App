@@ -44,16 +44,16 @@ final class MainTabViewModel {
         setCenterItem(.progressView)
         
         do {
-            guard let randomQueryImageItem: QueryImage = collectionsTabVM.queryImagesArray.randomElement() else {
-                // Random element must not fail, but if it does, fallback to next image conforming to `UnsplashRandomImage`.
-                Logger.log("❌: Query images array is empty for some unknown reason.")
+            // Handle when query images array is empty due to `RANDOM` collection selection.
+            guard !collectionsTabVM.queryImagesArray.isEmpty else {
                 try await setNextRandomImage()
                 Logger.log("✅: Next random image has been generated.")
                 return
             }
             
-            // Handle case when the random element is the `RANDOM` query.
-            guard randomQueryImageItem.query != Collection.randomKeywordString else {
+            guard let randomQueryImageItem: QueryImage = collectionsTabVM.queryImagesArray.randomElement() else {
+                // Random element must not fail, but if it does, fallback to next image conforming to `UnsplashRandomImage`.
+                Logger.log("❌: Query images array is empty for some unknown reason.")
                 try await setNextRandomImage()
                 Logger.log("✅: Next random image has been generated.")
                 return

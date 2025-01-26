@@ -1,5 +1,5 @@
 //
-//  GlobalWindowErrorModel.swift
+//  GlobalWindowError.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-11.
@@ -12,7 +12,7 @@ import SwiftUI
  
  This model defines global error types that are not specific to any individual tabs in the application. These error states, such as API access issues or network connectivity problems, are used to present error messages at a global level  throughout the app.
  */
-enum GlobalWindowErrorModel: CaseIterable, WindowErrorProtocol {
+enum GlobalWindowError: CaseIterable, WindowErrorProtocol {
     case apiAccessKeyNotFound
     case apiAccessKeyInvalid
     case apiAccessRateLimited
