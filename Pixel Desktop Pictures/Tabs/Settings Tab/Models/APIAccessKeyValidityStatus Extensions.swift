@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyValidityStatusValues.swift
+//  APIAccessKeyValidityStatus Extensions.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2024-12-27.
