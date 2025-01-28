@@ -25,7 +25,7 @@
 > First, try using the public API key. Create your API access key if you encounter an error on the app interface.
 
 ## 👨🏻‍🏫 Introduction
-Pixel Desktop Pictures is a macOS-exclusive Menu Bar app designed to enhance your desktop experience with stunning wallpapers from Unsplash. The app is structured around four main tabs: Preview, Recents, Collections, and Settings, each serving a specific purpose with a clear separation of concerns.
+Pixel Desktop Pictures is a macOS-exclusive Menu Bar app designed to enhance your desktop experience with stunning wallpapers from Unsplash. The app is structured around four main tabs: Main, Recents, Collections, and Settings, each serving a specific purpose with a clear separation of concerns.
 
 **Terminologies:** The following terminologies are used to match the design requirements of the Mac operating system. We don't say wallpaper in the context of Macs. The same applies to spaces, and We don't call them desktops like on operating systems like MS Windows.
 - Show on all spaces = Show wallpaper on all desktops
@@ -35,7 +35,7 @@ I know you’d prefer seeing the app in action over reading a wall of text—so 
 
 |Dark Mode|Light Mode|
 |-|-|
-|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Dark%20Mode.jpg'>|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Light%20Mode.jpg'>|
+|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Dark%20Mode.jpg?raw=true'>|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Light%20Mode.jpg?raw=true'>|
 
 
 ## 📹 Previews 
@@ -47,7 +47,7 @@ The Main tab lets you explore and set beautiful desktop wallpapers tailored to y
 
 **The Basic Functionalities of the App:**
 
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/The%20Basics%20-%20Video%20Preview.gif'>
+<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/The%20Basics%20-%20Video%20Preview.gif?raw=true'>
 
 ### Technical Details:
 <details>
