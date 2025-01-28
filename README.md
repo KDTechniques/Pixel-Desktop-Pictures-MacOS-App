@@ -73,7 +73,7 @@ This endpoint fetches a single random image, ideal for variety and surprise.
 - **Image Location:** Displays the location where the photo was taken (if provided).
 - **Download Link:** Ensures accurate download counts on Unsplash, supporting the image author.
 
-> [!Note]
+> **Note:**
 > The app uses Unsplash's dedicated download URL instead of the `full` resolution URL for downloading. This contributes to the photographer's download count on Unsplash, which supports their work.
 
 **2. Query Image Endpoint:**
@@ -206,3 +206,5 @@ The app employs two distinct models for data storage and logic:
 - For a completely context-free experience, users can select the **"RANDOM"** collection. This triggers a call to the Unsplash **Random Image API endpoint**, providing a truly random wallpaper.
 
 </details>
+
+
