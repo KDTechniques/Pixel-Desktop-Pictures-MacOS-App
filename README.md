@@ -33,6 +33,11 @@ Pixel Desktop Pictures is a macOS-exclusive Menu Bar app designed to enhance you
 
 I know you’d prefer seeing the app in action over reading a wall of text—so I’ve included GIF previews for your convenience. 😉
 
+|Dark Mode|Light Mode|
+|-|-|
+|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Dark%20Mode.jpg'>|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Light%20Mode.jpg'>|
+
+
 ## 📹 Previews 
 
 # `MAIN` Tab 🖼️
@@ -40,8 +45,15 @@ I know you’d prefer seeing the app in action over reading a wall of text—so 
 
 The Main tab lets you explore and set beautiful desktop wallpapers tailored to your preferences. You can refresh images based on your selected collections, set a new image as your desktop wallpaper, or download it in the highest available quality directly to your Mac.
 
-### Technical Details:
+**The Basic Functionalities of the App:**
 
+<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/The%20Basics%20-%20Video%20Preview.gif'>
+
+### Technical Details:
+<details>
+  <summary>Click here to read more</summary>
+  <br>  
+  
 The Main tab leverages Unsplash’s API to fetch and display high-quality images. Depending on your configuration, it retrieves images via two API endpoints:
 
 **1. Random Image Endpoint:**
@@ -94,6 +106,13 @@ Instead of pre-downloading thumbnail images for placeholders, the app displays a
 - Refreshing the image triggers a smooth fade animation for a seamless transition.
 - Users can click the author’s name in the bottom-left corner to view the original image on the Unsplash website.
 - Images can be downloaded directly to the Mac’s **Downloads** folder in the highest available resolution, contributing to the author’s download count on Unsplash.
+
+</details>
+
+
+
+
+
 
 
 
