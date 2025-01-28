@@ -189,6 +189,7 @@ This tab puts control firmly in your hands, letting you curate and refine your w
   3. Saves the new data without updating the underlying **QueryImage** model.
 
 **3. Data Storage and Models:**
+
 The app employs two distinct models for data storage and logic:
   - **Collection Model:** Handles presentation logic for displaying collections.
   - **QueryImage Model:** Manages business logic, including the collection name, fetched image data, and pagination.
