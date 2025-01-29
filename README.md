@@ -22,12 +22,12 @@
 > The above public API access key may be rate-limited(reached maximum requests per hour), allowing only 50 requests per hour.
 > Therefore, it’s always recommended to create your API access key.
 >
-> First, try using the public API key. Create your API access key if you encounter an error on the app interface.
+> First, try using the public API key. Create your API access key if you encounter a warning on the app interface.
 
 ## 👨🏻‍🏫 Introduction
 **Pixel Desktop Pictures** is a macOS-exclusive Menu Bar app designed to enhance your desktop experience with stunning wallpapers from Unsplash. The app is structured around four main tabs: **Main, Recents, Collections, and Settings**, each serving a specific purpose with a clear separation of concerns.
 
-**Terminologies:** The following terminologies are used to match the design requirements of the Mac operating system. We don't say wallpaper in the context of Macs. The same applies to spaces, and We don't call them desktops like on operating systems like MS Windows.
+**Terminologies:** The following terminologies are used to match the design requirements of the Mac operating system. We don't say wallpaper in the context of Macs. The same applies to spaces, and We don't call them desktops as we do on operating systems like MS Windows.
 - Show on all spaces = Show wallpaper on all desktops
 - Desktop Picture = Desktop Wallpaper
 
@@ -38,9 +38,9 @@ I know you’d prefer seeing the app in action over reading a wall of text—so 
 |<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Dark%20Mode.jpg?raw=true'>|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Light%20Mode.jpg?raw=true'>|
 
 
-## 📹 Previews 
+## Sections 
 
-# `MAIN` Tab 🖼️
+# `MAIN` 🖼️ Tab
 ### General Description:
 
 The **Main** tab lets you explore and set beautiful desktop wallpapers tailored to your preferences. You can refresh images based on your selected collections, set a new image as your desktop wallpaper, or download it in the highest available quality directly to your Mac.
@@ -107,7 +107,7 @@ Instead of pre-downloading thumbnail images for placeholders, the app displays a
 </details>
 
 
-# `RECENTS` Tab ⏱️
+# `RECENTS` ⏱️ Tab
 ### General Description:
 
 The **Recents** tab organizes previously refreshed images in reverse chronological order, making it easy for you to revisit them. You can click on an image in this tab to:
@@ -147,7 +147,7 @@ To avoid excessive storage, the app maintains a maximum of **102 images**, organ
 </details>
 
 
-# `COLLECTIONS` Tab 🌄🏞️🌁
+# `COLLECTIONS` 🌄🏞️🌁 Tab
 ### General Description:
 
 The **Collections** tab is the heart🫀 of this app, offering a level of customization and functionality that sets it apart from the **Unsplash Wallpapers** macOS app. This tab allows you to explore your favorite themes by creating and managing custom collections tailored to your interests.
@@ -208,3 +208,59 @@ The app employs two distinct models for data storage and logic:
 </details>
 
 
+# `SETTINGS` ⚙️ Tab
+### General Description:
+
+The **Settings** tab is responsible for managing essential configurations of the app, including:
+
+- **API Access Key Management:** Users can inject their own Unsplash API key to fetch images.
+- **Launch at Login:** Enables the app to start automatically upon login, ensuring a seamless experience.
+- **Update Interval:** Allows users to set how frequently the app refreshes and updates the desktop wallpaper automatically.
+- **Show on All Spaces:** Ensures the wallpaper is applied across all virtual desktops (Spaces) rather than just one. This option is recommended for a better user experience.
+
+##### 1) Basic settings:
+<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Basic%20Settings%20-%20Video%20Preview.gif?raw=true'>
+
+##### 2) API access key injection:
+<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/API%20Access%20Key%20Injection%20-%20Video%20Preview.gif?raw=true'>
+
+### Technical Details:
+<details>
+<summary>Click here to read more</summary>
+<br>  
+  
+**1. UserDefaults for Settings Storage:**
+- The following settings are persistently stored using **UserDefaults:**
+  - **Launch at Login**
+  - **Show on All Spaces**
+  - **Update Interval**
+  - **API Access Key**
+
+- Once an API key is injected, it is **no longer visible** in the UI due to privacy and security concerns.
+
+**2. Launch at Login Implementation:**
+- Enabling/disabling **Launch at Login** requires complex setup, including creating a separate helper target.
+- To simplify this, the app utilizes the `LaunchAtLogin` third-party Swift package, making the process seamless.
+
+**3. Show on All Spaces Mechanism:**
+- Unlike macOS’s built-in **"Show on All Spaces"** option, which instantly applies the wallpaper to all desktops, the app does not have direct API access to achieve this instantly.
+- To work around this limitation, the app observes **space changes using** `NSNotification`.
+  - When the user switches to a different space for the first time after setting a wallpaper, the app applies the current wallpaper to that space dynamically.
+
+**4. API Access Key Management:**
+- Users can either:
+  - Use the **public API access key** provided in the app’s documentation.
+  - Generate their **own API key** for privacy and higher rate limits.
+- Rate Limiting:
+  - The Unsplash API enforces a **50 requests per hour** limit for free-tier API keys.
+  - The author believes that 50 image refreshes per hour are more than sufficient for personal use.
+ 
+**5. Why This App Won't Be on the Mac App Store:**
+- **Pixel Desktop Pictures** replicates many functionalities of the **Unsplash Wallpapers** macOS app.
+- However, it **violates Unsplash API guidelines** in multiple ways, making it **ineligible for the App Store**.
+- To comply with licensing restrictions, users must manually inject an API key before using the app.
+
+**5. Resetting Settings:**
+- Users can reset all settings to their **default values**, except for the API access key.
+
+</details>
