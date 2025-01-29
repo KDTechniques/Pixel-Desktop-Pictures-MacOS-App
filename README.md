@@ -31,6 +31,42 @@
 - Show on all spaces = Show wallpaper on all desktops
 - Desktop Picture = Desktop Wallpaper
 
+## 🧑🏻‍💻 Requirements
+- Swift 6.0 or later
+- macOS 15 or later
+
+## 🫛 External Code and Dependencies
+This project uses the following frameworks and dependencies:
+- **SwiftUI:** To build the user interface, provide declarative syntax for UI development.
+- **SDWebImageSwiftUI:** For efficient image loading and caching, ensuring smooth performance when displaying recipe images.
+- **LaunchAtLogin:** To easily enable and manage to launch the app at system startup.
+
+## 👨🏻‍💻 Steps to Run the App
+
+To run the **Pixel Desktop Pictures** app locally, follow these steps:
+
+1. **Clone the Repository** 💽
+   ```bash
+   git clone https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App.git
+   ```
+   
+2. **Open the Project** 💻
+- Navigate to the project directory:
+```bash
+cd Pixel-Desktop-Pictures-MacOS-App
+```
+- Open the project in Xcode by double-clicking the `.xcodeproj` file.
+  
+3. **Install Dependencies** 🫛
+- If you are using Swift Package Manager, ensure all dependencies are resolved. This usually happens automatically when you open the project in Xcode.
+
+4. **Run the App** 💻 🖥️
+- Click the Run button (or press `Cmd + R`) in Xcode to build and run the app.
+
+5. **Explore the Features** 🤩
+- Once the app is running, you can create new collections, and set your Mac's desktop wallpaper.
+- Most importantly, you no longer need to run the app after launching it for the first time because it will start automatically at your next login.
+
 I know you’d prefer seeing the app in action over reading a wall of text—so I’ve included GIF previews for your convenience. 😉
 
 |Dark Mode|Light Mode|
@@ -264,3 +300,11 @@ The **Settings** tab is responsible for managing essential configurations of the
 - Users can reset all settings to their **default values**, except for the API access key.
 
 </details>
+
+
+## 🤝 Contribution
+Contributions are welcome! If you have suggestions or improvements, please submit a pull request or open an issue on GitHub.
+
+
+## 📜 License
+`Pixel Desktop Pictures` is released under the **Creative Commons Zero v1.0 Universal** License. See the [LICENSE](https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App/blob/main/LICENSE) file for details.
