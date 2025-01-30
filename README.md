@@ -71,7 +71,7 @@ I know you’d prefer seeing the app in action over reading a wall of text—so 
 
 |Dark Mode|Light Mode|
 |-|-|
-|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Dark%20Mode.jpg?raw=true'>|<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Preview%20-%20Light%20Mode.jpg?raw=true'>|
+|<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Preview%20-%20Dark%20Mode.jpg?raw=true'>|<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Preview%20-%20Light%20Mode.jpg?raw=true'>|
 
 
 ## Sections 
@@ -81,7 +81,7 @@ I know you’d prefer seeing the app in action over reading a wall of text—so 
 
 The **Main** tab lets you explore and set beautiful desktop wallpapers tailored to your preferences. You can refresh images based on your selected collections, set a new image as your desktop wallpaper, or download it in the highest available quality directly to your Mac.
 
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/The%20Basics%20-%20Video%20Preview.gif?raw=true'>
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/The%20Basics%20-%20Video%20Preview.gif?raw=true'>
 
 ### Technical Details:
 <details>
@@ -153,7 +153,7 @@ The **Recents** tab organizes previously refreshed images in reverse chronologic
 
 This feature provides you with another opportunity to reuse a previously loaded image, ensuring you don't lose access to an image you liked while refreshing rapidly.
 
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Recents%20-%20Video%20Preview.gif?raw=true'>
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Recents%20-%20Video%20Preview.gif?raw=true'>
 
 ### Technical Details:
 <details>
@@ -197,13 +197,13 @@ You can further organize your collections by:
 This tab puts control firmly in your hands, letting you curate and refine your wallpaper experience effortlessly.
 
 ##### 1) Creation of collections:
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Creation%20of%20Collections%20-%20Video%20Preview.gif?raw=true'>
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Creation%20of%20Collections%20-%20Video%20Preview.gif?raw=true'>
 
 ##### 2) Selection of collections:
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Selection%20of%20Collections%20-%20Video%20Preview.gif?raw=true'>
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Selection%20of%20Collections%20-%20Video%20Preview.gif?raw=true'>
 
 ##### 3) Update of collections:
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Update%20of%20Collections%20-%20Video%20Preview.gif?raw=true'>
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Update%20of%20Collections%20-%20Video%20Preview.gif?raw=true'>
 
 ### Technical Details:
 <details>
@@ -255,10 +255,10 @@ The **Settings** tab is responsible for managing essential configurations of the
 - **Show on All Spaces:** Ensures the wallpaper is applied across all virtual desktops (Spaces) rather than just one. This option is recommended for a better user experience.
 
 ##### 1) Basic settings:
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/Basic%20Settings%20-%20Video%20Preview.gif?raw=true'>
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Basic%20Settings%20-%20Video%20Preview.gif?raw=true'>
 
 ##### 2) API access key injection:
-<img src='https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App-ReadMe-Media-Files/blob/main/API%20Access%20Key%20Injection%20-%20Video%20Preview.gif?raw=true'>
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/API%20Access%20Key%20Injection%20-%20Video%20Preview.gif?raw=true'>
 
 ### Technical Details:
 <details>
