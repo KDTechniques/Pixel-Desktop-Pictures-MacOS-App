@@ -41,6 +41,9 @@ This project uses the following frameworks and dependencies:
 - **SDWebImageSwiftUI:** For efficient image loading and caching, ensuring smooth performance when displaying recipe images.
 - **LaunchAtLogin:** To easily enable and manage to launch the app at system startup.
 
+## ⤵️ Dependency Injection Flow Graph
+<img src='https://github.com/KDTechniques/ReadMe_Media_Files/blob/main/Pixel-Desktop-Pictures-MacOS-App/Dependency%20Injection%20Flow%20Graph.jpg?raw=true'>
+
 ## 👨🏻‍💻 Steps to Run the App
 
 To run the **Pixel Desktop Pictures** app locally, follow these steps:
