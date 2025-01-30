@@ -7,7 +7,7 @@
 > While the **Unsplash Wallpapers** app doesn’t allow you to create custom collections tailored to your preferences, this app does.
 > If you’ve ever used the **Unsplash Wallpapers** app on your Mac, you’ll notice significant differences in the **Collections** tab.
 >
-> This app is primarily built to meet the owner's specific requirements.
+> This app is primarily built to meet the author's specific requirements.
 >
 > *[Compare with Unsplash Wallpapers macOS app here](https://apps.apple.com/us/app/unsplash-wallpapers/id1284863847?mt=12)*
 
