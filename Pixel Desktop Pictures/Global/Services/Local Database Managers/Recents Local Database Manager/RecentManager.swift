@@ -118,4 +118,18 @@ actor RecentManager {
             throw error
         }
     }
+    
+#if DEBUG
+    /// Deletes all `Recent` items from the local database.
+    /// First, fetches all available `Recent` items, then deletes them.
+    /// This function is only available in debug builds for testing purposes.
+    func deleteAllRecents() async {
+        do {
+            let recentItems: [Recent] = try await localDatabaseManager.fetchRecents()
+            try await localDatabaseManager.deleteRecents(at: recentItems)
+        } catch {
+            Logger.log(RecentLocalDatabaseManagerError.failedToDeleteRecent(error).localizedDescription)
+        }
+    }
+#endif
 }

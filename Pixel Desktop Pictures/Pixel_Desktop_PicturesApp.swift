@@ -31,7 +31,7 @@ struct Pixel_Desktop_PicturesApp: App {
         do {
             let localDatabaseManagerInstance: LocalDatabaseManager = try .init(appEnvironment: appEnvironment)
             
-            // Collections Related
+            // COLLECTIONS Related
             let collectionLocalDatabaseManagerInstance: CollectionLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let collectionManagerInstance: CollectionManager = .shared(localDatabaseManager: collectionLocalDatabaseManagerInstance)
             let queryImageLocalDatabaseManagerInstance: QueryImageLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
@@ -43,17 +43,17 @@ struct Pixel_Desktop_PicturesApp: App {
             )
             collectionsTabVM = collectionsTabVMInstance
             
-            // Recents Related
+            // RECENTS Related
             let recentLocalDatabaseManagerInstance: RecentLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
             let recentManagerInstance: RecentManager = .shared(localDatabaseManager: recentLocalDatabaseManagerInstance)
             let recentsTabVMInstance: RecentsTabViewModel = .init(recentManager: recentManagerInstance)
             recentsTabVM = recentsTabVMInstance
             
-            // Main tab Related
+            // MAIN Tab Related
             let mainTabVMInstance: MainTabViewModel = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
             mainTabVM = mainTabVMInstance
             
-            // Settings Tab Related
+            // SETTINGS Tab Related
             settingsTabVM = .init(appEnvironment: appEnvironment, mainTabVM: mainTabVMInstance)
         } catch {
             Logger.log("❌: Unable to initialize the app properly. Due to local database initialization. \(error.localizedDescription)")
