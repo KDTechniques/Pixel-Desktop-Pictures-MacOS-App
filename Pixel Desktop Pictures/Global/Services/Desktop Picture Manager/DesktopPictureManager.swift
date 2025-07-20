@@ -63,12 +63,7 @@ actor DesktopPictureManager {
     /// - Note:
     ///   - If the current desktop picture is the same as the provided image, no changes are made.
     ///   - The function ensures each screen's desktop picture is updated independently and Logger.logs success or failure for each screen.
-    func setDesktopPicture(from imageFileURLString: String) async throws {
-        // Safely Unwrap URL String to URL
-        guard let imageFileURL: URL = .init(string: imageFileURLString) else {
-            throw URLError(.badURL)
-        }
-        
+    func setDesktopPicture(from imageFileURL: URL) async throws {
         let screens: [NSScreen] = NSScreen.screens
         
         // Iterate through screens(monitors) not desktops/spaces
@@ -87,7 +82,7 @@ actor DesktopPictureManager {
                 try workspace.setDesktopImageURL(imageFileURL, for: screen, options: [:])
                 
                 // Set & Save Current Desktop Picture File URL to User Defaults
-                await setNSaveCurrentDesktopPictureFileURLStringToUserDefaults(from: imageFileURLString)
+                await setNSaveCurrentDesktopPictureFileURLStringToUserDefaults(from: imageFileURL.path(percentEncoded: false))
                 Logger.log("✅: Wallpaper has been changed & saved for screen: \(screen.localizedName).")
             } catch {
                 Logger.log(managerError.failedToSetDesktopPictureForScreens(screen: screen.localizedName, error).localizedDescription)
@@ -118,12 +113,12 @@ actor DesktopPictureManager {
     /// - Purpose: This function fetches the stored desktop picture URL from User Defaults and attempts to set the desktop picture
     /// accordingly. If an error occurs while setting the image, it Logger.logs an error message to the console.
     private func initializeDesktopPicture() async {
-        guard let imageFileURL: String = await getNSetCurrentDesktopPictureFileURLStringFromUserDefaults() else {
+        guard let imageFileURLString: String = await getNSetCurrentDesktopPictureFileURLStringFromUserDefaults() else {
             return
         }
         
         do {
-            try await setDesktopPicture(from: imageFileURL)
+            try await setDesktopPicture(from: URL(fileURLWithPath: imageFileURLString, isDirectory: false))
             Logger.log("✅: Current desktop picture url has been retrieved.")
         } catch {
             Logger.log(managerError.failedToPrepareAndSetDesktopPicture(error).localizedDescription)
@@ -141,7 +136,7 @@ actor DesktopPictureManager {
         }
         
         do {
-            try await setDesktopPicture(from: currentDesktopPictureFileURLString)
+            try await setDesktopPicture(from: URL(fileURLWithPath: currentDesktopPictureFileURLString, isDirectory: false))
             Logger.log("✅: Desktop picture has been updated.")
         } catch {
             Logger.log(managerError.failedToUpdateDesktopPicture(error).localizedDescription)

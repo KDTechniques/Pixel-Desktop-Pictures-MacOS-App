@@ -8,9 +8,33 @@
 import SwiftUI
 
 struct FirstTimeEmptyRecentsWindowErrorMessageView: View {
+    // MARK: - INJECTED PROPERTIES
+    @Environment(TabsViewModel.self) private var tabsVM
+    
     // MARK: - BODY
     var body: some View {
-        Text("Refresh to load the next images, and they will appear here.")
+        VStack {
+            HStack(alignment: .top, spacing: 4) {
+                Text("Refresh on")
+                
+                Button {
+                    tabsVM.setTabSelection(.main)
+                } label: {
+                    HStack(spacing: 2) {
+                        Image(systemName: "photo.fill")
+                        Text("Preview")
+                    }
+                    .foregroundStyle(Color.accentColor)
+                    .underline()
+                }
+                .buttonStyle(.plain)
+                
+                Text("tab to load the next images,")
+            }
+            
+            Text("and they will appear here.")
+        }
+        
     }
 }
 

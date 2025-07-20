@@ -17,7 +17,7 @@ struct AddNewCollectionTextfieldView: View {
         TextfieldView(
             textfieldText: Binding(get: { collectionsTabVM.nameTextfieldText }, set: { collectionsTabVM.setNameTextfieldText($0) }),
             localizedKey: "Add New Collection Textfield",
-            prompt: "Ex: Super Car") { await collectionsTabVM.createCollection() }
+            prompt: "Ex: Cat") { await collectionsTabVM.createCollection() }
             .focused($isFocused)
             .onAppear { handleOnAppear() }
     }

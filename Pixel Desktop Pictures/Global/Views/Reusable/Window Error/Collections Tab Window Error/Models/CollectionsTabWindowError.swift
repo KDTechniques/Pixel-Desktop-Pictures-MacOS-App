@@ -16,7 +16,7 @@ enum CollectionsTabWindowError: CaseIterable, WindowErrorProtocol {
         case .collectionsTabViewModelInitializationFailed:
             return "Failed to Fetch Content"
         case .updatingCollectionNotFound:
-            return "You May Be Unable to Edit the Collection"
+            return "You May Unable to Edit the Collection"
         }
     }
     
