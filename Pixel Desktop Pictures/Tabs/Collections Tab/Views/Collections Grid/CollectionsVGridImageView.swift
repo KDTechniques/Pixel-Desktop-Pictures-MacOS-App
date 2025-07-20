@@ -38,8 +38,9 @@ struct CollectionsVGridImageView: View {
         .overlay { overlay }
         .onHover { handleHover($0) }
         .onTapGesture { handleTap() }
-        .onLongPressGesture { handleLongTap() }
-        .onChange(of: item.imageQualityURLStringsEncoded) { _, _ in handleImageURLsDataChange() }
+        .onLongPressGesture(minimumDuration: 0.3) { handleLongTap() }
+        .onChange(of: item.imageQualityURLStringsEncoded) { _, _ in handleImageURLsDataChange()
+        }
         .task { await handleTask() }
     }
 }

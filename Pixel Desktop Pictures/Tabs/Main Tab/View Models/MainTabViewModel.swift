@@ -89,10 +89,10 @@ final class MainTabViewModel {
             }
             
             // Download the image to documents directory
-            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: documentsDirectory)
+            let savedPathURL: URL = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: documentsDirectory)
             
             // Then set the desktop picture.
-            try await desktopPictureManager.setDesktopPicture(from: savedPath)
+            try await desktopPictureManager.setDesktopPicture(from: savedPathURL)
             Logger.log("✅: Current image has been set as desktop picture")
         } catch {
             Logger.log(vmError.failedToSetDesktopPicture(error).localizedDescription)
@@ -101,7 +101,7 @@ final class MainTabViewModel {
         }
     }
     
-    /// Downloads the current image to the device's downloads directory.
+    /// Downloads the current image to the device's downloads directory, and opens both  folder and the file at the same time.
     ///
     /// - Throws: An error if the download operation fails.
     func downloadImageToDevice(environment: AppEnvironment) async throws {
@@ -120,8 +120,19 @@ final class MainTabViewModel {
         
         do {
             // Download the image to downloads directory
-            let savedPath: String = try await ImageDownloadManager.shared.downloadImage(url: currentImage.links.downloadURL, to: downloadsDirectory)
-            Logger.log("✅: Current image has been downloaded to `Downloads` folder path: `\(savedPath)`")
+            let savedPathFileURL: URL = try await ImageDownloadManager.shared.downloadImage(url: currentImage.links.downloadURL, to: downloadsDirectory)
+            
+            // Extract folder and file URL String omitting percent encoding
+            let savedPathFileURLString: String = savedPathFileURL.path(percentEncoded: false)
+            let savedPathFolderURLString: String = savedPathFileURL.deletingLastPathComponent().path(percentEncoded: false)
+            
+            // Open both folder and file after a successful image download
+            let process = Process()
+            process.launchPath = "/usr/bin/open"
+            process.arguments = [savedPathFolderURLString, savedPathFileURLString]
+            process.launch()
+            
+            Logger.log("✅: Current image has been downloaded to `Downloads` folder path: `\(savedPathFileURL.absoluteString)`")
         } catch {
             Logger.log(vmError.failedToDownloadImageToDevice(error).localizedDescription)
             await errorPopupVM.addError(errorPopup.failedToDownloadImageToDevice)
