@@ -5,7 +5,7 @@
 //  Created by Kavinda Dilshan on 2025-01-17.
 //
 
-import SwiftUICore
+import SwiftUI
 
 extension CollectionsTabViewModel {
     /// Deletes a collection and updates associated states.

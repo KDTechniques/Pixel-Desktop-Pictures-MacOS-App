@@ -5,7 +5,7 @@
 //  Created by Kavinda Dilshan on 2024-12-23.
 //
 
-import SwiftUICore
+import SwiftUI
 
 extension Observable {
     /// Creates a two-way Binding for a given KeyPath of the current type.
