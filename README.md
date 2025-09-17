@@ -24,6 +24,9 @@
 >
 > First, try using the public API key. Create your API access key if you encounter a warning on the app interface.
 
+[![Download](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge&logo=apple)](https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App/raw/main/Pixel%20Desktop%20Pictures.dmg)
+
+
 ## 👨🏻‍🏫 Introduction
 **Pixel Desktop Pictures** is a macOS-exclusive Menu Bar app designed to enhance your desktop experience with stunning wallpapers from Unsplash. The app is structured around four main tabs: **Main, Recents, Collections, and Settings**, each serving a specific purpose with a clear separation of concerns.
 
