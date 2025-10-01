@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import SDWebImageSwiftUI
+import Sparkle
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
@@ -58,6 +59,15 @@ struct Pixel_Desktop_PicturesApp: App {
         } catch {
             Logger.log("❌: Unable to initialize the app properly. Due to local database initialization. \(error.localizedDescription)")
             fatalError()
+        }
+    }
+    
+    class AppDelegate: NSObject, NSApplicationDelegate {
+        private let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+        
+        func applicationDidFinishLaunching(_ notification: Notification) {
+            // Automatically check for updates when app launches
+            updaterController.updater.checkForUpdatesInBackground()
         }
     }
     
