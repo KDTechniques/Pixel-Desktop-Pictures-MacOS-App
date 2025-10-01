@@ -28,7 +28,7 @@ enum UnsplashImageDirectory: UnsplashImageDirectoryProtocol {
         case .downloadsDirectory:
             return "Pixel Desktop Picture Downloads"
         case .documentsDirectory:
-            return "Pixel Desktop Picture"
+            return "Current Pixel Desktop Picture"
         }
     }
     

@@ -5,7 +5,7 @@
 //  Created by Kavinda Dilshan on 2024-12-24.
 //
 
-import SwiftUICore
+import SwiftUI
 
 extension Color {
     static var debug: Self {

@@ -65,23 +65,30 @@ struct Pixel_Desktop_PicturesApp: App {
     var body: some Scene {
         MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .logo) {
             TabsView()
+            
             // Service Environment Values
                 .environment(\.appEnvironment, appEnvironment)
                 .environment(networkManager)
                 .environment(apiAccessKeyManager)
+            
             // Tabs Environment Values
                 .environment(tabsVM)
                 .environment(settingsTabVM)
                 .environment(mainTabVM)
                 .environment(recentsTabVM)
                 .environment(collectionsTabVM)
+            
                 .onFirstTaskViewModifier {
                     // MARK: - Service Initializations
                     Task { await apiAccessKeyManager.initializeAPIAccessKeyManager() }
                     
                     // MARK: - Tabs Initializations
-                    Task { await collectionsTabVM.initializeCollectionsViewModel() }
-                    Task { await mainTabVM.initializeMainTabViewModel() }
+                    // Note: Don't change the order below
+                    Task {
+                        await collectionsTabVM.initializeCollectionsViewModel()
+                        await mainTabVM.initializeMainTabViewModel()
+                    }
+                    
                     Task { await recentsTabVM.initializeRecentsTabViewModel() }
                 }
         }

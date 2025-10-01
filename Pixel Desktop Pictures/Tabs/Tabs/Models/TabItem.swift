@@ -5,7 +5,7 @@
 //  Created by Kavinda Dilshan on 2024-12-23.
 //
 
-import SwiftUICore
+import SwiftUI
 
 /**
  An enum representing the different tab items in the app.

@@ -5,7 +5,7 @@
 //  Created by Kavinda Dilshan on 2025-01-11.
 //
 
-import SwiftUICore
+import SwiftUI
 
 enum RecentsTabWindowError: CaseIterable, WindowErrorProtocol {
     case recentsTabViewModelInitializationFailed

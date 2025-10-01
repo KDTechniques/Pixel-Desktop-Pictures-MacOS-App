@@ -16,9 +16,7 @@ enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
     
     var directory: FileManager.SearchPathDirectory {
         switch self {
-        case .downloadsDirectory:
-            return .downloadsDirectory
-        case .documentsDirectory: // Note: Simulate Documents Directory in the Downloads Directory for Ease of Testing
+        case .downloadsDirectory, .documentsDirectory: // Note: Simulate Directories in the Downloads Directory for Ease of Testing
             return .downloadsDirectory
         }
     }
@@ -26,18 +24,16 @@ enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
     var folderName: String {
         switch self {
         case .downloadsDirectory:
-            return "(Mock-temp) Pixel Desktop Picture Downloads"
+            return "Mock Temp Pixel Desktop Picture Downloads"
         case .documentsDirectory:
-            return "(Mock-temp) Pixel Desktop Picture"
+            return "Current Mock Temp Pixel Desktop Picture"
         }
     }
     
     var fileName: String {
         switch self {
-        case .downloadsDirectory:
-            return "(Mock-temp)" + UUID().uuidString
-        case .documentsDirectory:
-            return "(Mock-temp) Desktop Picture"
+        case .downloadsDirectory, .documentsDirectory:
+            return "Mock Temp" + UUID().uuidString
         }
     }
     

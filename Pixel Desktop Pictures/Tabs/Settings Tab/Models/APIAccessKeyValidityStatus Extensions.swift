@@ -5,7 +5,7 @@
 //  Created by Kavinda Dilshan on 2024-12-27.
 //
 
-import SwiftUICore
+import SwiftUI
 
 /**
  An extension to `APIAccessKeyValidityStatus` that provides SwiftUI views and properties for displaying the status of an API access key.

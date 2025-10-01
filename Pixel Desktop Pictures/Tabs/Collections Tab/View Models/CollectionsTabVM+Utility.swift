@@ -5,7 +5,7 @@
 //  Created by Kavinda Dilshan on 2025-01-17.
 //
 
-import SwiftUICore
+import SwiftUI
 
 extension CollectionsTabViewModel {
     /// Initializes the Collections ViewModel by fetching collections and query images from the local database or creating default data.

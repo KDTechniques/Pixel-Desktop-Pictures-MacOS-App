@@ -16,10 +16,12 @@ enum MainTabErrorPopup: ErrorPopupProtocol {
         switch self {
         case .failedToGenerateNextImage(let error):
             return "Failed to generate the next image.\(getReason(for: error))"
+            
         case .failedToSetDesktopPicture:
             return "Failed to set the desktop picture.\nPlease check your internet connection."
+            
         case .failedToDownloadImageToDevice:
-            return "Failed to download the image to your mac.\nPlease check your internet connection."
+            return "Failed to download the image to your mac.\nPlease try again."
         }
     }
     
