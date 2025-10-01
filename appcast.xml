@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Pixel Desktop Pictures Updates</title>
+    <link>https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App/</link>
+    <description>Update feed for Pixel Desktop Pictures</description>
+    <language>en</language>
+
+    <item>
+      <title>Version 2025.10.1</title>
+      <sparkle:releaseNotesLink>
+        https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App/releases/tag/v2025.10.1
+      </sparkle:releaseNotesLink>
+      <pubDate>Wed, 01 Oct 2025 12:00:00 +0000</pubDate>
+      <enclosure
+        url="https://github.com/KDTechniques/Pixel-Desktop-Pictures-MacOS-App/raw/main/Pixel%20Desktop%20Pictures.dmg"
+        sparkle:version="4"
+        sparkle:shortVersionString="2025.10.1"
+        length="5072246"
+        type="application/octet-stream"/>
+    </item>
+  </channel>
+</rss>
