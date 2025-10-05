@@ -48,9 +48,6 @@ struct RecentsTabView: View {
         .environment(networkManager)
         .environment(apiAccessKeyManager)
         .previewModifier
-        .onFirstTaskViewModifier {
-            await apiAccessKeyManager.apiAccessKeyCheckup()
-        }
 }
 
 // MARK: - EXTENSIONS

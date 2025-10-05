@@ -18,7 +18,7 @@ struct UpdateIntervalSettingView: View {
                 Text(interval.timeIntervalName)
             }
         }
-        .frame(width: 132)
+        .frame(width: 132) 
     }
 }
 

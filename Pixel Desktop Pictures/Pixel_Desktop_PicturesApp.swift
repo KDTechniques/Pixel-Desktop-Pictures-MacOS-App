@@ -10,6 +10,20 @@ import SwiftData
 import SDWebImageSwiftUI
 import Sparkle
 
+/// one api access key grands 50 request per hour, so 50 x 10 is 500  requests per hour.
+let apiAccessKeys: [String] = [
+    "7ej27jdK3xA-t6PhPiFYfPts0jUsv-WLQxa61g0gDrI",
+//    "LI1BeRqbbuTbwNTDNAscF_CG0HDTxSclXOJrqZuBX9Q",
+//    "WNifUUadNzXFz6khL7UmV4s5rBqG7KICTVUrIWcIp8k",
+//    "ZMy5hQsko63OaazqDYweHOgzL4_-LHOE0fsTrAEiOW0",
+//    "45bPf1xzjNsvfHOngiI3ZHEHbRhOUXS3TuqRvyX_c0U",
+//    "cd8awUo1YKKAqZmSM_7h7VRJTsmOClsikdXwY67mNEY",
+//    "nVV_ujxWJ5rBPjgoxBfszkQ3bvKheTbJdKX4rLEKyb8",
+//    "ExtS6bLb-Ou4gX-hBVEh7wupzZR9tAZwONR86ZWXzBo",
+//    "tYJmkmA0ZXLhmoPDiGEvIJxAHjI2V9d_BY2b2ueumR8",
+//    "w9sxe_6HWTkUq6xZHRfZHLccukzf4_hN9iKedOA5RSE",
+]
+
 @main
 struct Pixel_Desktop_PicturesApp: App {
     // MARK: - ASSIGNED PROPERTIES

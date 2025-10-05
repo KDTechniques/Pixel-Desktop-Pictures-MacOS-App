@@ -25,7 +25,7 @@ final class NetworkManager {
         didSet { connectionStatus$ = connectionStatus }
     }
     @ObservationIgnored @Published private(set) var connectionStatus$: InternetConnectionStatus = .noConnection
-    private var cancellables: Set<AnyCancellable> = []
+    @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
     private init() {

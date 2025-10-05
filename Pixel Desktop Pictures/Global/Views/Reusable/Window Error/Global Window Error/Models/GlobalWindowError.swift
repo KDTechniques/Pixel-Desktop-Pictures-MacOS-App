@@ -13,41 +13,42 @@ import SwiftUI
  This model defines global error types that are not specific to any individual tabs in the application. These error states, such as API access issues or network connectivity problems, are used to present error messages at a global level  throughout the app.
  */
 enum GlobalWindowError: CaseIterable, WindowErrorProtocol {
-    case apiAccessKeyNotFound
-    case apiAccessKeyInvalid
     case apiAccessRateLimited
     case notConnectedToInternet
+    case apiAccessKeyFailed
     
     var title: String {
         switch self {
-        case .apiAccessKeyNotFound:
-            return "API Access Key Not Found"
-        case .apiAccessKeyInvalid, .notConnectedToInternet:
+        case .notConnectedToInternet:
             return "Failed to Fetch Content"
+            
         case .apiAccessRateLimited:
             return "Exceeded the Number of Image Changes"
+            
+        case .apiAccessKeyFailed:
+            return "Something Went Wrong"
         }
     }
     
     @ViewBuilder
     var messageView: some View {
         switch self {
-        case .apiAccessKeyNotFound:
-            APIAccessKeyNotFoundWindowErrorMessageView()
-        case .apiAccessKeyInvalid:
-            APIAccessKeyInvalidWindowErrorMessageView()
         case .apiAccessRateLimited:
             APIAccessRateLimitedWindowErrorMessageView()
+            
         case .notConnectedToInternet:
             NotConnectedToInternetWindowErrorMessageView()
+            
+        case .apiAccessKeyFailed:
+            APIAccessKeyFailedWindowErrorMessageView()
         }
     }
     
     var withBottomPadding: Bool {
         switch self {
-        case .apiAccessKeyNotFound, .notConnectedToInternet:
+        case .apiAccessKeyFailed, .notConnectedToInternet:
             return true
-        case .apiAccessKeyInvalid, .apiAccessRateLimited:
+        case .apiAccessRateLimited:
             return false
         }
     }

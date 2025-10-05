@@ -49,9 +49,6 @@ struct MainTabView: View {
             .frame(maxHeight: .infinity)
             .environment(networkManager)
             .environment(apiAccessKeyManager)
-            .onFirstTaskViewModifier {
-                apiAccessKeyManager.apiAccessKeyStatus = .connected
-            }
     }
 }
 

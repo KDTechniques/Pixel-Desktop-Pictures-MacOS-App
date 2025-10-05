@@ -51,7 +51,6 @@ extension CollectionsTabViewModel {
             setShowRenameButtonProgress(false)
             Logger.log(getVMError().failedToRenameCollection(error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionName(error))
-            getAPIAccessKeyManager().handleURLError(error)
         }
     }
     
@@ -79,7 +78,6 @@ extension CollectionsTabViewModel {
             setShowChangeThumbnailButtonProgress(false)
             Logger.log(getVMError().failedToUpdateCollectionThumbnailImage(collectionName: item.name, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToUpdateCollectionThumbnailImage)
-            getAPIAccessKeyManager().handleURLError(error)
         }
     }
     

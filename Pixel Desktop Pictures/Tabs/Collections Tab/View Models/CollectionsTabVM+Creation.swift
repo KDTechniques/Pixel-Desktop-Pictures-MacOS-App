@@ -47,11 +47,10 @@ extension CollectionsTabViewModel {
             setShowCreateButtonProgress(false)
             presentPopup(false, for: .collectionCreationPopOver)
             Logger.log("✅: `\(collectionName)` collection has been created")
-        } catch {
+        } catch let error {
             setShowCreateButtonProgress(false)
             Logger.log(getVMError().failedToCreateCollection(collectionName: collectionName, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToCreateCollection(error))
-            getAPIAccessKeyManager().handleURLError(error)
         }
     }
     

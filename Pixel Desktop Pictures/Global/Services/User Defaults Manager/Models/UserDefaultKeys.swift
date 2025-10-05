@@ -15,7 +15,6 @@ enum UserDefaultKeys: String {
     case endpointSelectionKey
     case selectedCollectionsKey
     case apiAccessKey
-    case apiAccessKeyStatusKey
     case timeIntervalDoubleKey
     case executionTimeIntervalSince1970Key
     case currentDesktopPictureFileURLStringKey

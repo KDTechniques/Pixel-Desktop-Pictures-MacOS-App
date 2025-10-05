@@ -43,7 +43,7 @@ final class DesktopPictureScheduler {
         didSet { didBackgroundTaskFailOnInternetFailure$ = didBackgroundTaskFailOnInternetFailure }
     }
     @ObservationIgnored @Published var didBackgroundTaskFailOnInternetFailure$: Bool = false
-    var cancellables: Set<AnyCancellable> = []
+    @ObservationIgnored var cancellables: Set<AnyCancellable> = []
     
     // MARK: - SETTERS
     
