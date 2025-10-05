@@ -14,25 +14,27 @@ import SwiftData
  This actor ensures that all database operations are performed in a thread-safe manner, leveraging Swift's concurrency model.
  */
 actor LocalDatabaseManager {
+    // MARK: SINGLETON
+    static let shared: LocalDatabaseManager = .init()
+    
     // MARK: - INJECTED PROPERTIES
     private(set) var container: ModelContainer
     
     // MARK: - INITIALIZER
-    
-    init(appEnvironment: AppEnvironment) throws {
+    private init() {
         do {
             container = try ModelContainer(
                 for: Collection.self, QueryImage.self, Recent.self,
                 configurations: .init(isStoredInMemoryOnly: appEnvironment == .mock)
             )
-            Logger.log("✅: `LocalDatabaseManager` has been initialized")
+            Logger.log("✅: Initialized `LocalDatabaseManager`.")
         } catch {
             Logger.log(LocalDatabaseManagerError.failedToInitializeModelContainer(error).localizedDescription)
-            throw error
+            fatalError()
         }
     }
     
-    // MARK: INTERNAL FUNCTIONS
+    // MARK: PUBLIC FUNCTIONS
     
     /// Erases all data from the local database.
     /// - Throws: An error if the operation fails, such as if the database cannot be erased.

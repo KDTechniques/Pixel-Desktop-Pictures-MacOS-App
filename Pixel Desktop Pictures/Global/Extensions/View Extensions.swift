@@ -27,29 +27,10 @@ extension View {
             .background(Color.windowBackground)
             .environment(ErrorPopupViewModel.shared)
             .environment(TabsViewModel())
-            .environment(MainTabViewModel(collectionsTabVM: .init(
-                apiAccessKeyManager: .init(),
-                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock))),
-                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))),
-                                          recentsTabVM: .init(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
-            )
-            .environment(
-                CollectionsTabViewModel(
-                    apiAccessKeyManager: .init(),
-                    collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-                    queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-                )
-            )
-            .environment(RecentsTabViewModel(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
-            .environment(SettingsTabViewModel(
-                appEnvironment: .mock,
-                mainTabVM: .init(
-                    collectionsTabVM: .init(apiAccessKeyManager: .init(),
-                                            collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock))),
-                                            queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))),
-                    recentsTabVM: .init(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
-            ))
-            .environment(APIAccessKeyManager())
+            .environment(MainTabViewModel(collectionsTabVM: .init(), recentsTabVM: .init()))
+            .environment(CollectionsTabViewModel())
+            .environment(RecentsTabViewModel())
+            .environment(SettingsTabViewModel(mainTabVM: .init(collectionsTabVM: .init(), recentsTabVM: .init())))
     }
 }
 

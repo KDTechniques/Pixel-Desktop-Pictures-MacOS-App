@@ -13,7 +13,7 @@ struct UpdateCollectionView: View {
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
     // MARK: - ASSIGNED PROPERTIES
-    private let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues = VGridValues.self
     
     // MARK: - BODY
     var body: some View {

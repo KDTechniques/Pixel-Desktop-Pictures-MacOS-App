@@ -34,11 +34,7 @@ struct CollectionsTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Collections Grid Tab View") {
-    @Previewable @State var collectionsTabVM: CollectionsTabViewModel = .init(
-        apiAccessKeyManager: .init(),
-        collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-        queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-    )
+    @Previewable @State var collectionsTabVM: CollectionsTabViewModel = .init()
     
     PreviewView {
         CollectionsVGridScrollView(scrollPosition: .constant(.init(edge: .top)))

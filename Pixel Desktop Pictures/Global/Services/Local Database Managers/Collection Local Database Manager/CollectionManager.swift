@@ -14,27 +14,17 @@ import Foundation
  */
 actor CollectionManager {
     // MARK: - SINGLETON
-    private static var singleton: CollectionManager?
-    
-    // MARK: - PROPERTIES
-    let localDatabaseManager: CollectionLocalDatabaseManager
+    static let shared: CollectionManager = .init()
     
     // MARK: - INITIALIZER
-    private init(localDatabaseManager: CollectionLocalDatabaseManager) {
-        self.localDatabaseManager = localDatabaseManager
-    }
-    
-    // MARK: - INTERNAL FUNCTIONS
-    
-    static func shared(localDatabaseManager: CollectionLocalDatabaseManager) -> CollectionManager {
-        guard singleton == nil else {
-            return singleton!
-        }
+    private init() {
         
-        let newInstance: Self = .init(localDatabaseManager: localDatabaseManager)
-        singleton = newInstance
-        return newInstance
     }
+    
+    // MARK: - ASSIGNED PROPERTIES
+    let collectionDatabaseManager: CollectionLocalDatabaseManager = .shared
+    
+    // MARK: PUBLIC FUNCTIONS
     
     // MARK: - Create Operations
     
@@ -42,7 +32,7 @@ actor CollectionManager {
     /// - Parameter newItems: An array of `Collection` objects to be added to the database.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
     func addCollections(_ newItems: [Collection]) async throws {
-        try await localDatabaseManager.addCollections(newItems)
+        try await collectionDatabaseManager.addCollections(newItems)
     }
     
     // MARK: - Read Operations
@@ -51,7 +41,7 @@ actor CollectionManager {
     /// - Returns: An array of `Collection` objects fetched from the database.
     /// - Throws: An error if the operation fails, such as if the fetch request cannot be executed.
     func getCollections() async throws -> [Collection] {
-        let collections: [Collection] = try await localDatabaseManager.fetchCollections()
+        let collections: [Collection] = try await collectionDatabaseManager.fetchCollections()
         return collections
     }
     
@@ -69,7 +59,7 @@ actor CollectionManager {
     /// Saves any changes made to the `Collection` items in the local database.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
     func updateCollections() async throws {
-        try await localDatabaseManager.updateCollection()
+        try await collectionDatabaseManager.updateCollection()
     }
     
     /// Renames a specific `Collection` item and updates its metadata.
@@ -82,7 +72,7 @@ actor CollectionManager {
         item.name = newName.capitalized
         item.pageNumber = 1
         item.imageQualityURLStringsEncoded = imageQualityURLStringsEncoded
-        try await localDatabaseManager.updateCollection()
+        try await collectionDatabaseManager.updateCollection()
     }
     
     /// Updates the image quality URLs for a specific `Collection` item by fetching new URLs from the API.
@@ -101,7 +91,7 @@ actor CollectionManager {
         
         try await setEncodedImageURLs(for: item, with: newImageURLs)
         item.pageNumber = nextPageNumber
-        try await localDatabaseManager.updateCollection()
+        try await collectionDatabaseManager.updateCollection()
     }
     
     /// Updates the selection state of a specific `Collection` item.
@@ -112,7 +102,7 @@ actor CollectionManager {
     func updateSelection(for item: Collection, with boolean: Bool) async throws {
         guard item.isSelected != boolean else { return }
         item.isSelected = boolean
-        try await localDatabaseManager.updateCollection()
+        try await collectionDatabaseManager.updateCollection()
     }
     
     /// Updates the selection state of multiple `Collection` items, ensuring only one item is selected.
@@ -128,7 +118,7 @@ actor CollectionManager {
         
         except.isSelected = true
         
-        try await localDatabaseManager.updateCollection()
+        try await collectionDatabaseManager.updateCollection()
     }
     
     // MARK: - Delete Operations
@@ -137,7 +127,7 @@ actor CollectionManager {
     /// - Parameter item: The `Collection` object to be deleted.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved after deletion.
     func deleteCollection(at item: Collection) async throws {
-        try await localDatabaseManager.deleteCollection(at: item)
+        try await collectionDatabaseManager.deleteCollection(at: item)
     }
     
     // MARK: - PRIVATE FUNCTIONS

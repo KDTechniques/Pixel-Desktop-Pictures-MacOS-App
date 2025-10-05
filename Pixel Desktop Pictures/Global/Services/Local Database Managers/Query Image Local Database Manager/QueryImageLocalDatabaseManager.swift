@@ -14,15 +14,18 @@ import SwiftData
  This actor ensures that all database operations are performed in a thread-safe manner, leveraging Swift's concurrency model.
  */
 actor QueryImageLocalDatabaseManager {
-    // MARK: - INJECTED PROPERTIES
-    let localDatabaseManager: LocalDatabaseManager
+    // MARK: - SINGLETON
+    static let shared: QueryImageLocalDatabaseManager = .init()
     
     // MARK: - INITIALIZER
-    init(localDatabaseManager: LocalDatabaseManager) {
-        self.localDatabaseManager = localDatabaseManager
+    private init() {
+        
     }
     
-    // MARK: FUNCTIONS
+    // MARK: - ASSIGNED PROPERTIES
+    let localDatabaseManager: LocalDatabaseManager = .shared
+    
+    // MARK: PUBLIC FUNCTIONS
     
     // MARK: - Create Operations
     

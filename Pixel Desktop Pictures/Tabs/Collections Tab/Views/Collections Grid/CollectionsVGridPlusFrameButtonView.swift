@@ -18,7 +18,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
     }
     
     // MARK: - ASSIGNED PROPERTIES
-    private let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues = VGridValues.self
     
     // MARK: - BODY
     var body: some View {
@@ -39,13 +39,7 @@ struct CollectionsVGridPlusFrameButtonView: View {
 // MARK: - PREVIEWS
 #Preview("Collections VGrid Plus Frame Button View") {
     CollectionsVGridPlusFrameButtonView(collectionName: "Nature")
-        .environment(
-            CollectionsTabViewModel(
-                apiAccessKeyManager: .init(),
-                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-            )
-        )
+        .previewModifier
 }
 
 // MARK: EXTENSIONS

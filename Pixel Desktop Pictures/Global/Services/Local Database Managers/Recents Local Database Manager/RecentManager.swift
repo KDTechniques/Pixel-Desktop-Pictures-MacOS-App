@@ -14,30 +14,18 @@ import Foundation
  */
 actor RecentManager {
     // MARK: - SINGLETON
-    private static var singleton: RecentManager?
-    
-    // MARK: - INJECTED PROPERTIES
-    let localDatabaseManager: RecentLocalDatabaseManager
+    static let shared: RecentManager = .init()
     
     // MARK: - INITIALIZER
-    private init(localDatabaseManager: RecentLocalDatabaseManager) {
-        self.localDatabaseManager = localDatabaseManager
+    private init() {
+        
     }
     
     // MARK: - ASSIGNED PROPERTIES
-    private let managerError: RecentLocalDatabaseManagerError.Type = RecentLocalDatabaseManagerError.self
+    private let recentDatabaseManager: RecentLocalDatabaseManager = .shared
+    private let managerError = RecentLocalDatabaseManagerError.self
     
-    // MARK: - INTERNAL FUNCTIONS
-    
-    static func shared(localDatabaseManager: RecentLocalDatabaseManager) -> RecentManager {
-        guard singleton == nil else {
-            return singleton!
-        }
-        
-        let newInstance: Self = .init(localDatabaseManager: localDatabaseManager)
-        singleton = newInstance
-        return newInstance
-    }
+    // MARK: PUBLIC FUNCTIONS
     
     // MARK: - Create Operations
     
@@ -46,7 +34,7 @@ actor RecentManager {
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
     func addRecent(_ newItem: Recent) async throws {
         do {
-            try await localDatabaseManager.addRecent(newItem)
+            try await recentDatabaseManager.addRecent(newItem)
         } catch {
             Logger.log(managerError.failedToCreateRecent(error).localizedDescription)
             throw error
@@ -60,7 +48,7 @@ actor RecentManager {
     /// - Throws: An error if the operation fails, such as if the fetch request cannot be executed.
     func getRecents() async throws -> [Recent] {
         do {
-            let recents: [Recent] = try await localDatabaseManager.fetchRecents()
+            let recents: [Recent] = try await recentDatabaseManager.fetchRecents()
             return recents
         } catch {
             Logger.log(managerError.failedToFetchRecents(error).localizedDescription)
@@ -98,7 +86,7 @@ actor RecentManager {
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
     func updateRecents() async throws {
         do {
-            try await localDatabaseManager.updateRecents()
+            try await recentDatabaseManager.updateRecents()
         } catch {
             Logger.log(managerError.failedToUpdateRecents(error).localizedDescription)
             throw error
@@ -112,7 +100,7 @@ actor RecentManager {
     /// - Throws: An error if the operation fails, such as if the context cannot be saved after deletion.
     func deleteRecents(at items: [Recent]) async throws {
         do {
-            try await localDatabaseManager.deleteRecents(at: items)
+            try await recentDatabaseManager.deleteRecents(at: items)
         } catch {
             Logger.log(managerError.failedToDeleteRecent(error).localizedDescription)
             throw error
@@ -125,8 +113,8 @@ actor RecentManager {
     /// This function is only available in debug builds for testing purposes.
     func deleteAllRecents() async {
         do {
-            let recentItems: [Recent] = try await localDatabaseManager.fetchRecents()
-            try await localDatabaseManager.deleteRecents(at: recentItems)
+            let recentItems: [Recent] = try await recentDatabaseManager.fetchRecents()
+            try await recentDatabaseManager.deleteRecents(at: recentItems)
         } catch {
             Logger.log(RecentLocalDatabaseManagerError.failedToDeleteRecent(error).localizedDescription)
         }

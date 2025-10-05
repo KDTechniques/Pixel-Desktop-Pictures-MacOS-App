@@ -19,9 +19,9 @@ final class MainTabViewModel {
     private(set) var centerItem: ImageContainerCenterItems = .retryIcon
     let defaults: UserDefaultsManager = .shared
     private(set) var currentImage: UnsplashImage?
-    let vmError: MainTabViewModelError.Type = MainTabViewModelError.self
+    let vmError = MainTabViewModelError.self
     let errorPopupVM: ErrorPopupViewModel = .shared
-    let errorPopup: MainTabErrorPopup.Type = MainTabErrorPopup.self
+    let errorPopup = MainTabErrorPopup.self
     
     // MARK: - INITIALIZER
     init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel) {
@@ -48,13 +48,13 @@ final class MainTabViewModel {
     /// Sets the current image as the desktop wallpaper.
     ///
     /// - Note: Downloads the image to the documents directory and applies it as the desktop wallpaper.
-    func setDesktopPicture(environment: AppEnvironment) async throws {
+    func setDesktopPicture() async throws {
         // Early exit if the current image is not available.
         guard let currentImage else { return }
         
         do {
             // Get the documents directory based on app environment
-            let documentsDirectory: UnsplashImageDirectoryProtocol = DirectoryTypes.documents(environment).directory
+            let documentsDirectory: UnsplashImageDirectoryProtocol = DirectoryTypes.documents.directory
             
             // Download the image to documents directory
             let savedPathURL: URL = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: documentsDirectory)

@@ -9,13 +9,16 @@ import Foundation
 import SwiftData
 
 actor RecentLocalDatabaseManager {
-    // MARK: - INJECTED PROPERTIES
-    let localDatabaseManager: LocalDatabaseManager
+    //  MARK: - SINGLETON
+    static let shared: RecentLocalDatabaseManager = .init()
     
     // MARK: - INITIALIZER
-    init(localDatabaseManager: LocalDatabaseManager) {
-        self.localDatabaseManager = localDatabaseManager
+    private init() {
+        
     }
+    
+    // MARK: - INJECTED PROPERTIES
+    let localDatabaseManager: LocalDatabaseManager = .shared
     
     // MARK: FUNCTIONS
     

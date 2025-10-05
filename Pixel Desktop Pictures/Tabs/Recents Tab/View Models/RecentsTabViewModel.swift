@@ -11,17 +11,17 @@ import Foundation
 @Observable
 final class RecentsTabViewModel {
     // MARK: - INJECTED PROPERTIES
-    let recentManager: RecentManager
+    let recentManager: RecentManager = .shared
     
     // MARK: - INITIALIZER
-    init(recentManager: RecentManager) {
-        self.recentManager = recentManager
+    init() {
+
     }
     
     // MARK: - ASSIGNED PROPERTIES
     private(set) var recentsArray: [Recent] = []
     private let maxRecentsCount: Int = 102
-    private let vmError: RecentsTabViewModelError.Type = RecentsTabViewModelError.self
+    private let vmError = RecentsTabViewModelError.self
     
     // MARK: - INTERNAL FUNCTIONS
     

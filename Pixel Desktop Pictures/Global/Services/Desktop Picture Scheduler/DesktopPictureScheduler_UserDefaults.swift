@@ -15,7 +15,7 @@ extension DesktopPictureScheduler {
         // Try to Get Time Interval Selection Value from User Defaults
         guard let timeIntervalSelection: TimeInterval = await defaults.get(key: timeIntervalKey) as? TimeInterval else {
             // Get the Default Time Interval Value from `DesktopPictureSchedulerInterval`
-            let defaultTimeInterval: TimeInterval = DesktopPictureSchedulerInterval.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
+            let defaultTimeInterval: TimeInterval = DesktopPictureSchedulerInterval.defaultTimeInterval.timeInterval
             
             return defaultTimeInterval
         }

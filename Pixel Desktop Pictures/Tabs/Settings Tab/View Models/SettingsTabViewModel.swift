@@ -33,13 +33,12 @@ import SwiftUI
     @ObservationIgnored @Published private(set) var updateIntervalSelection$: DesktopPictureSchedulerInterval = .defaultTimeInterval
     
     let defaults: UserDefaultsManager = .shared
-    let vmError: SettingsTabViewModelError.Type = SettingsTabViewModelError.self
+    let vmError = SettingsTabViewModelError.self
     @ObservationIgnored var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
-    init(appEnvironment: AppEnvironment, mainTabVM: MainTabViewModel) {
-        desktopPictureScheduler = .shared(appEnvironmentType: appEnvironment, mainTabVM: mainTabVM)
-        Task { await initializeSettingsTabVM() }
+    init(mainTabVM: MainTabViewModel) {
+        desktopPictureScheduler = .init(mainTabVM: mainTabVM)
     }
     
     // MARK: - INTERNAL FUNCTIONS
@@ -53,6 +52,8 @@ import SwiftUI
     /// - Throws: `vmError` if initialization fails
     /// - Note: Settings are persisted using UserDefaults and loaded on initialization
     func initializeSettingsTabVM() async {
+        await desktopPictureScheduler.initializeScheduler()
+        
         do {
             updateIntervalSelectionSubscriber()
             showOnAllSpacesSubscriber()

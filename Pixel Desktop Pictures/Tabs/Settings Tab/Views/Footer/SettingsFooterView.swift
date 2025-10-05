@@ -83,7 +83,7 @@ extension SettingsFooterView {
         Button("Reset Swift Data") {
             Task {
                 do {
-                    try await LocalDatabaseManager(appEnvironment: .production).eraseAllData()
+                    try await LocalDatabaseManager.shared.eraseAllData()
                     UserDefaultsManager.clearAllUserDefaults()
                 } catch {
                     Logger.log("❌: Failed to erase all data from swift data. \(error.localizedDescription)")

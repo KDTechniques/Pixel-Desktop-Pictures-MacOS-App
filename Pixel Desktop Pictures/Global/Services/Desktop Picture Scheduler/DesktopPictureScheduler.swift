@@ -14,21 +14,13 @@ import Combine
  */
 @MainActor
 final class DesktopPictureScheduler {
-    // MARK: - SINGLETON
-    private static var singleton: DesktopPictureScheduler?
-    
     // MARK: - INJECTED PROPERTIES
-    let appEnvironmentType: AppEnvironment
-    private(set) var timeIntervalSelection: TimeInterval
+    private(set) var timeIntervalSelection: TimeInterval =  DesktopPictureSchedulerInterval.defaultTimeInterval.timeInterval
     let mainTabVM: MainTabViewModel
     
     // MARK: - INITIALIZER
-    private init(appEnvironmentType: AppEnvironment, mainTabVM: MainTabViewModel) {
-        self.appEnvironmentType = appEnvironmentType
-        timeIntervalSelection = DesktopPictureSchedulerInterval.defaultTimeInterval.timeInterval(environment: appEnvironmentType)
+    init(mainTabVM: MainTabViewModel) {
         self.mainTabVM = mainTabVM
-        
-        Task { await initializeScheduler() }
     }
     
     // MARK: - ASSIGNED PROPERTIES
@@ -60,35 +52,14 @@ final class DesktopPictureScheduler {
     }
     
     
-    // MARK: - INTERNAL FUNCTIONS
-    
-    /// Returns the shared singleton instance of `DesktopPictureScheduler`.
-    ///
-    /// This function ensures that only one instance of `DesktopPictureScheduler` is created.
-    /// If the singleton instance is already created, it is returned.
-    /// Otherwise, a new instance is created, stored, and then returned. This ensures that the app
-    /// uses a single instance for managing the desktop picture scheduling process.
-    ///
-    /// - Parameter appEnvironmentType: The type of the app's environment, which is passed to the
-    ///   `DesktopPictureScheduler` initializer to configure the scheduler for the correct environment.
-    ///
-    /// - Returns: The shared `DesktopPictureScheduler` instance.
-    static func shared(appEnvironmentType: AppEnvironment, mainTabVM: MainTabViewModel) -> DesktopPictureScheduler {
-        guard singleton == nil else {
-            return singleton!
-        }
-        
-        let newInstance: DesktopPictureScheduler = .init(appEnvironmentType: appEnvironmentType, mainTabVM: mainTabVM)
-        singleton = newInstance
-        return newInstance
-    }
+    // MARK: - PUBLIC FUNCTIONS
     
     /// Handles changes to the time interval selection.
     ///
     /// - Parameter timeInterval: The new time interval selection.
     func onChangeOfTimeIntervalSelection(from timeInterval: DesktopPictureSchedulerInterval) async {
         // Save Time Interval Selection Value to User Defaults
-        let timeIntervalSelection: TimeInterval = timeInterval.timeInterval(environment: appEnvironmentType)
+        let timeIntervalSelection: TimeInterval = timeInterval.timeInterval
         await saveTimeIntervalSelectionToUserDefaults(from: timeIntervalSelection)
         
         // Calculate Execution Time Interval Since 1970, Then Schedule Task, and Save to User Defaults
@@ -99,7 +70,7 @@ final class DesktopPictureScheduler {
     // MARK: - PRIVATE FUNCTIONS
     
     /// Initializes the scheduler by setting the time interval and scheduling the background task.
-    private func initializeScheduler() async {
+    func initializeScheduler() async {
         didBackgroundTaskFailOnInternetFailureSubscriber()
         networkConnectionSubscriber()
         

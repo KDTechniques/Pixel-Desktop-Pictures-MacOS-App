@@ -15,19 +15,22 @@ import Combine
 @MainActor
 @Observable
 final class APIAccessKeyManager {
+    // MARK: - SINGLETON
+    static let shared: APIAccessKeyManager = .shared
+    
+    // MARK: - INNITIALIZER
+    private init() async {
+        networkConnectionSubscriber()
+        await initializeAPIAccessKeyManager()
+    }
+    
     // MARK: - ASSIGNED PROPERTIES
     let defaults: UserDefaultsManager = .shared
     let networkManager: NetworkManager = .shared
     @ObservationIgnored private var apiAccessKey: String?
     @ObservationIgnored private(set) var apiAccessKeyValidationState: APIAccessKeyValidityStates?
-    let errorModel: APIAccessKeyManagerError.Type = APIAccessKeyManagerError.self
+    let errorModel = APIAccessKeyManagerError.self
     @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
-    
-    // MARK: - INNITIALIZER
-    init() {
-        networkConnectionSubscriber()
-        Task { await initializeAPIAccessKeyManager() }
-    }
     
     
     // MARK: - SETTERS
@@ -41,6 +44,12 @@ final class APIAccessKeyManager {
     }
     
     // MARK: - PUBLIC FUNCTIONS
+    
+    private func initializeAPIAccessKeyManager() async {
+        guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() ?? apiAccessKeys.first else { return }
+        
+        await apiAccessKeyValidation(apiAccessKey)
+    }
     
     /// Retrieves the current API access key.
     ///
@@ -67,7 +76,7 @@ final class APIAccessKeyManager {
             .removeDuplicates()
             .sink { [weak self] connection in
                 guard let self,
-                connection == .connected && apiAccessKeyValidationState == .noInternet else { return }
+                      connection == .connected && apiAccessKeyValidationState == .noInternet else { return }
                 
                 Task { [weak self] in
                     await self?.initializeAPIAccessKeyManager()
@@ -75,12 +84,6 @@ final class APIAccessKeyManager {
             }
             .store(in: &cancellables)
         
-    }
-    
-    func initializeAPIAccessKeyManager() async {
-        guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() ?? apiAccessKeys.first else { return }
-        
-        await apiAccessKeyValidation(apiAccessKey)
     }
     
     private func apiAccessKeyValidation(_ key: String) async {
