@@ -70,10 +70,9 @@ extension SettingsTabViewModel {
     func getSettingsFromUserDefaults() throws {
         do {
             // Handle settings states in very first app launch.
-            guard
-                let savedLaunchAtLogin: Bool = defaults.get(key: .launchAtLoginKey) as? Bool,
-                let savedShowOnAllSpaces: Bool = defaults.get(key: .showOnAllSpacesKey) as? Bool,
-                let savedUpdateInterval: DesktopPictureSchedulerInterval = try defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerInterval.self) else {
+            guard let savedLaunchAtLogin: Bool = defaults.get(key: .launchAtLoginKey) as? Bool,
+                  let savedShowOnAllSpaces: Bool = defaults.get(key: .showOnAllSpacesKey) as? Bool,
+                  let savedUpdateInterval: DesktopPictureSchedulerInterval = try defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerInterval.self) else {
                 saveSettingsToUserDefaults()
                 
                 Logger.log("✅: Saved initial settings to user defaults.")

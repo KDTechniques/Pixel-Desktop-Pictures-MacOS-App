@@ -15,11 +15,12 @@ struct SettingsFooterView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
             HStack(alignment: .bottom) {
+//#if Debug
                 VStack(alignment: .leading) {
                     eraseAllDataButton
                     clearAllUserDefaults
                 }
-                
+//#endif
                 Spacer()
                 restoreToDefaultButton
             }
@@ -78,7 +79,6 @@ extension SettingsFooterView {
         .buttonStyle(.plain)
     }
     
-#if DEBUG
     private var eraseAllDataButton: some View {
         Button("Reset Swift Data") {
             Task {
@@ -97,5 +97,4 @@ extension SettingsFooterView {
             UserDefaultsManager.clearAllUserDefaults()
         }
     }
-#endif
 }

@@ -25,7 +25,6 @@ extension SettingsTabViewModel {
     /// - Note: This is a private function as it handles internal view model state management
     func updateIntervalSelectionSubscriber() {
         $updateIntervalSelection$
-            .dropFirst(2)
             .removeDuplicates()
             .sink { interval in
                 Logger.log("✅: Triggered update interval selection subscriber.")
@@ -47,7 +46,6 @@ extension SettingsTabViewModel {
     /// - Note: Uses `@MainActor` to ensure UI updates occur on the main thread.
     func showOnAllSpacesSubscriber() {
         $showOnAllSpaces$
-            .dropFirst()
             .removeDuplicates()
             .sink { boolean in
                 Logger.log("✅: Triggered show on all spaces subscriber.")
@@ -72,15 +70,14 @@ extension SettingsTabViewModel {
     /// - Note: Uses `@MainActor` to ensure UserDefaults update occurs on the main thread.
     func launchAtLoginSubscriber() {
         $launchAtLogin$
-            .dropFirst(2)
             .removeDuplicates()
             .sink { boolean in
-                Logger.log("✅: Triggered Launch at login subscriber.")
-                
                 LaunchAtLogin.isEnabled = boolean
                 Task { [weak self] in
                     self?.saveLaunchAtLoginToUserDefaults(boolean)
                 }
+                
+                Logger.log("✅: Assigned and saved Launch at login boolean to User Defaults.")
             }
             .store(in: &cancellables)
     }

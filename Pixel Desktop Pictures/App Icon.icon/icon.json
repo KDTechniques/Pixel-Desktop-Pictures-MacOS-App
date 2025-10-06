@@ -70,7 +70,7 @@
         {
           "idiom" : "macOS",
           "value" : {
-            "scale" : 1,
+            "scale" : 0.9,
             "translation-in-points" : [
               0,
               -50
@@ -145,7 +145,7 @@
                 "scale" : 1,
                 "translation-in-points" : [
                   0,
-                  270
+                  280
                 ]
               }
             }
@@ -156,7 +156,7 @@
         {
           "idiom" : "macOS",
           "value" : {
-            "scale" : 1,
+            "scale" : 0.9,
             "translation-in-points" : [
               0,
               -40

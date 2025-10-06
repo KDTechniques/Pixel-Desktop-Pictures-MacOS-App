@@ -68,7 +68,7 @@ struct Pixel_Desktop_PicturesApp: App {
     
     // MARK: - BODY
     var body: some Scene {
-        MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .logo) {
+        MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .menuBarIcon) {
             TabsView()
                 .environment(apiAccessKeyManager)
                 .environment(tabsVM)
