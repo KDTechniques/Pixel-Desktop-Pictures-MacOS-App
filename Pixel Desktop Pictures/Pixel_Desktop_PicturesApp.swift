@@ -51,6 +51,7 @@ struct Pixel_Desktop_PicturesApp: App {
         
         
         Task {
+            await APIAccessKeyManager.shared.initializeAPIAccessKeyManager()
             await collectionsTabVMInstance.initializeCollectionsViewModel()
             await recentsTabVMInstance.initializeRecentsTabViewModel()
             await mainTabVMInstance.initializeMainTabViewModel()

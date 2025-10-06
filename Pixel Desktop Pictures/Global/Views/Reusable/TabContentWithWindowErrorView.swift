@@ -9,13 +9,13 @@ import SwiftUI
 
 struct TabContentWithWindowErrorView<T: View>: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(NetworkManager.self) private var networkManager
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     let tab: TabItem
     let content: T
     
     // MARK: - ASSIGNED PROPERTIES
-    let errorModel = GlobalWindowError.self
+    private let networkManager: NetworkManager = .shared
+    private let apiAccessKeyManager: APIAccessKeyManager = .shared
+    private let errorModel = GlobalWindowError.self
     
     // MARK: - INITIALIZERS
     init(tab: TabItem, @ViewBuilder _ content: () -> T) {
@@ -53,6 +53,5 @@ struct TabContentWithWindowErrorView<T: View>: View {
 // MARK: - PREVIEWS
 #Preview("Tab Content with Error View") {
     TabContentWithWindowErrorView(tab: .random(), Color.debug)
-        .environment(NetworkManager.shared)
         .previewModifier
 }

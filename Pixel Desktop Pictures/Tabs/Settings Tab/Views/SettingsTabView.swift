@@ -10,7 +10,6 @@ import SwiftUI
 struct SettingsTabView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - BODY
     var body: some View {

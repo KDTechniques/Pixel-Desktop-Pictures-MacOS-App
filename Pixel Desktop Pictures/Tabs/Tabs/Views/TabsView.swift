@@ -36,8 +36,6 @@ struct TabsView: View {
 
 // MARK: - PREVIEWS
 #Preview("Tabs View") {
-    @Previewable @State var networkManager: NetworkManager = .shared
     TabsView()
-        .environment(networkManager)
         .previewModifier
 }

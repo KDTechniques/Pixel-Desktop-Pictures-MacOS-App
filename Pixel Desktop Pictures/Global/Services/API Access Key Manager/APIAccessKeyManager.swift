@@ -19,16 +19,15 @@ final class APIAccessKeyManager {
     static let shared: APIAccessKeyManager = .shared
     
     // MARK: - INNITIALIZER
-    private init() async {
+    private init() {
         networkConnectionSubscriber()
-        await initializeAPIAccessKeyManager()
     }
     
     // MARK: - ASSIGNED PROPERTIES
     let defaults: UserDefaultsManager = .shared
     let networkManager: NetworkManager = .shared
     @ObservationIgnored private var apiAccessKey: String?
-    @ObservationIgnored private(set) var apiAccessKeyValidationState: APIAccessKeyValidityStates?
+    private(set) var apiAccessKeyValidationState: APIAccessKeyValidityStates?
     let errorModel = APIAccessKeyManagerError.self
     @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
     
@@ -45,7 +44,7 @@ final class APIAccessKeyManager {
     
     // MARK: - PUBLIC FUNCTIONS
     
-    private func initializeAPIAccessKeyManager() async {
+    func initializeAPIAccessKeyManager() async {
         guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() ?? apiAccessKeys.first else { return }
         
         await apiAccessKeyValidation(apiAccessKey)
