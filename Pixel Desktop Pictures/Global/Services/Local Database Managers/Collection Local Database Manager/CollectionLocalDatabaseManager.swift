@@ -18,9 +18,7 @@ actor CollectionLocalDatabaseManager {
     static let shared: CollectionLocalDatabaseManager = .init()
     
     // MARK: - INITIALIZER
-    private init() {
-        
-    }
+    private init() { }
     
     // MARK: - ASSIGNED PROPERTIES
     let localDatabaseManager: LocalDatabaseManager = .shared
@@ -33,13 +31,13 @@ actor CollectionLocalDatabaseManager {
     /// - Parameter newItems: An array of `Collection` objects to be added to the database.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
     @MainActor
-    func addCollections(_ newItems: [Collection]) async throws {
+    func addCollections(_ newItems: [Collection]) throws {
         for item in newItems {
-            await localDatabaseManager.container.mainContext.insert(item)
+            localDatabaseManager.insertToContext(item)
         }
         
         do {
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
             Logger.log(CollectionLocalDatabaseManagerError.failedToCreateCollection(error).localizedDescription)
             throw error
@@ -52,15 +50,12 @@ actor CollectionLocalDatabaseManager {
     /// - Returns: An array of `Collection` objects fetched from the database.
     /// - Throws: An error if the operation fails, such as if the fetch request cannot be executed.
     @MainActor
-    func fetchCollections() async throws -> [Collection] {
+    func fetchCollections() throws -> [Collection] {
         do {
             let descriptor: FetchDescriptor = FetchDescriptor<Collection>(
                 sortBy: [SortDescriptor(\.timestamp, order: .forward)] // Ascending order
             )
-            let collectionsArray: [Collection] = try await localDatabaseManager
-                .container
-                .mainContext
-                .fetch(descriptor)
+            let collectionsArray: [Collection] = try localDatabaseManager.fetchFromContext(descriptor)
             
             return collectionsArray
         } catch {
@@ -73,9 +68,10 @@ actor CollectionLocalDatabaseManager {
     
     /// Saves any changes made to the `Collection` items in the local database.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
-    func updateCollection() async throws {
+    @MainActor
+    func updateCollection() throws {
         do {
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
             Logger.log(CollectionLocalDatabaseManagerError.failedToUpdateCollections(error).localizedDescription)
             throw error
@@ -88,10 +84,10 @@ actor CollectionLocalDatabaseManager {
     /// - Parameter item: The `Collection` object to be deleted.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved after deletion.
     @MainActor
-    func deleteCollection(at item: Collection) async throws {
-        await localDatabaseManager.container.mainContext.delete(item)
+    func deleteCollection(at item: Collection) throws {
+        localDatabaseManager.deleteFromContext(item)
         do {
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
             Logger.log(CollectionLocalDatabaseManagerError.failedToDeleteCollection(error).localizedDescription)
             throw error

@@ -9,12 +9,12 @@ import SwiftUI
 
 struct TabContentWithWindowErrorView<T: View>: View {
     // MARK: - INJECTED PROPERTIES
+    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     let tab: TabItem
     let content: T
     
     // MARK: - ASSIGNED PROPERTIES
     private let networkManager: NetworkManager = .shared
-    private let apiAccessKeyManager: APIAccessKeyManager = .shared
     private let errorModel = GlobalWindowError.self
     
     // MARK: - INITIALIZERS

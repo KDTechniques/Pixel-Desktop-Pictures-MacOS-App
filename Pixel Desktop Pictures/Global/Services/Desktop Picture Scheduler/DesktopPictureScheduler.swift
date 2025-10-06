@@ -24,7 +24,7 @@ final class DesktopPictureScheduler {
     }
     
     // MARK: - ASSIGNED PROPERTIES
-    let defaults: UserDefaultsManager = .shared
+    let defaults: UserDefaultsManager = .init()
     private let networkManager: NetworkManager = .shared
     let timeIntervalKey: UserDefaultKeys = .timeIntervalDoubleKey
     let executionTimeKey: UserDefaultKeys = .executionTimeIntervalSince1970Key

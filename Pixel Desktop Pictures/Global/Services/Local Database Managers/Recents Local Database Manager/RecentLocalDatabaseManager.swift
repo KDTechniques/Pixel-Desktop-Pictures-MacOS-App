@@ -26,10 +26,10 @@ actor RecentLocalDatabaseManager {
     
     @MainActor
     func addRecent(_ newItem: Recent) async throws {
-        await localDatabaseManager.container.mainContext.insert(newItem)
+        localDatabaseManager.insertToContext(newItem)
         
         do {
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
             Logger.log(CollectionLocalDatabaseManagerError.failedToCreateCollection(error).localizedDescription)
             throw error
@@ -45,10 +45,7 @@ actor RecentLocalDatabaseManager {
                 sortBy: [SortDescriptor(\.timestamp, order: .reverse)] // Descending order
             )
             
-            let recentsArray: [Recent] = try await localDatabaseManager
-                .container
-                .mainContext
-                .fetch(descriptor)
+            let recentsArray: [Recent] = try localDatabaseManager.fetchFromContext(descriptor)
             
             return recentsArray
         } catch {
@@ -73,11 +70,11 @@ actor RecentLocalDatabaseManager {
     @MainActor
     func deleteRecents(at items: [Recent]) async throws {
         for item in items {
-            await localDatabaseManager.container.mainContext.delete(item)
+            localDatabaseManager.deleteFromContext(item)
         }
         
         do {
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
             Logger.log(CollectionLocalDatabaseManagerError.failedToDeleteCollection(error).localizedDescription)
             throw error

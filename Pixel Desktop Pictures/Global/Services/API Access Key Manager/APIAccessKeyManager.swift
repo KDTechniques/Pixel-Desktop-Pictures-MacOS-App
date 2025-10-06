@@ -15,16 +15,13 @@ import Combine
 @MainActor
 @Observable
 final class APIAccessKeyManager {
-    // MARK: - SINGLETON
-    static let shared: APIAccessKeyManager = .shared
-    
     // MARK: - INNITIALIZER
-    private init() {
+    init() {
         networkConnectionSubscriber()
     }
     
     // MARK: - ASSIGNED PROPERTIES
-    let defaults: UserDefaultsManager = .shared
+    let defaults: UserDefaultsManager = .init()
     let networkManager: NetworkManager = .shared
     @ObservationIgnored private var apiAccessKey: String?
     private(set) var apiAccessKeyValidationState: APIAccessKeyValidityStates?
@@ -45,7 +42,7 @@ final class APIAccessKeyManager {
     // MARK: - PUBLIC FUNCTIONS
     
     func initializeAPIAccessKeyManager() async {
-        guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() ?? apiAccessKeys.first else { return }
+        guard let apiAccessKey: String = getAPIAccessKeyFromUserDefaults() ?? apiAccessKeys.first else { return }
         
         await apiAccessKeyValidation(apiAccessKey)
     }
@@ -56,7 +53,7 @@ final class APIAccessKeyManager {
     /// - Fetches key from UserDefaults if not already in memory.
     func getAPIAccessKey() async -> String? {
         guard let apiAccessKey else {
-            guard let savedAPIAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
+            guard let savedAPIAccessKey: String = getAPIAccessKeyFromUserDefaults() else {
                 return nil
             }
             
@@ -92,7 +89,7 @@ final class APIAccessKeyManager {
             try await imageAPIService.validateAPIAccessKey()
             
             // Handle Successful API Access Key Validation
-            await saveAPIAccessKeyToUserDefaults(key)
+            saveAPIAccessKeyToUserDefaults(key)
             setAPIAccessKey(key)
             setAPIAccessKeyValidationState(.connected)
             print("✅: Successful API access key validation.")

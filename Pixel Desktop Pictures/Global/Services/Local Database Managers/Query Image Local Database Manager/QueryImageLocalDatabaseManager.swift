@@ -36,10 +36,10 @@ actor QueryImageLocalDatabaseManager {
     func addQueryImages(_ newItems: [QueryImage]) async throws {
         do {
             for object in newItems {
-                await localDatabaseManager.container.mainContext.insert(object)
+                localDatabaseManager.insertToContext(object)
             }
             
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
             Logger.log(QueryImageLocalDatabaseManagerError.failedToCreateQueryImages(error).localizedDescription)
             throw error
@@ -59,7 +59,7 @@ actor QueryImageLocalDatabaseManager {
                 predicate: #Predicate<QueryImage> { collectionNames.contains($0.query) }
             )
             
-            let queryImages: [QueryImage] = try await localDatabaseManager.container.mainContext.fetch(descriptor)
+            let queryImages: [QueryImage] = try localDatabaseManager.fetchFromContext(descriptor)
             return queryImages
         } catch {
             Logger.log(QueryImageLocalDatabaseManagerError.failedToFetchQueryImages(error).localizedDescription)

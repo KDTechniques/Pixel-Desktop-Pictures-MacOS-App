@@ -32,7 +32,7 @@ import SwiftUI
     }
     @ObservationIgnored @Published private(set) var updateIntervalSelection$: DesktopPictureSchedulerInterval = .defaultTimeInterval
     
-    let defaults: UserDefaultsManager = .shared
+    let defaults: UserDefaultsManager = .init()
     let vmError = SettingsTabViewModelError.self
     @ObservationIgnored var cancellables: Set<AnyCancellable> = []
     
@@ -58,7 +58,7 @@ import SwiftUI
             updateIntervalSelectionSubscriber()
             showOnAllSpacesSubscriber()
             launchAtLoginSubscriber()
-            try await getSettingsFromUserDefaults()
+            try getSettingsFromUserDefaults()
             Logger.log("✅: Initialized `Settings Tab View Model`.")
         } catch {
             Logger.log(vmError.failedToInitializeSettingsTabViewModel(error).localizedDescription)

@@ -36,7 +36,7 @@ extension CollectionsTabViewModel {
             )
             
             // Update collection name in local database.
-            try await getCollectionManager().rename(
+            try getCollectionManager().rename(
                 for: updatingCollectionItem,
                 newName: newCollectionName,
                 imageQualityURLStringsEncoded: imageQualityURLStringsEncoded
@@ -97,21 +97,21 @@ extension CollectionsTabViewModel {
             if item.name == randomCollectionName {
                 // Deselect all the collections except the random collection.
                 for collection in collectionsArray {
-                    collection.name != randomCollectionName ? try await getCollectionManager().updateSelection(for: collection, with: false) : ()
+                    collection.name != randomCollectionName ? try getCollectionManager().updateSelection(for: collection, with: false) : ()
                 }
                 
                 // Then select the random collection only.
-                try await getCollectionManager().updateSelection(for: item, with: true)
+                try getCollectionManager().updateSelection(for: item, with: true)
             } else {
                 // Handle any collection selection case except the random collection
                 
                 // Toggle the tapped item's selection state
-                try await getCollectionManager().updateSelection(for: item, with: !item.isSelected)
+                try getCollectionManager().updateSelection(for: item, with: !item.isSelected)
                 
                 // Ensure the random collection is selected, if no other collection is selected
                 let isAllCollectionsDeselected: Bool = !collectionsArray.contains(where: { $0.isSelected })
                 guard let randomCollection: Collection = collectionsArray.first(where: { $0.name == randomCollectionName }) else { return }
-                try await getCollectionManager().updateSelection(for: randomCollection, with: isAllCollectionsDeselected)
+                try getCollectionManager().updateSelection(for: randomCollection, with: isAllCollectionsDeselected)
             }
             
             // Update the query images array
@@ -142,7 +142,7 @@ extension CollectionsTabViewModel {
         
         do {
             // Set selection to false for filtered collections, and true for the excluded item.
-            try await getCollectionManager().updateSelection(for: collectionItems, except: excludedItem)
+            try getCollectionManager().updateSelection(for: collectionItems, except: excludedItem)
             
             // Then set the query images array.
             try await getAndSetQueryImagesArray()

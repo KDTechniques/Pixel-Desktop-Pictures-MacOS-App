@@ -15,8 +15,8 @@ extension SettingsTabViewModel {
     ///
     /// - Parameter value: A Boolean indicating whether the app should launch at login.
     /// `true` enables the setting, while `false` disables it.
-    func saveLaunchAtLoginToUserDefaults(_ value: Bool) async {
-        await defaults.save(key: .launchAtLoginKey, value: value)
+    func saveLaunchAtLoginToUserDefaults(_ value: Bool) {
+        defaults.save(key: .launchAtLoginKey, value: value)
         Logger.log("✅: Saved launch at login state `\(value)` to user defaults.")
     }
     
@@ -27,8 +27,8 @@ extension SettingsTabViewModel {
     ///
     /// - Parameter value: A Boolean indicating whether the app should be shown on all spaces.
     /// `true` enables the setting, while `false` disables it.
-    func saveShowOnAllSpacesToUserDefaults(_ value: Bool) async {
-        await defaults.save(key: .showOnAllSpacesKey, value: value)
+    func saveShowOnAllSpacesToUserDefaults(_ value: Bool) {
+        defaults.save(key: .showOnAllSpacesKey, value: value)
         Logger.log("✅: Saved show on all spaces state `\(value)` to user defaults.")
     }
     
@@ -39,9 +39,9 @@ extension SettingsTabViewModel {
     /// It also handles potential errors and Logger.logs a message confirming whether the save was successful.
     ///
     /// - Parameter value: The `DesktopPictureSchedulerInterval` representing the selected update interval.
-    func saveUpdateIntervalToUserDefaults(_ value: DesktopPictureSchedulerInterval) async {
+    func saveUpdateIntervalToUserDefaults(_ value: DesktopPictureSchedulerInterval) {
         do {
-            try await defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
+            try defaults.saveModel(key: .timeIntervalSelectionKey, value: value)
             Logger.log("✅: Saved update interval to user defaults.")
         } catch {
             Logger.log(vmError.failedToSaveUpdateIntervalsToUserDefaults(error).localizedDescription)
@@ -52,10 +52,10 @@ extension SettingsTabViewModel {
     ///
     /// This asynchronous function saves the current settings for `launchAtLogin`, `showOnAllSpaces`,
     /// and `updateIntervalSelection` to UserDefaults using the respective save functions for each setting.
-    private func saveSettingsToUserDefaults() async {
-        await saveLaunchAtLoginToUserDefaults(launchAtLogin)
-        await saveShowOnAllSpacesToUserDefaults(showOnAllSpaces)
-        await saveUpdateIntervalToUserDefaults(updateIntervalSelection)
+    private func saveSettingsToUserDefaults() {
+        saveLaunchAtLoginToUserDefaults(launchAtLogin)
+        saveShowOnAllSpacesToUserDefaults(showOnAllSpaces)
+        saveUpdateIntervalToUserDefaults(updateIntervalSelection)
         Logger.log("✅: Saved settings to user defaults.")
     }
     
@@ -67,14 +67,14 @@ extension SettingsTabViewModel {
     /// retrieved, they are assigned to the respective properties.
     ///
     /// - Throws: An error if retrieving the `updateIntervalSelection` model fails.
-    func getSettingsFromUserDefaults() async throws {
+    func getSettingsFromUserDefaults() throws {
         do {
             // Handle settings states in very first app launch.
             guard
-                let savedLaunchAtLogin: Bool = await defaults.get(key: .launchAtLoginKey) as? Bool,
-                let savedShowOnAllSpaces: Bool = await defaults.get(key: .showOnAllSpacesKey) as? Bool,
-                let savedUpdateInterval: DesktopPictureSchedulerInterval = try await defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerInterval.self) else {
-                await saveSettingsToUserDefaults()
+                let savedLaunchAtLogin: Bool = defaults.get(key: .launchAtLoginKey) as? Bool,
+                let savedShowOnAllSpaces: Bool = defaults.get(key: .showOnAllSpacesKey) as? Bool,
+                let savedUpdateInterval: DesktopPictureSchedulerInterval = try defaults.getModel(key: .timeIntervalSelectionKey, type: DesktopPictureSchedulerInterval.self) else {
+                saveSettingsToUserDefaults()
                 
                 Logger.log("✅: Saved initial settings to user defaults.")
                 return

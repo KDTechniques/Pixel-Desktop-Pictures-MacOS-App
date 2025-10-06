@@ -30,11 +30,15 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var mainTabVM: MainTabViewModel
     @State private var recentsTabVM: RecentsTabViewModel
     @State private var collectionsTabVM: CollectionsTabViewModel
+    @State private var apiAccessKeyManager: APIAccessKeyManager
     
     // MARK: - INITIALIZER
     init() {
+        let apiAccessKeyManagerInstace: APIAccessKeyManager = .init()
+        apiAccessKeyManager = apiAccessKeyManagerInstace
+        
         // COLLECTIONS Related
-        let collectionsTabVMInstance: CollectionsTabViewModel = .init()
+        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiAccessKeyManager: apiAccessKeyManagerInstace)
         collectionsTabVM = collectionsTabVMInstance
         
         // RECENTS Related
@@ -51,7 +55,7 @@ struct Pixel_Desktop_PicturesApp: App {
         
         
         Task {
-            await APIAccessKeyManager.shared.initializeAPIAccessKeyManager()
+            await apiAccessKeyManagerInstace.initializeAPIAccessKeyManager()
             await collectionsTabVMInstance.initializeCollectionsViewModel()
             await recentsTabVMInstance.initializeRecentsTabViewModel()
             await mainTabVMInstance.initializeMainTabViewModel()
@@ -66,6 +70,7 @@ struct Pixel_Desktop_PicturesApp: App {
     var body: some Scene {
         MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .logo) {
             TabsView()
+                .environment(apiAccessKeyManager)
                 .environment(tabsVM)
                 .environment(settingsTabVM)
                 .environment(mainTabVM)

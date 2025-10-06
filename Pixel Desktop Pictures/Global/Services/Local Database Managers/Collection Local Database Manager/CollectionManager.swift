@@ -31,8 +31,9 @@ actor CollectionManager {
     /// Adds a list of `Collection` items to the local database.
     /// - Parameter newItems: An array of `Collection` objects to be added to the database.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
-    func addCollections(_ newItems: [Collection]) async throws {
-        try await collectionDatabaseManager.addCollections(newItems)
+    @MainActor
+    func addCollections(_ newItems: [Collection]) throws {
+        try collectionDatabaseManager.addCollections(newItems)
     }
     
     // MARK: - Read Operations
@@ -40,8 +41,9 @@ actor CollectionManager {
     /// Fetches all `Collection` items from the local database.
     /// - Returns: An array of `Collection` objects fetched from the database.
     /// - Throws: An error if the operation fails, such as if the fetch request cannot be executed.
-    func getCollections() async throws -> [Collection] {
-        let collections: [Collection] = try await collectionDatabaseManager.fetchCollections()
+    @MainActor
+    func getCollections() throws -> [Collection] {
+        let collections: [Collection] = try collectionDatabaseManager.fetchCollections()
         return collections
     }
     
@@ -49,7 +51,7 @@ actor CollectionManager {
     /// - Parameter item: The `Collection` object for which to retrieve image URLs.
     /// - Returns: An `UnsplashImageResolution` object containing the image URLs.
     /// - Throws: An error if the operation fails, such as if the data cannot be decoded.
-    func getImageURLs(from item: Collection) async throws -> UnsplashImageResolution {
+    func getImageURLs(from item: Collection) throws -> UnsplashImageResolution {
         let imageURLs: UnsplashImageResolution = try JSONDecoder().decode(UnsplashImageResolution.self, from: item.imageQualityURLStringsEncoded)
         return imageURLs
     }
@@ -58,8 +60,9 @@ actor CollectionManager {
     
     /// Saves any changes made to the `Collection` items in the local database.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
-    func updateCollections() async throws {
-        try await collectionDatabaseManager.updateCollection()
+    @MainActor
+    func updateCollections() throws {
+        try collectionDatabaseManager.updateCollection()
     }
     
     /// Renames a specific `Collection` item and updates its metadata.
@@ -68,11 +71,12 @@ actor CollectionManager {
     ///   - newName: The new name for the collection.
     ///   - imageQualityURLStringsEncoded: The encoded image URLs associated with the collection.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
-    func rename(for item: Collection, newName: String, imageQualityURLStringsEncoded: Data) async throws {
+    @MainActor
+    func rename(for item: Collection, newName: String, imageQualityURLStringsEncoded: Data)  throws {
         item.name = newName.capitalized
         item.pageNumber = 1
         item.imageQualityURLStringsEncoded = imageQualityURLStringsEncoded
-        try await collectionDatabaseManager.updateCollection()
+        try collectionDatabaseManager.updateCollection()
     }
     
     /// Updates the image quality URLs for a specific `Collection` item by fetching new URLs from the API.
@@ -89,7 +93,7 @@ actor CollectionManager {
             throw URLError(.badServerResponse)
         }
         
-        try await setEncodedImageURLs(for: item, with: newImageURLs)
+        try setEncodedImageURLs(for: item, with: newImageURLs)
         item.pageNumber = nextPageNumber
         try await collectionDatabaseManager.updateCollection()
     }
@@ -99,10 +103,11 @@ actor CollectionManager {
     ///   - item: The `Collection` object to be updated.
     ///   - boolean: The new selection state (`true` for selected, `false` for unselected).
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
-    func updateSelection(for item: Collection, with boolean: Bool) async throws {
+    @MainActor
+    func updateSelection(for item: Collection, with boolean: Bool) throws {
         guard item.isSelected != boolean else { return }
         item.isSelected = boolean
-        try await collectionDatabaseManager.updateCollection()
+        try collectionDatabaseManager.updateCollection()
     }
     
     /// Updates the selection state of multiple `Collection` items, ensuring only one item is selected.
@@ -110,7 +115,8 @@ actor CollectionManager {
     ///   - items: An array of `Collection` objects to be updated.
     ///   - except: The `Collection` object that should remain selected.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
-    func updateSelection(for items: [Collection], except: Collection) async throws {
+    @MainActor
+    func updateSelection(for items: [Collection], except: Collection) throws {
         for item in items {
             guard item.isSelected != false else { continue }
             item.isSelected = false
@@ -118,7 +124,7 @@ actor CollectionManager {
         
         except.isSelected = true
         
-        try await collectionDatabaseManager.updateCollection()
+        try collectionDatabaseManager.updateCollection()
     }
     
     // MARK: - Delete Operations
@@ -126,8 +132,9 @@ actor CollectionManager {
     /// Deletes a specific `Collection` item from the local database.
     /// - Parameter item: The `Collection` object to be deleted.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved after deletion.
-    func deleteCollection(at item: Collection) async throws {
-        try await collectionDatabaseManager.deleteCollection(at: item)
+    @MainActor
+    func deleteCollection(at item: Collection) throws {
+        try collectionDatabaseManager.deleteCollection(at: item)
     }
     
     // MARK: - PRIVATE FUNCTIONS
@@ -137,7 +144,7 @@ actor CollectionManager {
     ///   - item: The `Collection` object to be updated.
     ///   - imageURLs: The `UnsplashImageResolution` object containing the image URLs.
     /// - Throws: An error if the operation fails, such as if the data cannot be encoded.
-    private func setEncodedImageURLs(for item: Collection, with imageURLs: UnsplashImageResolution) async throws {
+    private func setEncodedImageURLs(for item: Collection, with imageURLs: UnsplashImageResolution) throws {
         let imageURLsData: Data = try JSONEncoder().encode(imageURLs)
         item.imageQualityURLStringsEncoded = imageURLsData
     }

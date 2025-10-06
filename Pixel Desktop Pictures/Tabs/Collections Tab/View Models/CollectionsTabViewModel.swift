@@ -11,16 +11,17 @@ import SwiftUI
 @Observable
 final class CollectionsTabViewModel {
     // MARK: - INJECTED PROPERTIES
-    private let apiAccessKeyManager: APIAccessKeyManager = .shared
-    private let collectionManager: CollectionManager = .shared
-    private let queryImageManager: QueryImageManager = .shared
+    private let apiAccessKeyManager: APIAccessKeyManager
     
     // MARK: - INITIALIZER
-    init() {
-
+    init(apiAccessKeyManager: APIAccessKeyManager) {
+        self.apiAccessKeyManager = apiAccessKeyManager
     }
     
     // MARK: - ASSIGNED PROPERTIES
+    private let defaults: UserDefaultsManager = .init()
+    private let collectionManager: CollectionManager = .shared
+    private let queryImageManager: QueryImageManager = .shared
     private(set) var collectionsArray: [Collection] = []
     private(set) var popOverItem: (isPresented: Bool, type: CollectionsViewPopOver) = (false, .collectionCreationPopOver)
     
@@ -53,7 +54,7 @@ final class CollectionsTabViewModel {
     func initializeCollectionsViewModel() async {
         do {
             // Try to fetch collections from local database, if available.
-            let fetchedCollectionsArray: [Collection] = try await getCollectionManager().getCollections()
+            let fetchedCollectionsArray: [Collection] = try getCollectionManager().getCollections()
             
             // Handle the case where no collections are found in local database.
             guard !fetchedCollectionsArray.isEmpty else {
@@ -69,7 +70,7 @@ final class CollectionsTabViewModel {
                 try await fetchAndAddInitialQueryImages(with: collectionNamesArray)
                 
                 // Save the default collections array to local database.
-                try await getCollectionManager().addCollections(defaultCollectionsArray)
+                try getCollectionManager().addCollections(defaultCollectionsArray)
                 
                 // Then prepare the collections array.
                 setCollectionsArray(defaultCollectionsArray)
@@ -125,7 +126,7 @@ extension CollectionsTabViewModel {
     }
     
     func getUserDefaults() -> UserDefaultsManager {
-        return .shared
+        return defaults
     }
     
     func getErrorPopup() -> CollectionsTabErrorPopup.Type {

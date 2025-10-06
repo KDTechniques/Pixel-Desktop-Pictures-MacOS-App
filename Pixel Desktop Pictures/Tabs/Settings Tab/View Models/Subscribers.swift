@@ -33,7 +33,7 @@ extension SettingsTabViewModel {
                 Task { [weak self] in
                     guard let self else { return }
                     
-                    await saveUpdateIntervalToUserDefaults(interval)
+                    saveUpdateIntervalToUserDefaults(interval)
                     await desktopPictureScheduler.onChangeOfTimeIntervalSelection(from: interval)
                 }
             }
@@ -55,7 +55,7 @@ extension SettingsTabViewModel {
                 Task { [weak self] in
                     guard let self else { return }
                     
-                    await saveShowOnAllSpacesToUserDefaults(boolean)
+                    saveShowOnAllSpacesToUserDefaults(boolean)
                     
                     boolean
                     ? await desktopPictureManager.activateSpaceDidChangeNotificationObserver()
@@ -79,7 +79,7 @@ extension SettingsTabViewModel {
                 
                 LaunchAtLogin.isEnabled = boolean
                 Task { [weak self] in
-                    await self?.saveLaunchAtLoginToUserDefaults(boolean)
+                    self?.saveLaunchAtLoginToUserDefaults(boolean)
                 }
             }
             .store(in: &cancellables)

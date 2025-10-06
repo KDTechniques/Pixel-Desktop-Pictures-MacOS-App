@@ -38,7 +38,7 @@ extension CollectionsTabViewModel {
             )
             
             // First, add the new item to local database.
-            try await getCollectionManager().addCollections([collectionItem])
+            try getCollectionManager().addCollections([collectionItem])
             
             // Then, add the item to the collections array.
             appendCollectionsArray(collectionItem)

@@ -28,7 +28,7 @@ actor DesktopPictureManager {
     // MARK: - ASSIGNED PROPERTIES
     static let shared: DesktopPictureManager = .init()
     nonisolated(unsafe) let workspace = NSWorkspace.shared
-    let defaults: UserDefaultsManager = .shared
+    let defaults: UserDefaultsManager = .init()
     let currentDesktopPictureFileURLStringKey: UserDefaultKeys = .currentDesktopPictureFileURLStringKey
     private(set) var currentDesktopPictureFileURLString: String?
     let managerError = DesktopPictureManagerError.self
