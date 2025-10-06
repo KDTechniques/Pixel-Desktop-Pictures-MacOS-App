@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct TabContentWithWindowErrorView<T: View>: View {
-    // MARK: - PROPERTIES
-    @Environment(NetworkManager.self) private var networkManager
+    // MARK: - INJECTED PROPERTIES
     @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     let tab: TabItem
     let content: T
     
-    let errorModel = GlobalWindowError.self
+    // MARK: - ASSIGNED PROPERTIES
+    private let networkManager: NetworkManager = .shared
+    private let errorModel = GlobalWindowError.self
     
     // MARK: - INITIALIZERS
     init(tab: TabItem, @ViewBuilder _ content: () -> T) {
@@ -31,15 +32,15 @@ struct TabContentWithWindowErrorView<T: View>: View {
     var body: some View {
         Group {
             if networkManager.connectionStatus == .connected {
-                switch apiAccessKeyManager.apiAccessKeyStatus {
-                case .notFound, .validating, .failed:
-                    WindowErrorView(model: errorModel.apiAccessKeyNotFound)
-                case .invalid:
-                    WindowErrorView(model: errorModel.apiAccessKeyInvalid)
+                switch apiAccessKeyManager.apiAccessKeyValidationState {
                 case .rateLimited:
                     WindowErrorView(model: errorModel.apiAccessRateLimited)
+                    
                 case .connected :
                     content
+                    
+                default:
+                    WindowErrorView(model: errorModel.apiAccessKeyFailed)
                 }
             } else {
                 WindowErrorView(model: errorModel.notConnectedToInternet)
@@ -52,6 +53,5 @@ struct TabContentWithWindowErrorView<T: View>: View {
 // MARK: - PREVIEWS
 #Preview("Tab Content with Error View") {
     TabContentWithWindowErrorView(tab: .random(), Color.debug)
-        .environment(NetworkManager.shared)
         .previewModifier
 }

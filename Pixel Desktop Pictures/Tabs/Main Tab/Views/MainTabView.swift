@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(\.appEnvironment) private var appEnvironment
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
@@ -41,17 +40,9 @@ struct MainTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Main Tab View") {
-    @Previewable @State var networkManager: NetworkManager = .shared
-    @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
-    
     PreviewView {
         MainTabView()
             .frame(maxHeight: .infinity)
-            .environment(networkManager)
-            .environment(apiAccessKeyManager)
-            .onFirstTaskViewModifier {
-                apiAccessKeyManager.apiAccessKeyStatus = .connected
-            }
     }
 }
 
@@ -77,7 +68,7 @@ extension MainTabView {
     
     private func setDesktopPicture() async {
         showProgress = true
-        try? await mainTabVM.setDesktopPicture(environment: appEnvironment)
+        try? await mainTabVM.setDesktopPicture()
         showProgress = false
     }
 }

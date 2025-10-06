@@ -11,18 +11,21 @@ enum APIAccessKeyManagerError: LocalizedError {
     case apiAccessKeyNotFound
     case EmptyAPIAccessKey
     case apiAccessKeyCheckupFailed
-    case apiAccessKeyStatusNotFound
+    case apiAccessKeyValidationFailed(_ error: Error)
     
     var errorDescription: String? {
         switch self {
         case .apiAccessKeyNotFound:
             return "❌: Failed to find api access key from user defaults."
+            
         case .EmptyAPIAccessKey:
             return "❌: The passed API access key is empty."
+            
         case .apiAccessKeyCheckupFailed:
-            return "❌: Failed to perform an api access key checkup."
-        case .apiAccessKeyStatusNotFound:
-            return "❌: Failed to find api access key status from user defaults."
+            return "❌: Failed to perform an API access key checkup."
+            
+        case .apiAccessKeyValidationFailed(let error):
+            return "❌: Failed to validate API access key. \(error.localizedDescription)"
         }
     }
 }

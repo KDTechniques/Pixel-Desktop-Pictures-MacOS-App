@@ -13,7 +13,6 @@ fileprivate enum DownloadState: CaseIterable {
 
 struct DownloadButtonView: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(\.appEnvironment) private var appEnvironment
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
@@ -35,12 +34,6 @@ struct DownloadButtonView: View {
     DownloadButtonView()
         .padding()
         .previewModifier
-        .environment(MainTabViewModel(collectionsTabVM: .init(
-            apiAccessKeyManager: .init(),
-            collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock))),
-            queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))),
-                                      recentsTabVM: .init(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
-        )
 }
 
 // MARK: - EXTENTIONS

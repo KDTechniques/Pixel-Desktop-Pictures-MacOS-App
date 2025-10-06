@@ -11,17 +11,17 @@ import Foundation
 @Observable
 final class RecentsTabViewModel {
     // MARK: - INJECTED PROPERTIES
-    let recentManager: RecentManager
+    let recentManager: RecentManager = .shared
     
     // MARK: - INITIALIZER
-    init(recentManager: RecentManager) {
-        self.recentManager = recentManager
+    init() {
+
     }
     
     // MARK: - ASSIGNED PROPERTIES
     private(set) var recentsArray: [Recent] = []
     private let maxRecentsCount: Int = 102
-    private let vmError: RecentsTabViewModelError.Type = RecentsTabViewModelError.self
+    private let vmError = RecentsTabViewModelError.self
     
     // MARK: - INTERNAL FUNCTIONS
     
@@ -46,7 +46,7 @@ final class RecentsTabViewModel {
                 // Remove the exceeded items from the temp recents array.
                 let exceededItemsCount: Int = recentsArrayCount - maxRecentsCount
                 tempRecentsArray.removeLast(exceededItemsCount)
-                print("✅: Exceeded recent items have been removed from recents array.")
+                print("✅: Removed exceeded recent items from recents array.")
             }
             
             // First, assign the modified array to recents array.
@@ -54,7 +54,7 @@ final class RecentsTabViewModel {
             
             // Then save the changes to local database.
             try await recentManager.updateRecents()
-            Logger.log("✅: `Recents Tab View Model` has been initialized")
+            Logger.log("✅: Initialized `Recents Tab View Model`.")
         } catch {
             Logger.log(vmError.initializationFailed(error).localizedDescription)
         }
@@ -80,7 +80,7 @@ final class RecentsTabViewModel {
             // Get a recents array by appending, inserting, removing, and deleting exceeded items through the local database.
             let adjustedArray: [Recent] = try await insertAndDeleteExceededRecents(newRecentItem)
             recentsArray = adjustedArray
-            Logger.log("✅: New recent image item has been created and saved to local database.")
+            Logger.log("✅: Created & saved new recent image item to local database.")
         } catch {
             Logger.log(vmError.failedToAddRecentsArray(error).localizedDescription)
         }

@@ -56,8 +56,8 @@ extension DesktopPictureManager {
     /// `updateDesktopPicture` to set the wallpaper accordingly.
     @MainActor
     @objc private func onSpaceDidChange(notification: NSNotification) {
-        Task {
-            await updateDesktopPicture()
+        Task { @MainActor [weak self] in
+            await self?.updateDesktopPicture()
         }
         Logger.log("✅: Space did change.")
     }
@@ -99,7 +99,9 @@ extension DesktopPictureManager {
     /// `updateDesktopPicture` to set the wallpaper accordingly.
     @MainActor
     @objc private func onSystemDidWake(notification: NSNotification) {
-        Task { await updateDesktopPicture() }
+        Task { @MainActor [weak self] in
+            await self?.updateDesktopPicture()
+        }
         Logger.log("✅: System did wake.")
     }
 }

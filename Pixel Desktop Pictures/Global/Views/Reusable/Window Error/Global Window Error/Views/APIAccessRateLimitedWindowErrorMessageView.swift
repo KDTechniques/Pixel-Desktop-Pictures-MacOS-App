@@ -8,20 +8,9 @@
 import SwiftUI
 
 struct APIAccessRateLimitedWindowErrorMessageView: View {
-    // MARK: - INJECTED PROPERTIES
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
-    
     // MARK: - BODY
     var body: some View {
-        VStack(spacing: 30) {
-            Text("Too many changes in a short period. Please wait an hour before retrying.")
-            
-            ButtonView(title: "Retry", type: .regular) {
-                Task {
-                    await apiAccessKeyManager.apiAccessKeyCheckup()
-                }
-            }
-        }
+        Text("Too many changes in a short period. Please wait an hour before retrying.")
     }
 }
 

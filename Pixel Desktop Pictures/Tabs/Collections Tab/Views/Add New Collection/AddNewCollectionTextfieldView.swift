@@ -27,13 +27,7 @@ struct AddNewCollectionTextfieldView: View {
 #Preview("Add New Collection Textfield View") {
     AddNewCollectionTextfieldView()
         .padding()
-        .environment(
-            CollectionsTabViewModel(
-                apiAccessKeyManager: .init(),
-                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-            )
-        )
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS

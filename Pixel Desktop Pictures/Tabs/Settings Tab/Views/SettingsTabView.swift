@@ -10,7 +10,6 @@ import SwiftUI
 struct SettingsTabView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
     
     // MARK: - BODY
     var body: some View {
@@ -30,15 +29,11 @@ struct SettingsTabView: View {
                 
                 divider
                 
-                // API Access Key Textfield, and Connect Button
-                apiAccessKey
-                
                 // Restore Default settings, Version and Quit button
                 SettingsFooterView()
             }
             .padding([.horizontal, .bottom])
         }
-        .overlay(alignment: .bottom) { bottomPopup }
         .setTabContentHeightToTabsViewModelViewModifier(from: .settings)
     }
 }
@@ -53,26 +48,5 @@ extension SettingsTabView {
     private var divider: some View {
         Divider()
             .padding(.vertical)
-    }
-    
-    private var apiAccessKey: some View {
-        VStack(alignment: .leading) {
-            // API Access key Status
-            APIAccessKeyStatusView()
-            
-            // API Key Insertion
-            ButtonView(title: apiAccessKeyManager.apiAccessKeyStatus.buttonTitle, type: .regular) {
-                settingsTabVM.presentPopup(true)
-            }
-        }
-        .padding(.bottom)
-    }
-    
-    @ViewBuilder
-    private var bottomPopup: some View {
-        if settingsTabVM.isPresentedPopup {
-            APIAccessKeyPopupView()
-                .transition(.move(edge: .bottom))
-        }
     }
 }

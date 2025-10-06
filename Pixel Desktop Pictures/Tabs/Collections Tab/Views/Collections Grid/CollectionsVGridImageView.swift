@@ -21,7 +21,7 @@ struct CollectionsVGridImageView: View {
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @State private var showEditButton: Bool = false
     @State private var imageURLString: String?
-    private let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues = VGridValues.self
     
     // MARK: - BODY
     var body: some View {
@@ -50,13 +50,6 @@ struct CollectionsVGridImageView: View {
     CollectionsVGridImageView(item: try! .getDefaultCollectionsArray()[3])
         .frame(width: 120)
         .padding()
-        .environment(
-            CollectionsTabViewModel(
-                apiAccessKeyManager: .init(),
-                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-            )
-        )
         .previewModifier
 }
 

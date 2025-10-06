@@ -30,11 +30,5 @@ struct AddNewCollectionPopupDismissButtonView: View {
 #Preview("Add New Collection Textfield Reset Button View") {
     AddNewCollectionPopupDismissButtonView()
         .padding()
-        .environment(
-            CollectionsTabViewModel(
-                apiAccessKeyManager: .init(),
-                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-            )
-        )
+        .previewModifier
 }
