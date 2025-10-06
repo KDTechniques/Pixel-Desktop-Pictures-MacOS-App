@@ -15,12 +15,12 @@ struct SettingsFooterView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
             HStack(alignment: .bottom) {
-//#if Debug
+#if DEBUG
                 VStack(alignment: .leading) {
-                    eraseAllDataButton
-                    clearAllUserDefaults
+                    EraseAllDataButton()
+                    ClearAllUserDefaultsButton()
                 }
-//#endif
+#endif
                 Spacer()
                 restoreToDefaultButton
             }
@@ -78,8 +78,11 @@ extension SettingsFooterView {
         }
         .buttonStyle(.plain)
     }
-    
-    private var eraseAllDataButton: some View {
+}
+
+// MARK: - SUB VIEWS
+fileprivate struct EraseAllDataButton:  View {
+    var body: some View {
         Button("Reset Swift Data") {
             Task {
                 do {
@@ -91,8 +94,10 @@ extension SettingsFooterView {
             }
         }
     }
-    
-    private var clearAllUserDefaults: some View {
+}
+
+fileprivate struct ClearAllUserDefaultsButton: View {
+    var body: some View {
         Button("Reset User Defaults") {
             UserDefaultsManager.clearAllUserDefaults()
         }

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B7468292E8CF3B4005D8966 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 0B7468282E8CF3B4005D8966 /* Sparkle */; };
 		82734FA62D2D320F000F43F8 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 82734FA52D2D320F000F43F8 /* LaunchAtLogin */; };
 		82FA74702D19788E002E41BC /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 82FA746F2D19788E002E41BC /* SDWebImageSwiftUI */; };
 /* End PBXBuildFile section */
@@ -29,7 +28,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B7468292E8CF3B4005D8966 /* Sparkle in Frameworks */,
 				82734FA62D2D320F000F43F8 /* LaunchAtLogin in Frameworks */,
 				82FA74702D19788E002E41BC /* SDWebImageSwiftUI in Frameworks */,
 			);
@@ -76,7 +74,6 @@
 			packageProductDependencies = (
 				82FA746F2D19788E002E41BC /* SDWebImageSwiftUI */,
 				82734FA52D2D320F000F43F8 /* LaunchAtLogin */,
-				0B7468282E8CF3B4005D8966 /* Sparkle */,
 			);
 			productName = "Pixel Desktop Pictures";
 			productReference = 829048972D17F9840032417F /* Pixel Desktop Pictures.app */;
@@ -109,7 +106,6 @@
 			packageReferences = (
 				82FA746E2D19788E002E41BC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				82734FA42D2D320F000F43F8 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
-				0B7468272E8CF3B4005D8966 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 829048982D17F9840032417F /* Products */;
@@ -364,14 +360,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0B7468272E8CF3B4005D8966 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.8.0;
-			};
-		};
 		82734FA42D2D320F000F43F8 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Legacy.git";
@@ -391,11 +379,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0B7468282E8CF3B4005D8966 /* Sparkle */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0B7468272E8CF3B4005D8966 /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
-		};
 		82734FA52D2D320F000F43F8 /* LaunchAtLogin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 82734FA42D2D320F000F43F8 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */;

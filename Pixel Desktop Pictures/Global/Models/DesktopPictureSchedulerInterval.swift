@@ -21,16 +21,16 @@ enum DesktopPictureSchedulerInterval: String, Codable, CaseIterable {
     
     var timeInterval: TimeInterval {
         switch appEnvironment {
-//        case .production:
-//            switch self {
-//            case .hourly:
-//                return 60 * 60  // 1 hour in seconds
-//            case .daily:
-//                return 24 * 60 * 60  // 1 day in seconds
-//            case .weekly:
-//                return 7 * 24 * 60 * 60  // 1 week in seconds
-//            }
-        case .production, .mock:
+        case .production:
+            switch self {
+            case .hourly:
+                return 60 * 60  // 1 hour in seconds
+            case .daily:
+                return 24 * 60 * 60  // 1 day in seconds
+            case .weekly:
+                return 7 * 24 * 60 * 60  // 1 week in seconds
+            }
+        case .mock:
             // Note: Do not test for less than 10 minutes, as it is advised for `Activities Occurring in Intervals of 10 Minutes or More`.
             /// 1 minute is the minimum value that can be used; otherwise, the scheduler may not work properly.
             /// A value greater than 1 minute is always fine for testing purposes, but in a production environment, 10 minutes is the recommended minimum value.
