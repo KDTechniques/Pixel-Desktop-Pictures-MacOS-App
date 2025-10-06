@@ -271,7 +271,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Pixel Desktop Pictures/Pixel_Desktop_Pictures.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
@@ -308,7 +308,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Pixel Desktop Pictures/Pixel_Desktop_Pictures.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
