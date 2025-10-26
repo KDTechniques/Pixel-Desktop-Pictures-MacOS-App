@@ -271,7 +271,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Pixel Desktop Pictures/Pixel_Desktop_Pictures.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
@@ -292,7 +292,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 2025.10.8;
+				MARKETING_VERSION = 2025.10.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kdtechniques.Pixel-Desktop-Pictures";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -309,7 +309,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Pixel Desktop Pictures/Pixel_Desktop_Pictures.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
@@ -330,7 +330,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 2025.10.8;
+				MARKETING_VERSION = 2025.10.26;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kdtechniques.Pixel-Desktop-Pictures";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

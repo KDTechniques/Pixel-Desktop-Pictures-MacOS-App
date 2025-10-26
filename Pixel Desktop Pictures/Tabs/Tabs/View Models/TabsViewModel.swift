@@ -23,6 +23,5 @@ import Foundation
     func setTabContentHeight(height: CGFloat, from tab: TabItem) {
         guard tab == tabSelection else { return }
         selectedTabContentHeight = height
-        Logger.log("✅: Tab content has been assigned.")
     }
 }
