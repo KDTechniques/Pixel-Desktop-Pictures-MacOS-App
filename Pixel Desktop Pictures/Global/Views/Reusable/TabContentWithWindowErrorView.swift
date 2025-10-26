@@ -36,7 +36,7 @@ struct TabContentWithWindowErrorView<T: View>: View {
                 case .rateLimited:
                     WindowErrorView(model: errorModel.apiAccessRateLimited)
                     
-                case .connected :
+                case .connected, .unknown:
                     content
                     
                 default:

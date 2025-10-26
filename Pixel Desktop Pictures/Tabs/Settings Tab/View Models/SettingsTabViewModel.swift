@@ -17,10 +17,10 @@ import SwiftUI
     // MARK: - ASSIGNED PROPERTIES
     let desktopPictureManager: DesktopPictureManager = .shared
     
-    var launchAtLogin: Bool = true {
+    var launchAtLogin: Bool = false {
         didSet { launchAtLogin$ = launchAtLogin }
     }
-    @ObservationIgnored @Published private(set) var launchAtLogin$: Bool = true
+    @ObservationIgnored @Published private(set) var launchAtLogin$: Bool = false
     
     var showOnAllSpaces: Bool = true {
         didSet { showOnAllSpaces$ = showOnAllSpaces  }
@@ -35,6 +35,7 @@ import SwiftUI
     let defaults: UserDefaultsManager = .init()
     let vmError = SettingsTabViewModelError.self
     @ObservationIgnored var cancellables: Set<AnyCancellable> = []
+    var showLaunchAtLoginAlert: Bool = false
     
     // MARK: - INITIALIZER
     init(mainTabVM: MainTabViewModel) {
@@ -85,6 +86,16 @@ import SwiftUI
     func quitApp() {
         NSApplication.shared.terminate(nil)
         Logger.log("✅: App has been quit.")
+    }
+    
+    func handleLaunchAtLoginAlertOnTabViewAppear() {
+        guard defaults.get(key: .launchAtLoginAlert) as? Bool == nil else { return }
+        
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            showLaunchAtLoginAlert = true
+            defaults.save(key: .launchAtLoginAlert, value: true)
+        }
     }
     
     // MARK: - PRIVATE FUNCTIONS

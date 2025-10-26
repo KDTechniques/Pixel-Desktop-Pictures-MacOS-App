@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import TipKit
 
 let appEnvironment: AppEnvironment = .production  // Note: Change to `.mock` as needed
 
 /// one api access key grands 50 request per hour, so 50 x 10 is 500  requests per hour.
-let apiAccessKeys: [String] = [
+let apiAccessKeys: [String] = [ // invalid key for testing purposes: 2do6EHZxsHAQ_Aprpob3hGXHaBPDGHYscSt9hPlxuIQ
     "7ej27jdK3xA-t6PhPiFYfPts0jUsv-WLQxa61g0gDrI",
     "LI1BeRqbbuTbwNTDNAscF_CG0HDTxSclXOJrqZuBX9Q",
     "WNifUUadNzXFz6khL7UmV4s5rBqG7KICTVUrIWcIp8k",
@@ -34,11 +35,17 @@ struct Pixel_Desktop_PicturesApp: App {
     
     // MARK: - INITIALIZER
     init() {
-        let apiAccessKeyManagerInstace: APIAccessKeyManager = .init()
-        apiAccessKeyManager = apiAccessKeyManagerInstace
+        try? Tips.configure()
+        
+#if DEBUG
+        try? Tips.resetDatastore()
+#endif
+        
+        let apiAccessKeyManagerInstance: APIAccessKeyManager = .init()
+        apiAccessKeyManager = apiAccessKeyManagerInstance
         
         // COLLECTIONS Related
-        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiAccessKeyManager: apiAccessKeyManagerInstace)
+        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiAccessKeyManager: apiAccessKeyManagerInstance)
         collectionsTabVM = collectionsTabVMInstance
         
         // RECENTS Related
@@ -55,7 +62,7 @@ struct Pixel_Desktop_PicturesApp: App {
         
         
         Task {
-            await apiAccessKeyManagerInstace.initializeAPIAccessKeyManager()
+            await apiAccessKeyManagerInstance.initializeAPIAccessKeyManager()
             await collectionsTabVMInstance.initializeCollectionsViewModel()
             await recentsTabVMInstance.initializeRecentsTabViewModel()
             await mainTabVMInstance.initializeMainTabViewModel()

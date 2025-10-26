@@ -32,4 +32,11 @@ struct Utilities {
         
         return mimeMapping[mimeType] ?? "jpg"
     }
+    
+    static func isEntireUserDefaultsEmpty() -> Bool {
+        guard let bundleID = Bundle.main.bundleIdentifier,
+              let _ = UserDefaults.standard.persistentDomain(forName: bundleID) else { return true }
+        
+        return false
+    }
 }

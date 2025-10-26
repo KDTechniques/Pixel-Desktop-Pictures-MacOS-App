@@ -10,7 +10,7 @@ import SwiftUI
 struct APIAccessKeyFailedWindowErrorMessageView: View {
     // MARK: - BODY
     var body: some View {
-        Text("Something went wrong on our side. If the issue continues after restarting the app, please wait for the next update.")
+        Text("If the issue continues after restarting the app, please wait for the next update.")
     }
 }
 

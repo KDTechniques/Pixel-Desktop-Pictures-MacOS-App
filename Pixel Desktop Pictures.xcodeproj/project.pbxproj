@@ -271,7 +271,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Pixel Desktop Pictures/Pixel_Desktop_Pictures.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
@@ -283,6 +283,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Pixel-Desktop-Pictures-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pixel Desktop Pictures";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -291,7 +292,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 2025.10.6;
+				MARKETING_VERSION = 2025.10.8;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kdtechniques.Pixel-Desktop-Pictures";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -308,7 +309,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Pixel Desktop Pictures/Pixel_Desktop_Pictures.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pixel Desktop Pictures/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
@@ -320,6 +321,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Pixel-Desktop-Pictures-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Pixel Desktop Pictures";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -328,7 +330,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 2025.10.6;
+				MARKETING_VERSION = 2025.10.8;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kdtechniques.Pixel-Desktop-Pictures";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

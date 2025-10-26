@@ -13,7 +13,7 @@ import Foundation
     private(set) var tabSelection: TabItem = .main
     private(set) var selectedTabContentHeight: CGFloat = .infinity
     
-    // MARK: - INTERNAL FUNCTIONS
+    // MARK: - PUBLIC FUNCTIONS
     
     func setTabSelection(_ tab: TabItem) {
         tabSelection = tab

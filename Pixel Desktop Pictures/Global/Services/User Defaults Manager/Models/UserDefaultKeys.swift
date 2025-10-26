@@ -20,4 +20,5 @@ enum UserDefaultKeys: String {
     case currentDesktopPictureFileURLStringKey
     case currentImageKey
     case desktopSchedulerBackgroundTaskFailureKey
+    case launchAtLoginAlert
 }

@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct TabsView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
+    @Environment(SettingsTabViewModel.self) private var settingsVM
+    
+    let tip: SampleTip = .init()
     
     // MARK: - BODY
     var body: some View {
@@ -31,6 +35,16 @@ struct TabsView: View {
         }
         .frame(width: TabItem.allWindowWidth)
         .background(Color.windowBackground)
+//        .alert(LaunchAtLoginAlertModel.title, isPresented: settingsVM.binding(\.showLaunchAtLoginAlert)) {
+//            LaunchAtLoginAlertModel.actions {
+//                settingsVM.launchAtLogin = true
+//            }
+//        } message: {
+//            LaunchAtLoginAlertModel.message
+//        }
+        .onFirstAppearViewModifier {
+            settingsVM.handleLaunchAtLoginAlertOnTabViewAppear()
+        }
     }
 }
 
@@ -38,4 +52,14 @@ struct TabsView: View {
 #Preview("Tabs View") {
     TabsView()
         .previewModifier
+}
+
+struct SampleTip: Tip {
+    var title: Text {
+        Text("title goes here")
+    }
+    
+    var message: Text? {
+        Text("message goes here")
+    }
 }
