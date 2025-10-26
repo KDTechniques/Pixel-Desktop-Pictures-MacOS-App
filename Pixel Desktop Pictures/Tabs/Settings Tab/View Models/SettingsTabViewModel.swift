@@ -35,7 +35,6 @@ import SwiftUI
     let defaults: UserDefaultsManager = .init()
     let vmError = SettingsTabViewModelError.self
     @ObservationIgnored var cancellables: Set<AnyCancellable> = []
-    var showLaunchAtLoginAlert: Bool = false
     
     // MARK: - INITIALIZER
     init(mainTabVM: MainTabViewModel) {
@@ -92,8 +91,8 @@ import SwiftUI
         guard defaults.get(key: .launchAtLoginAlert) as? Bool == nil else { return }
         
         Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            showLaunchAtLoginAlert = true
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            LaunchAtLoginAlertModel.showLaunchAtLoginAlert { launchAtLogin = true }
             defaults.save(key: .launchAtLoginAlert, value: true)
         }
     }

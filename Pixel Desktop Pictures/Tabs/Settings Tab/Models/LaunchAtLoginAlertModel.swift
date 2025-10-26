@@ -8,19 +8,27 @@
 import SwiftUI
 
 struct LaunchAtLoginAlertModel {
-    static let title: String = "Launch Pixel Desktop Pictures at Login?"
-    static let message: Text = .init("This keeps your wallpapers changing automatically. You can turn it off anytime in Settings.")
+    private static let title: String = "Launch Pixel Desktop Pictures at Login?"
+    private static let message: String = "This keeps your wallpapers changing automatically. You can turn it off anytime in Settings."
+    private static let primaryButtonlabel: String = "Enable at Login"
+    private static let secondaryButtonlabel: String = "Not Now"
     
-    @ViewBuilder
-    static func actions(defaultAction: @escaping () -> Void) -> some View {
-        Button("Enable at Login") { defaultAction() }
-        Button("Not Now", role: .cancel) { }
+    
+    static func showLaunchAtLoginAlert(_ action: () -> Void) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: primaryButtonlabel)
+        alert.addButton(withTitle: secondaryButtonlabel)
+        
+        let response = alert.runModal()
+        
+        switch response {
+        case .alertFirstButtonReturn:
+            action()
+        default:
+            break
+        }
     }
-}
-
-
-struct LaunchAtLoginAlertButtonModel {
-    let text: String
-    let role: ButtonRole? = nil
-    let action: () -> Void
 }
