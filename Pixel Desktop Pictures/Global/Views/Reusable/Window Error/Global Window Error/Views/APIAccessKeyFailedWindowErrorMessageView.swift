@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyFailedWindowErrorMessageView.swift
+//  APIKeyFailedWindowErrorMessageView.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-10-02.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct APIAccessKeyFailedWindowErrorMessageView: View {
+struct APIKeyFailedWindowErrorMessageView: View {
     // MARK: - BODY
     var body: some View {
         Text("If the issue continues after restarting the app, please wait for the next update.")
@@ -15,7 +15,7 @@ struct APIAccessKeyFailedWindowErrorMessageView: View {
 }
 
 // MARK: - PREVIEWS
-#Preview("APIAccessKeyFailedWindowErrorMessageView") {
-    APIAccessKeyFailedWindowErrorMessageView()
+#Preview("APIKeyFailedWindowErrorMessageView") {
+    APIKeyFailedWindowErrorMessageView()
         .previewModifier
 }

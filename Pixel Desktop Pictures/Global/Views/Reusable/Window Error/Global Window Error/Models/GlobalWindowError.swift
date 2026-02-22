@@ -10,22 +10,22 @@ import SwiftUI
 /**
  A model that represents error states at the window level in the application.
  
- This model defines global error types that are not specific to any individual tabs in the application. These error states, such as API access issues or network connectivity problems, are used to present error messages at a global level  throughout the app.
+ This model defines global error types that are not specific to any individual tabs in the application. These error states, such as API issues or network connectivity problems, are used to present error messages at a global level  throughout the app.
  */
 enum GlobalWindowError: CaseIterable, WindowErrorProtocol {
-    case apiAccessRateLimited
+    case apiRateLimited
     case notConnectedToInternet
-    case apiAccessKeyFailed
+    case apiKeyFailed
     
     var title: String {
         switch self {
         case .notConnectedToInternet:
             return "Failed to Fetch Content"
             
-        case .apiAccessRateLimited:
+        case .apiRateLimited:
             return "Exceeded the Number of Image Changes"
             
-        case .apiAccessKeyFailed:
+        case .apiKeyFailed:
             return "Something Went Wrong"
         }
     }
@@ -33,22 +33,22 @@ enum GlobalWindowError: CaseIterable, WindowErrorProtocol {
     @ViewBuilder
     var messageView: some View {
         switch self {
-        case .apiAccessRateLimited:
-            APIAccessRateLimitedWindowErrorMessageView()
+        case .apiRateLimited:
+            APIRateLimitedWindowErrorMessageView()
             
         case .notConnectedToInternet:
             NotConnectedToInternetWindowErrorMessageView()
             
-        case .apiAccessKeyFailed:
-            APIAccessKeyFailedWindowErrorMessageView()
+        case .apiKeyFailed:
+            APIKeyFailedWindowErrorMessageView()
         }
     }
     
     var withBottomPadding: Bool {
         switch self {
-        case .apiAccessKeyFailed, .notConnectedToInternet:
+        case .apiKeyFailed, .notConnectedToInternet:
             return true
-        case .apiAccessRateLimited:
+        case .apiRateLimited:
             return false
         }
     }

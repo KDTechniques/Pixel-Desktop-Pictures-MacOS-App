@@ -1,5 +1,5 @@
 //
-//  APIAccessRateLimitedWindowErrorMessageView.swift
+//  APIRateLimitedWindowErrorMessageView.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-12.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct APIAccessRateLimitedWindowErrorMessageView: View {
+struct APIRateLimitedWindowErrorMessageView: View {
     // MARK: - BODY
     var body: some View {
         Text("Too many changes in a short period. Please wait an hour before retrying.")
@@ -15,8 +15,8 @@ struct APIAccessRateLimitedWindowErrorMessageView: View {
 }
 
 // MARK: - PREVIEWS
-#Preview("API Access Rate Limited Window Error Message View") {
-    WindowErrorView(model: GlobalWindowError.apiAccessRateLimited)
+#Preview("API  Rate Limited Window Error Message View") {
+    WindowErrorView(model: GlobalWindowError.apiRateLimited)
         .padding()
         .previewModifier
 }

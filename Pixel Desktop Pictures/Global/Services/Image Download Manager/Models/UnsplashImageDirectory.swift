@@ -58,7 +58,7 @@ enum UnsplashImageDirectory: UnsplashImageDirectoryProtocol {
     
     /// Deletes all previous desktop pictures in the Documents directory.
     /// Avoids removing all files in the Downloads folder.
-    /// - Throws: An error if the directory path cannot be read or accessed.
+    /// - Throws: An error if the directory path cannot be read ored.
     func deletePreviousDesktopPictures() throws {
         // Avoid removing all the files in the downloads folder
         guard directory == .documentDirectory else { return }
@@ -92,7 +92,7 @@ enum UnsplashImageDirectory: UnsplashImageDirectoryProtocol {
                 }
             }
         } catch {
-            Logger.log("Error accessing directory: \(error.localizedDescription)")
+            Logger.log("Erroring directory: \(error.localizedDescription)")
         }
     }
     

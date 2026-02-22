@@ -91,7 +91,7 @@ enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
                 }
             }
         } catch {
-            Logger.log("Error accessing directory: \(error.localizedDescription)")
+            Logger.log("Erroring directory: \(error.localizedDescription)")
         }
     }
     

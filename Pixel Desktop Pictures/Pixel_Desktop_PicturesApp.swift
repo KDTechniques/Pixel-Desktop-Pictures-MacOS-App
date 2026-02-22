@@ -10,8 +10,8 @@ import TipKit
 
 let appEnvironment: AppEnvironment = .production  // Note: Change to `.mock` as needed
 
-/// one api access key grands 50 request per hour, so 50 x 10 is 500  requests per hour.
-let apiAccessKeys: [String] = [ // invalid key for testing purposes: 2do6EHZxsHAQ_Aprpob3hGXHaBPDGHYscSt9hPlxuIQ
+/// one api key grands 50 request per hour, so 50 x 10 is 500  requests per hour.
+let apiKeys: [String] = [ // invalid key for testing purposes: 2do6EHZxsHAQ_Aprpob3hGXHaBPDGHYscSt9hPlxuIQ
     "tYJmkmA0ZXLhmoPDiGEvIJxAHjI2V9d_BY2b2ueumR8",
     "7ej27jdK3xA-t6PhPiFYfPts0jUsv-WLQxa61g0gDrI",
     "LI1BeRqbbuTbwNTDNAscF_CG0HDTxSclXOJrqZuBX9Q",
@@ -31,7 +31,7 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var mainTabVM: MainTabViewModel
     @State private var recentsTabVM: RecentsTabViewModel
     @State private var collectionsTabVM: CollectionsTabViewModel
-    @State private var apiAccessKeyManager: APIAccessKeyManager
+    @State private var apiKeyManager: APIKeyManager
     
     // MARK: - INITIALIZER
     init() {
@@ -41,11 +41,11 @@ struct Pixel_Desktop_PicturesApp: App {
         try? Tips.resetDatastore()
 #endif
         
-        let apiAccessKeyManagerInstance: APIAccessKeyManager = .init()
-        apiAccessKeyManager = apiAccessKeyManagerInstance
+        let apiKeyManagerInstance: APIKeyManager = .init()
+        apiKeyManager = apiKeyManagerInstance
         
         // COLLECTIONS Related
-        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiAccessKeyManager: apiAccessKeyManagerInstance)
+        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiKeyManager: apiKeyManagerInstance)
         collectionsTabVM = collectionsTabVMInstance
         
         // RECENTS Related
@@ -62,7 +62,7 @@ struct Pixel_Desktop_PicturesApp: App {
         
         
         Task {
-            await apiAccessKeyManagerInstance.initializeAPIAccessKeyManager()
+            await apiKeyManagerInstance.initializeAPIKeyManager()
             await collectionsTabVMInstance.initializeCollectionsViewModel()
             await recentsTabVMInstance.initializeRecentsTabViewModel()
             await mainTabVMInstance.initializeMainTabViewModel()
@@ -77,7 +77,7 @@ struct Pixel_Desktop_PicturesApp: App {
     var body: some Scene {
         MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .menuBarIcon) {
             TabsView()
-                .environment(apiAccessKeyManager)
+                .environment(apiKeyManager)
                 .environment(tabsVM)
                 .environment(settingsTabVM)
                 .environment(mainTabVM)

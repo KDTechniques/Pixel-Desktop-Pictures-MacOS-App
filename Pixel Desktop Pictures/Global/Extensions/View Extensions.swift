@@ -25,13 +25,13 @@ extension View {
         self
             .frame(width: TabItem.allWindowWidth)
             .background(Color.windowBackground)
-            .environment(APIAccessKeyManager())
+            .environment(APIKeyManager())
             .environment(ErrorPopupViewModel.shared)
             .environment(TabsViewModel())
-            .environment(MainTabViewModel(collectionsTabVM: .init(apiAccessKeyManager: .init()), recentsTabVM: .init()))
-            .environment(CollectionsTabViewModel(apiAccessKeyManager: .init()))
+            .environment(MainTabViewModel(collectionsTabVM: .init(apiKeyManager: .init()), recentsTabVM: .init()))
+            .environment(CollectionsTabViewModel(apiKeyManager: .init()))
             .environment(RecentsTabViewModel())
-            .environment(SettingsTabViewModel(mainTabVM: .init(collectionsTabVM: .init(apiAccessKeyManager: .init()), recentsTabVM: .init())))
+            .environment(SettingsTabViewModel(mainTabVM: .init(collectionsTabVM: .init(apiKeyManager: .init()), recentsTabVM: .init())))
     }
 }
 

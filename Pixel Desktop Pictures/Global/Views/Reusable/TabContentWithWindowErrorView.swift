@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TabContentWithWindowErrorView<T: View>: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
+    @Environment(APIKeyManager.self) private var apiKeyManager
     let tab: TabItem
     let content: T
     
@@ -32,15 +32,15 @@ struct TabContentWithWindowErrorView<T: View>: View {
     var body: some View {
         Group {
             if networkManager.connectionStatus == .connected {
-                switch apiAccessKeyManager.apiAccessKeyValidationState {
+                switch apiKeyManager.apiKeyValidationState {
                 case .rateLimited:
-                    WindowErrorView(model: errorModel.apiAccessRateLimited)
+                    WindowErrorView(model: errorModel.apiRateLimited)
                     
                 case .connected, .unknown:
                     content
                     
                 default:
-                    WindowErrorView(model: errorModel.apiAccessKeyFailed)
+                    WindowErrorView(model: errorModel.apiKeyFailed)
                 }
             } else {
                 WindowErrorView(model: errorModel.notConnectedToInternet)

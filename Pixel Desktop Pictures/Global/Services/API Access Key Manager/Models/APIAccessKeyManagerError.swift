@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyManagerError.swift
+//  APIKeyManagerError.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-16.
@@ -7,21 +7,21 @@
 
 import Foundation
 
-enum APIAccessKeyManagerError: LocalizedError {
-    case apiAccessKeyNotFound
-    case apiAccessKeyCheckupFailed
-    case apiAccessKeyValidationFailed(_ error: Error)
+enum APIKeyManagerError: LocalizedError {
+    case apiKeyNotFound
+    case apiKeyCheckupFailed
+    case apiKeyValidationFailed(_ error: Error)
     
     var errorDescription: String? {
         switch self {
-        case .apiAccessKeyNotFound:
-            return "❌: Failed to find api access key from user defaults."
+        case .apiKeyNotFound:
+            return "❌: Failed to find api key from user defaults."
             
-        case .apiAccessKeyCheckupFailed:
-            return "❌: Failed to perform an API access key checkup."
+        case .apiKeyCheckupFailed:
+            return "❌: Failed to perform an API key checkup."
             
-        case .apiAccessKeyValidationFailed(let error):
-            return "❌: Failed to validate API access key. \(error.localizedDescription)"
+        case .apiKeyValidationFailed(let error):
+            return "❌: Failed to validate API key. \(error.localizedDescription)"
         }
     }
 }
