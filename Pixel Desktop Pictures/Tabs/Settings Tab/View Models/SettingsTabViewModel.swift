@@ -5,7 +5,6 @@
 //  Created by Kavinda Dilshan on 2024-12-27.
 //
 
-import AppKit
 import Combine
 import SwiftUI
 
@@ -78,17 +77,8 @@ import SwiftUI
         Logger.log("✅: Restored defaults settings.")
     }
     
-    /// Quits the application.
-    ///
-    /// This function terminates the running application by invoking the `terminate` method
-    /// on the shared `NSApplication` instance.
-    func quitApp() {
-        NSApplication.shared.terminate(nil)
-        Logger.log("✅: App has been quit.")
-    }
-    
     func handleLaunchAtLoginAlertOnTabViewAppear() {
-        guard defaults.get(key: .launchAtLoginAlert) as? Bool == nil else { return }
+        guard defaults.get(key: .launchAtLoginAlert).isNil() else { return }
         
         Task {
             try? await Task.sleep(nanoseconds: 3_000_000_000)

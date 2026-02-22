@@ -37,7 +37,7 @@ struct UnsplashImageAPIService {
     /// that the key validation was unsuccessful.
     func validateAPIKey() async throws {
         do {
-            let _ = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImage.self)
+            let _ = try await getRandomImage()
             Logger.log("✅: API key has been validated.")
         } catch {
             Logger.log(UnsplashImageAPIServiceError.failedToFetchAPIKey(error).localizedDescription)

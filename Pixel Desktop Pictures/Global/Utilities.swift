@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AppKit
 
 struct Utilities {
     /// Retrieves the app's version and build number from the main bundle.
@@ -31,5 +32,19 @@ struct Utilities {
         ]
         
         return mimeMapping[mimeType] ?? "jpg"
+    }
+    
+    static func quitApp() {
+        NSApplication.shared.terminate(nil)
+        Logger.log("✅: App has been quit.")
+    }
+    
+    static func quitNRelaunchApp() {
+        let task = Process()
+        task.launchPath = "/usr/bin/open"
+        task.arguments = [Bundle.main.bundlePath]
+        task.launch()
+        
+        NSApp.terminate(nil)
     }
 }

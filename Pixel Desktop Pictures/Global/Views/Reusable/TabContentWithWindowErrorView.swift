@@ -39,6 +39,13 @@ struct TabContentWithWindowErrorView<T: View>: View {
                 case .connected, .unknown:
                     content
                     
+                case .validating:
+                    if apiKeyManager.getAPIKeyFromUserDefaults().isNil() {
+                        SettingThingsUpView()
+                    } else {
+                        content
+                    }
+                    
                 default:
                     WindowErrorView(model: errorModel.apiKeyFailed)
                 }

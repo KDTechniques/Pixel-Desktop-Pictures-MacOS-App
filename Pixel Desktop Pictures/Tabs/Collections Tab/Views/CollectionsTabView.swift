@@ -37,10 +37,13 @@ struct CollectionsTabView: View {
     @Previewable @State var collectionsTabVM: CollectionsTabViewModel = .init(apiKeyManager: .init())
     
     PreviewView {
-        CollectionsVGridScrollView(scrollPosition: .constant(.init(edge: .top)))
-            .environment(collectionsTabVM)
-            .onFirstAppearViewModifier {
-                collectionsTabVM.setCollectionsArray(try! Collection.getDefaultCollectionsArray())
-            }
+//        CollectionsVGridScrollView(scrollPosition: .constant(.init(edge: .top)))
+//            .environment(collectionsTabVM)
+//            .onFirstAppearViewModifier {
+//                collectionsTabVM.setCollectionsArray(try! Collection.getDefaultCollectionsArray())
+//            }
+        
+        
+        WindowErrorView(model: CollectionsTabWindowError.collectionsTabViewModelInitializationFailed)
     }
 }

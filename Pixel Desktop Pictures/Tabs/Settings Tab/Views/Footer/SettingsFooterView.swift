@@ -68,7 +68,7 @@ extension SettingsFooterView {
     
     private var quitButton: some View {
         Button {
-            settingsTabVM.quitApp()
+            Utilities.quitApp()
         } label: {
             Text("Quit")
                 .foregroundStyle(Color.buttonForeground)
