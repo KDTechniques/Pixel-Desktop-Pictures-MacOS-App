@@ -146,6 +146,7 @@ struct UnsplashImageAPIService {
         let model: T = try JSONDecoder().decode(T.self, from: data)
         
         Logger.log("✅: Data has been fetched and decoded.")
+        
         // Return Model Object
         return model
     }

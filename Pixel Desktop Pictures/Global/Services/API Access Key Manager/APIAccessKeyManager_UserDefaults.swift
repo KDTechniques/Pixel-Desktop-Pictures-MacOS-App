@@ -14,10 +14,7 @@ extension APIAccessKeyManager {
     /// - Updates the access key status if no key is present.
     func getAPIAccessKeyFromUserDefaults() -> String? {
         guard let apiAccessKey: String = defaults.get(key: .apiAccessKey) as? String else {
-            if !Utilities.isEntireUserDefaultsEmpty() {
-                Logger.log(errorModel.apiAccessKeyNotFound.localizedDescription)
-            }
-           
+            Logger.log(errorModel.apiAccessKeyNotFound.localizedDescription)
             return nil
         }
         

@@ -9,7 +9,6 @@ import Foundation
 
 enum APIAccessKeyManagerError: LocalizedError {
     case apiAccessKeyNotFound
-    case EmptyAPIAccessKey
     case apiAccessKeyCheckupFailed
     case apiAccessKeyValidationFailed(_ error: Error)
     
@@ -17,9 +16,6 @@ enum APIAccessKeyManagerError: LocalizedError {
         switch self {
         case .apiAccessKeyNotFound:
             return "❌: Failed to find api access key from user defaults."
-            
-        case .EmptyAPIAccessKey:
-            return "❌: The passed API access key is empty."
             
         case .apiAccessKeyCheckupFailed:
             return "❌: Failed to perform an API access key checkup."

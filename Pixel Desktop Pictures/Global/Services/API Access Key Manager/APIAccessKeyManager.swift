@@ -21,14 +21,20 @@ final class APIAccessKeyManager {
     }
     
     // MARK: - ASSIGNED PROPERTIES
+    
+    // Managers/Services
     let defaults: UserDefaultsManager = .init()
     let networkManager: NetworkManager = .shared
-    @ObservationIgnored private(set) var apiAccessKey: String?
-    private(set) var apiAccessKeyValidationState: APIAccessKeyValidityStates?
-    let errorModel = APIAccessKeyManagerError.self
-    @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
-    @ObservationIgnored private(set) var initialAPIKeyIndex: Int?
     
+    // Models
+    let errorModel = APIAccessKeyManagerError.self
+    
+    // Publishers
+    private(set) var apiAccessKeyValidationState: APIAccessKeyValidityStates?
+    
+    @ObservationIgnored private(set) var apiAccessKey: String?
+    @ObservationIgnored private(set) var initialAPIKeyIndex: Int?
+    @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - SETTERS
     
@@ -47,22 +53,20 @@ final class APIAccessKeyManager {
     // MARK: - PUBLIC FUNCTIONS
     
     func initializeAPIAccessKeyManager() async {
-        // First get the api key from user defaults, and it may be nil.
-        let savedAPIKey: String? = getAPIAccessKeyFromUserDefaults()
+        // First get the api key from user defaults.
+        /// if the saved api key is nil we take the first available api key from the api keys array and proceed with the validation.
+        let apiKey: String? = getAPIAccessKeyFromUserDefaults() ?? apiAccessKeys.first
+        
+        guard let apiKey else { return }
         
         // Even if the key is not nil, it might be invalid or rate limited at the moment.
-        if savedAPIKey != nil {
-            // Yet we still assign the value to the api access key and set the validation state to `.unknown`.
-            /// while `.unknown` state is being handled by the front end for better user experience we perform the validation in the background to make sure the api key is valid.
-            /// Ex: even if the retrieved key is invalid we can show the usual UI to the user, until we are done processing the validation.
-            /// If user tries to reload the next image while the invalid api is there, they will see a circular progress or something like that until we finish processing the api key validation.
-            setAPIAccessKey(savedAPIKey)
-            setAPIAccessKeyValidationState(.unknown)
-        }
-        
-        // if the saved api key is nil we take the first available api key from the api keys array and proceed with the validation.
-        guard let apiAccessKey: String = savedAPIKey ?? apiAccessKeys.first else { return }
-        await apiAccessKeyValidation(apiAccessKey)
+        /// Yet we still assign the value to the api access key and set the validation state to `.unknown`.
+        /// while `.unknown` state is being handled by the front end for better user experience we perform the validation in the background to make sure the api key is valid.
+        /// Ex: even if the retrieved key is invalid we can show the usual UI to the user, until we are done processing the validation.
+        /// If user tries to reload the next image while the invalid api is there, they will see a circular progress or something like that until we finish processing the api key validation.
+        setAPIAccessKey(apiKey)
+        setAPIAccessKeyValidationState(.unknown)
+        await validateAPIKey(apiKey)
     }
     
     /// Retrieves the current API access key.
@@ -79,7 +83,7 @@ final class APIAccessKeyManager {
             return savedAPIAccessKey
         }
         
-        Logger.log("✅: returned API access key.")
+        Logger.log("✅: Returned API access key.")
         return apiAccessKey
     }
     
@@ -90,8 +94,11 @@ final class APIAccessKeyManager {
             .removeDuplicates()
             .debounce(for: .seconds(5), scheduler: DispatchQueue.main)
             .sink { [weak self] connection in
-                guard let self,
-                      connection == .connected && apiAccessKeyValidationState == .noInternet else { return }
+                guard
+                    let self,
+                    connection == .connected,
+                    apiAccessKeyValidationState == .noInternet,
+                    apiAccessKeyValidationState != .validating else { return }
                 
                 Task { [weak self] in
                     await self?.initializeAPIAccessKeyManager()
@@ -101,7 +108,7 @@ final class APIAccessKeyManager {
         
     }
     
-    private func apiAccessKeyValidation(_ key: String) async {
+    private func validateAPIKey(_ key: String) async {
         // To validate the api key we must create an instance of Unsplash image api service by passing the given api key.
         let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: key)
         
@@ -146,7 +153,7 @@ final class APIAccessKeyManager {
                 let nextAPIAccessKey: String = apiAccessKeys[nextIndex]
                 /// once we have the next available api key we check whether that api key is valid or not.
                 /// if it's not valid the validation process iterates.
-                await apiAccessKeyValidation(nextAPIAccessKey)
+                await validateAPIKey(nextAPIAccessKey)
             } else {
                 /// this line get executed when we reach the initial index after a whole iteration through the array.
                 /// that means we're fucked. all the api keys are rate limited now. Congrates that means somewhat user base is currently using all the api keys.
