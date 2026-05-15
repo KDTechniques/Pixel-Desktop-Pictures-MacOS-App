@@ -39,7 +39,11 @@ struct Pixel_Desktop_PicturesApp: App {
         recentsTabVM = recentsTabVMInstance
         
         // MAIN Tab Related
-        let mainTabVMInstance: MainTabViewModel = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
+        let mainTabVMInstance: MainTabViewModel = .init(
+            collectionsTabVM: collectionsTabVMInstance,
+            recentsTabVM: recentsTabVMInstance,
+            apiKeyManager: apiKeyManagerInstance
+        )
         mainTabVM = mainTabVMInstance
         
         // SETTINGS Tab Related

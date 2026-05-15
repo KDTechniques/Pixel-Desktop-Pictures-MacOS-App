@@ -68,7 +68,18 @@ extension MainTabView {
     
     private func setDesktopPicture() async {
         showProgress = true
-        try? await mainTabVM.setDesktopPicture()
+        
+        do {
+            try await setDesktopPictureTask()
+        } catch {
+            await mainTabVM.apiKeyManager.onUnsplashImageAPIFailure(error) {
+                Task { try await setDesktopPictureTask() }
+            }
+        }
+    }
+    
+    private func setDesktopPictureTask() async throws {
+        try await mainTabVM.setDesktopPicture()
         showProgress = false
     }
 }

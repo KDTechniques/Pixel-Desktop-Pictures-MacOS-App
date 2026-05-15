@@ -13,6 +13,7 @@ final class MainTabViewModel {
     // MARK: - INJECTED PROPERTIES
     let collectionsTabVM: CollectionsTabViewModel
     let recentsTabVM: RecentsTabViewModel
+    let apiKeyManager: APIKeyManager
     
     // MARK: - ASSIGNED PROPERTIES
     private let desktopPictureManager: DesktopPictureManager = .shared
@@ -24,9 +25,10 @@ final class MainTabViewModel {
     let errorPopup = MainTabErrorPopup.self
     
     // MARK: - INITIALIZER
-    init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel) {
+    init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel, apiKeyManager: APIKeyManager) {
         self.collectionsTabVM = collectionsTabVM
         self.recentsTabVM = recentsTabVM
+        self.apiKeyManager = apiKeyManager
     }
     
     // MARK: - SETTERS

@@ -28,10 +28,10 @@ extension View {
             .environment(APIKeyManager())
             .environment(ErrorPopupViewModel.shared)
             .environment(TabsViewModel())
-            .environment(MainTabViewModel(collectionsTabVM: .init(apiKeyManager: .init()), recentsTabVM: .init()))
+            .environment(MainTabViewModel(collectionsTabVM: .init(apiKeyManager: .init()), recentsTabVM: .init(), apiKeyManager: .init()))
             .environment(CollectionsTabViewModel(apiKeyManager: .init()))
             .environment(RecentsTabViewModel())
-            .environment(SettingsTabViewModel(mainTabVM: .init(collectionsTabVM: .init(apiKeyManager: .init()), recentsTabVM: .init())))
+            .environment(SettingsTabViewModel(mainTabVM: .init(collectionsTabVM: .init(apiKeyManager: .init()), recentsTabVM: .init(), apiKeyManager: .init())))
     }
 }
 

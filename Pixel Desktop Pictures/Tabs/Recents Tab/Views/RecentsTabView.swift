@@ -22,7 +22,6 @@ struct RecentsTabView: View {
     // MARK: - BODY
     var body: some View {
         TabContentWithWindowErrorView(tab: .recents) {
-            
             Group {
                 if condition1 {
                     WindowErrorView(model: RecentsTabWindowError.recentsTabViewModelInitializationFailed)

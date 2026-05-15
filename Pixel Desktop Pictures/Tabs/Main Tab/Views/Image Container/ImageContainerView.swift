@@ -20,8 +20,8 @@ struct ImageContainerView: View {
     var body: some View {
         let imageURLString: String = mainTabVM.currentImage?.imageQualityURLStrings.regular ?? ""
         
-        Button{
-            handleImageRefresh()
+        Button {
+            Task { await handleImageRefresh() }
         } label: {
             WebImage(
                 url: .init(string: imageURLString),
@@ -53,7 +53,7 @@ struct ImageContainerView: View {
 // MARK: EXTENSIONS
 extension ImageContainerView {
     private var centerButton: some View {
-        ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) { handleImageRefresh() }
+        ImageContainerOverlayCenterView(centerItem: mainTabVM.centerItem) { await handleImageRefresh() }
     }
     
     private var placeholder: some View {
@@ -85,10 +85,15 @@ extension ImageContainerView {
         isImageLoaded = false
     }
     
-    private func handleImageRefresh() {
-        Task {
-            guard mainTabVM.centerItem == .retryIcon else { return }
-            try? await mainTabVM.setNextImage()
+    private func handleImageRefresh() async {
+        guard mainTabVM.centerItem == .retryIcon else { return }
+        
+        do {
+            try await mainTabVM.setNextImage()
+        } catch {
+            await mainTabVM.apiKeyManager.onUnsplashImageAPIFailure(error) {
+                Task { try? await mainTabVM.setNextImage() }
+            }
         }
     }
 }

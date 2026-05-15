@@ -87,21 +87,54 @@ extension DesktopPictureScheduler {
     /// - Important: Network failures trigger automatic rescheduling of the task.
     func performBackgroundTask() async {
         Logger.log("Progress: Performing background task.")
+    
+        // If task_1 fails, retry with task1 and task2
+        // If task_2 fails, retry only task_2
+        
+        
+        
+        
+        
+        let task_1: Task = .init { try await mainTabVM.setNextImage() }
+        let task_2: Task = .init { try await mainTabVM.setDesktopPicture() }
+        
+        
+        
+        
+        
+        switch await task_1.result {
+        case .success:
+            switch await task_2.result {
+            case .success:
+                print("✅: Set the background picture successfully.")
+            case .failure(let error):
+                Logger.log("❌: Failed to perform background task - `setDesktopPicture()`. \(error.localizedDescription)")
+            }
+            
+        case .failure(let error):
+            Logger.log("❌: Failed to perform background task - `setNextImage()`. \(error.localizedDescription)")
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         do {
-            try await Task.sleep(nanoseconds: 5_000_000_000)
             try await mainTabVM.setNextImage()
             try await mainTabVM.setDesktopPicture()
         } catch {
             Logger.log("❌: Failed to perform background task. \(error.localizedDescription)")
-            guard let urlError: URLError = error as? URLError else { return }
             
-            switch urlError.code {
-            case .notConnectedToInternet:
-                setDidBackgroundTaskFailOnInternetFailure(true)
-                Logger.log("⚠️✅: Background task has been rescheduled to run when connected to the internet properly.")
-            default: ()
-            }
+            guard Utilities.handleURLError(error) == .noInternet else { return }
+            setDidBackgroundTaskFailOnInternetFailure(true)
+            Logger.log("⚠️✅: Background task has been rescheduled to run when connected to the internet properly.")
         }
     }
 }

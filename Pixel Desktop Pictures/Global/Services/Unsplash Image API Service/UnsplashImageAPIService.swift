@@ -127,7 +127,7 @@ struct UnsplashImageAPIService {
             throw URLError(.badURL)
         }
         
-        // Create a URL Request with Header Passing API  Key
+        // Create a URL Request with Header Passing API Key
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
         request.setValue("Client-ID \(apiKey)", forHTTPHeaderField: "Authorization")
         
@@ -169,7 +169,7 @@ struct UnsplashImageAPIService {
             Logger.log("❌: Invalid  Token. Status code: 401 - Unauthorized") // This occurs when the API  Key is invalid
             throw URLError(.userAuthenticationRequired)
         case 403:
-            Logger.log("❌: Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
+            Logger.log("❌: Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits (API rate limit)
             throw URLError(.clientCertificateRejected)
         case 404:
             Logger.log("❌: Resource not found. Status code: 404")

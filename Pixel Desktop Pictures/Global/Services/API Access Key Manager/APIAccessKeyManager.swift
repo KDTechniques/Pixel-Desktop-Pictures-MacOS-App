@@ -105,6 +105,21 @@ final class APIKeyManager {
         return apiKey
     }
     
+    func onUnsplashImageAPIFailure(_ error: Error, retryAction: () async -> Void) async {
+        let validationState: APIKeyValidityStates = Utilities.handleURLError(error)
+        
+        switch validationState {
+        case .invalid, .failed, .rateLimited:
+            guard let apiKey else { return }
+            await onAPIKeyValidationFailure(apiKey)
+            
+            await retryAction()
+            
+        default:
+            break
+        }
+    }
+    
     // MARK: - PRIVATE FUNCTIONS
     
     private func networkConnectionSubscriber() {
@@ -151,7 +166,7 @@ final class APIKeyManager {
         } catch let error {
             // In case of api key invalidation we have to figure out a way to iterate through other available api keys from the api keys array and find a valid key.
             /// error can be due to not having connected to the internet, rate limited or invalid, so we need to handle it properly while maintaining better UX.
-            let validationState: APIKeyValidityStates = handleURLError(error)
+            let validationState: APIKeyValidityStates = Utilities.handleURLError(error)
             
             /// user might see a specific UI only when the app is  not connected to the internet or api key validation is failed.
             /// that means for some reason if all api keys are rate limited, invalid or failed we have to show a specific message to the user asking to try again later.
@@ -165,38 +180,29 @@ final class APIKeyManager {
     private func onAPIKeyValidationFailure(_ key: String) async {
         switch apiKeyValidationState {
         case .invalid, .failed, .rateLimited:
+            // Get the index of the failed API key from API keys array
             guard let failedAPIKeyIndex: Int = apiKeys.getMatchedIndex(for: key) else { return }
             
+            // Insert the failed API key index to a set to keep track of failed indexes and to get the next available API key
             insertFailedAPIKeyIndex(failedAPIKeyIndex)
             
+            // Making sure not to iterate over once all the API keys are rate limited
+            /// That means no point of going over 0th index to the rest if everything is rate limited, because the next iteration is more likely to give the same rate limited error results.
+            /// It's way better to ask user to wait for an hour before trying the next validation iteration.
             guard failedAPIKeyIndexes.count != apiKeys.count else {
                 setAPIKeyValidationState(.rateLimited)
                 return
             }
             
-            // Start coding here.....
+            // Attempt to validate the next available API key
+            let nextAPIKeyIndex: Int = apiKeys.getNextIndex(failedAPIKeyIndex)
+            let nextAPIKey: String = apiKeys[nextAPIKeyIndex]
             
-            
+            /// Note: The following line of code is bit unsafe so handle it safely when modifying in future implementations.
+            /// This iterates over another set of API key validations. If not handled properly it could lead to memory leak and eventually app will crash!
+            await handleAPIKeyValidation(nextAPIKey)
         default:
             break
-        }
-    }
-    
-    private func handleURLError(_ error: Error) -> APIKeyValidityStates {
-        guard let urlError: URLError = error as? URLError else { return .failed }
-        
-        switch urlError.code {
-        case .notConnectedToInternet:
-            return .noInternet
-            
-        case .clientCertificateRejected:
-            return .rateLimited
-            
-        case .userAuthenticationRequired:
-            return .invalid
-            
-        default:
-            return .failed
         }
     }
 }
