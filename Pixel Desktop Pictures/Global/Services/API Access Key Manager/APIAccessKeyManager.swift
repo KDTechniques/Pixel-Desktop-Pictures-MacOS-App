@@ -37,7 +37,8 @@ final class APIKeyManager {
     @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
     
     /// one api key grands 50 request per hour, so globally we can handle 50 x 10 (500) requests per hour for all users.
-    let apiKeys: [String] = [ // invalid key for testing purposes: 2do6EHZxsHAQ_Aprpob3hGXHaBPDGHYscSt9hPlxuIQ
+    /// invalid key for testing purposes: 2do6EHZxsHAQ_Aprpob3hGXHaBPDGHYscSt9hPlxuIQ
+    let apiKeys: [String] = [
         "tYJmkmA0ZXLhmoPDiGEvIJxAHjI2V9d_BY2b2ueumR8",
         "7ej27jdK3xA-t6PhPiFYfPts0jUsv-WLQxa61g0gDrI",
         "LI1BeRqbbuTbwNTDNAscF_CG0HDTxSclXOJrqZuBX9Q",

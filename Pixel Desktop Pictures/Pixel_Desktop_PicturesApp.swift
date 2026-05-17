@@ -7,6 +7,7 @@
 
 import SwiftUI
 import TipKit
+import AppKit
 
 let appEnvironment: AppEnvironment = .production  // Note: Change to `.mock` as needed
 
@@ -61,10 +62,27 @@ struct Pixel_Desktop_PicturesApp: App {
     }
     
     // MARK: - ASSIGNED PROPERTIES
+    @AppStorage("isInitialLaunch") private var isInitialLaunch = true
     @State private var tabsVM: TabsViewModel = .init()
     
     // MARK: - BODY
     var body: some Scene {
+        WindowGroup {
+            VStack {
+                Button("Get Started") {
+                    if let window = NSApplication.shared.keyWindow {
+                        window.close()
+                        isInitialLaunch = false
+                    }
+                }
+                
+                Rectangle()
+                    .fill(.red)
+            }
+        }
+        .windowStyle(.plain)
+        .defaultLaunchBehavior(isInitialLaunch ? .presented : .suppressed)
+        
         MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .menuBarIcon) {
             TabsView()
                 .environment(apiKeyManager)
