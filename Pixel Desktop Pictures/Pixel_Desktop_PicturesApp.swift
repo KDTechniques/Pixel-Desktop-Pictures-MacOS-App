@@ -68,20 +68,25 @@ struct Pixel_Desktop_PicturesApp: App {
     // MARK: - BODY
     var body: some Scene {
         WindowGroup {
-            VStack {
-                Button("Get Started") {
-                    if let window = NSApplication.shared.keyWindow {
-                        window.close()
-                        isInitialLaunch = false
-                    }
-                }
-                
-                Rectangle()
-                    .fill(.red)
-            }
+//            VStack {
+//                Button("Get Started") {
+//                    if let window = NSApplication.shared.keyWindow {
+//                        window.close()
+//                        isInitialLaunch = false
+//                    }
+//                }
+//                
+//                Rectangle()
+//                    .fill(.red)
+//            }
+            
+            OnboardingView()
+            
+            
         }
         .windowStyle(.plain)
         .defaultLaunchBehavior(isInitialLaunch ? .presented : .suppressed)
+        .restorationBehavior(.disabled)
         
         MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .menuBarIcon) {
             TabsView()
