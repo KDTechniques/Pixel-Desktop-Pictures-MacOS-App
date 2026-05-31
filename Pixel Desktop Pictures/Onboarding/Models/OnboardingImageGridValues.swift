@@ -10,7 +10,7 @@ import Foundation
 struct OnboardingImageGridValues {
     private static let widthRate: CGFloat = 16
     private static let heightRate: CGFloat = 9
-    private static let size: CGFloat = 300
+    private static let size: CGFloat = 350
     private static let imageFrameWidth: CGFloat = size / (widthRate + heightRate) * widthRate
     static let imageFrameHeight: CGFloat = size / (widthRate + heightRate) * heightRate
     static let spacing: CGFloat = 5
@@ -18,8 +18,19 @@ struct OnboardingImageGridValues {
     
     static let urlCases: [GridImageTypes] = [.car, .mountain, .dog, .abstract, .astronomy, .food, .colorful, .beach]
     
-    static func getWidth(_ fraction: CGFloat) -> CGFloat {
-        return imageFrameWidth * fraction
+    static func getWidth(_ rate: CGFloat) -> CGFloat {
+        return imageFrameWidth * rate
+    }
+    
+    static func getImageGridWidth() -> CGFloat {
+        var width: CGFloat = .zero
+        let totalSpacing: CGFloat = spacing * 3
+        
+        for rate in widthPatternRates {
+            width += getWidth(rate)
+        }
+        
+        return width + totalSpacing
     }
 }
 

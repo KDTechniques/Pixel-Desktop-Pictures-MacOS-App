@@ -36,7 +36,6 @@ struct OnboardingView: View {
                     urlCases: OnboardingImageGridValues.urlCases.reversed()
                 )
             }
-            .getWidth($imageGridWidth)
             
             Onboarding_LogoNTextView()
             Onboarding_GuideView()
@@ -45,7 +44,7 @@ struct OnboardingView: View {
                 .padding(.horizontal)
         }
         .padding(.bottom)
-        .frame(maxWidth: imageGridWidth, alignment: .top)
+        .frame(width: OnboardingImageGridValues.getImageGridWidth())
         .background(Color.windowBackground)
         .overlay { windowStroke(colorScheme) }
         .clipShape(.rect(cornerRadius: 10))
@@ -63,20 +62,5 @@ extension OnboardingView {
         RoundedRectangle(cornerRadius: 10)
             .fill(.clear)
             .stroke(Color.white.gradient.opacity(0.3), lineWidth: colorScheme == .dark ? 2 : 1.5)
-    }
-}
-
-fileprivate extension View {
-    func getWidth(_ width: Binding<CGFloat>) -> some View {
-        self
-            .background {
-                GeometryReader { geo in
-                    Color.clear
-                        .preference(key: Onboarding_ImageGridPreferenceKey.self, value: geo.frame(in: .global).width)
-                }
-                .onPreferenceChange(Onboarding_ImageGridPreferenceKey.self) { value in
-                    width.wrappedValue = value
-                }
-            }
     }
 }
