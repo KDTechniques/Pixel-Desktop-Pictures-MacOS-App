@@ -68,21 +68,14 @@ struct Pixel_Desktop_PicturesApp: App {
     // MARK: - BODY
     var body: some Scene {
         WindowGroup {
-//            VStack {
-//                Button("Get Started") {
-//                    if let window = NSApplication.shared.keyWindow {
-//                        window.close()
-//                        isInitialLaunch = false
-//                    }
-//                }
-//                
-//                Rectangle()
-//                    .fill(.red)
-//            }
-            
-            OnboardingView()
-            
-            
+            OnboardingView() {
+                NSApp.windows.first?.close()
+#if DEBUG
+                isInitialLaunch = true
+#else
+                isInitialLaunch = false
+#endif
+            }
         }
         .windowStyle(.plain)
         .defaultLaunchBehavior(isInitialLaunch ? .presented : .suppressed)
