@@ -39,7 +39,7 @@ actor CollectionLocalDatabaseManager {
         do {
             try localDatabaseManager.saveContext()
         } catch {
-            Logger.log(CollectionLocalDatabaseManagerError.failedToCreateCollection(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerErrorModel.failedToCreateCollection(error).localizedDescription)
             throw error
         }
     }
@@ -59,7 +59,7 @@ actor CollectionLocalDatabaseManager {
             
             return collectionsArray
         } catch {
-            Logger.log(CollectionLocalDatabaseManagerError.failedToFetchCollections(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerErrorModel.failedToFetchCollections(error).localizedDescription)
             throw error
         }
     }
@@ -73,7 +73,7 @@ actor CollectionLocalDatabaseManager {
         do {
             try localDatabaseManager.saveContext()
         } catch {
-            Logger.log(CollectionLocalDatabaseManagerError.failedToUpdateCollections(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerErrorModel.failedToUpdateCollections(error).localizedDescription)
             throw error
         }
     }
@@ -89,7 +89,7 @@ actor CollectionLocalDatabaseManager {
         do {
             try localDatabaseManager.saveContext()
         } catch {
-            Logger.log(CollectionLocalDatabaseManagerError.failedToDeleteCollection(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerErrorModel.failedToDeleteCollection(error).localizedDescription)
             throw error
         }
     }

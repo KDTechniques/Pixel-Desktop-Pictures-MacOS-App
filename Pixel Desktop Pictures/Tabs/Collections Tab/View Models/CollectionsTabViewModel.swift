@@ -137,8 +137,8 @@ extension CollectionsTabViewModel {
         return .shared
     }
     
-    func getVMError() -> CollectionsViewModelError.Type {
-        return CollectionsViewModelError.self
+    func getVMError() -> CollectionsViewModelErrorModel.Type {
+        return CollectionsViewModelErrorModel.self
     }
 }
 

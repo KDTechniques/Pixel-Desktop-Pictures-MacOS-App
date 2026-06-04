@@ -1,5 +1,5 @@
 //
-//  LocalDatabaseManagerError.swift
+//  LocalDatabaseManagerErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-11.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum LocalDatabaseManagerError: LocalizedError {
+enum LocalDatabaseManagerErrorModel: LocalizedError {
     case failedToInitializeModelContainer(_ error: Error)
     case failedToSaveContext(_ error: Error)
     case failedToEraseAllData(_ error: Error)

@@ -15,7 +15,7 @@ struct TabContentWithWindowErrorView<T: View>: View {
     
     // MARK: - ASSIGNED PROPERTIES
     private let networkManager: NetworkManager = .shared
-    private let errorModel = GlobalWindowError.self
+    private let errorModel = GlobalWindowErrorModel.self
     
     // MARK: - INITIALIZERS
     init(tab: TabItem, @ViewBuilder _ content: () -> T) {

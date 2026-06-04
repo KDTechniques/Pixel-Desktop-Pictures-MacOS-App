@@ -27,7 +27,7 @@ final class APIKeyManager {
     let networkManager: NetworkManager = .shared
     
     // Models
-    let errorModel = APIKeyManagerError.self
+    let errorModel = APIKeyManagerErrorModel.self
     
     // Publishers
     private(set) var apiKeyValidationState: APIKeyValidityStates?

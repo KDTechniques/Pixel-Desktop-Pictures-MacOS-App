@@ -1,5 +1,5 @@
 //
-//  RecentLocalDatabaseManagerError.swift
+//  RecentLocalDatabaseManagerErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-19.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum RecentLocalDatabaseManagerError: LocalizedError {
+enum RecentLocalDatabaseManagerErrorModel: LocalizedError {
     case failedToCreateRecent(_ error: Error)
     case failedToFetchRecents(_ error: Error)
     case failedToUpdateRecents(_ error: Error)

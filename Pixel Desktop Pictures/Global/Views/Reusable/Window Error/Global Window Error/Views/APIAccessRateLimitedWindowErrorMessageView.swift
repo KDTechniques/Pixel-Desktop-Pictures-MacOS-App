@@ -16,7 +16,7 @@ struct APIRateLimitedWindowErrorMessageView: View {
 
 // MARK: - PREVIEWS
 #Preview("API  Rate Limited Window Error Message View") {
-    WindowErrorView(model: GlobalWindowError.apiRateLimited)
+    WindowErrorView(model: GlobalWindowErrorModel.apiRateLimited)
         .padding()
         .previewModifier
 }

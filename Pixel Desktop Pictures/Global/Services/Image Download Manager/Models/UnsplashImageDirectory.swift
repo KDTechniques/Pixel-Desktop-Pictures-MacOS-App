@@ -41,7 +41,7 @@ enum UnsplashImageDirectory: UnsplashImageDirectoryProtocol {
         guard let directoryURL = FileManager.default
             .urls(for: directory, in: .userDomainMask)
             .first else {
-            throw UnsplashImageDirectoryModelError.unableToReadDirectoryPath(directory: directory)
+            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
         }
         
         let folderURL: URL = directoryURL.appending(path: folderName)
@@ -68,7 +68,7 @@ enum UnsplashImageDirectory: UnsplashImageDirectoryProtocol {
         guard let directoryURL = fileManager
             .urls(for: directory, in: .userDomainMask)
             .first else {
-            throw UnsplashImageDirectoryModelError.unableToReadDirectoryPath(directory: directory)
+            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
         }
         
         let folderURL: URL = directoryURL.appending(path: folderName)
@@ -109,7 +109,7 @@ enum UnsplashImageDirectory: UnsplashImageDirectoryProtocol {
             return fileURL
         } catch {
             Logger.log("❌: Constructing file url in \(directory). \(error.localizedDescription)")
-            throw UnsplashImageDirectoryModelError.fileURLConstructionFailed(directory: directory, error: error)
+            throw UnsplashImageDirectoryModelErrorModel.fileURLConstructionFailed(directory: directory, error: error)
         }
     }
 }

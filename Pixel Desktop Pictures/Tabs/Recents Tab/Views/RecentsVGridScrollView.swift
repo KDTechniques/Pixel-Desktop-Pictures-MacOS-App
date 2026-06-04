@@ -13,16 +13,25 @@ struct RecentsVGridScrollView: View {
     
     // MARK: - ASSGNED PROPERTIES
     private let vGridValues = VGridValues.self
+    @State private var scrollID: String = UUID().uuidString
+    @State private var direction: UnitPoint?
     
     // MARK: - BODY
     var body: some View {
-        ScrollView(.vertical) {
-            LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(recentsTabVM.recentsArray, id: \.id) { recentItem in
-                    RecentsVGridImageView(item: recentItem)
+        ZStack {
+            ScrollView(.vertical) {
+                LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
+                    ForEach(recentsTabVM.recentsArray, id: \.id) { recentItem in
+                        RecentsVGridImageView(item: recentItem)
+                    }
                 }
+                .padding([.horizontal, .bottom])
+                .id(scrollID)
             }
-            .padding([.horizontal, .bottom])
+            .scrollPosition(.constant(.init(id: scrollID)), anchor: direction)
+            
+            ScrollPageUpNDownView(scrollID: $scrollID, direction: $direction, key: .pageUp)
+            ScrollPageUpNDownView(scrollID: $scrollID, direction: $direction, key: .pageDown)
         }
     }
 }

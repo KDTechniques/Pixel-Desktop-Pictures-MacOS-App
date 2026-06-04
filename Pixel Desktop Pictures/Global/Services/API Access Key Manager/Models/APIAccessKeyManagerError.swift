@@ -1,5 +1,5 @@
 //
-//  APIKeyManagerError.swift
+//  APIKeyManagerErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-16.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum APIKeyManagerError: LocalizedError {
+enum APIKeyManagerErrorModel: LocalizedError {
     case apiKeyNotFound
     case apiKeyCheckupFailed
     case apiKeyValidationFailed(_ error: Error)

@@ -23,7 +23,7 @@ actor RecentManager {
     
     // MARK: - ASSIGNED PROPERTIES
     private let recentDatabaseManager: RecentLocalDatabaseManager = .shared
-    private let managerError = RecentLocalDatabaseManagerError.self
+    private let managerError = RecentLocalDatabaseManagerErrorModel.self
     
     // MARK: PUBLIC FUNCTIONS
     
@@ -116,7 +116,7 @@ actor RecentManager {
             let recentItems: [Recent] = try await recentDatabaseManager.fetchRecents()
             try await recentDatabaseManager.deleteRecents(at: recentItems)
         } catch {
-            Logger.log(RecentLocalDatabaseManagerError.failedToDeleteRecent(error).localizedDescription)
+            Logger.log(RecentLocalDatabaseManagerErrorModel.failedToDeleteRecent(error).localizedDescription)
         }
     }
 #endif

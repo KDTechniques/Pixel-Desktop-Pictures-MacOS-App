@@ -29,7 +29,7 @@ actor LocalDatabaseManager {
             )
             Logger.log("✅: Initialized `LocalDatabaseManager`.")
         } catch {
-            Logger.log(LocalDatabaseManagerError.failedToInitializeModelContainer(error).localizedDescription)
+            Logger.log(LocalDatabaseManagerErrorModel.failedToInitializeModelContainer(error).localizedDescription)
             fatalError()
         }
     }
@@ -42,7 +42,7 @@ actor LocalDatabaseManager {
         do {
             try container.erase()
         } catch {
-            Logger.log(LocalDatabaseManagerError.failedToEraseAllData(error).localizedDescription)
+            Logger.log(LocalDatabaseManagerErrorModel.failedToEraseAllData(error).localizedDescription)
             throw error
         }
     }
@@ -57,7 +57,7 @@ actor LocalDatabaseManager {
         } catch {
             // Rollback changes to the context if saving fails
             container.mainContext.rollback() // Rollback any unsaved changes
-            Logger.log(LocalDatabaseManagerError.failedToSaveContext(error).localizedDescription)
+            Logger.log(LocalDatabaseManagerErrorModel.failedToSaveContext(error).localizedDescription)
             throw error
         }
     }

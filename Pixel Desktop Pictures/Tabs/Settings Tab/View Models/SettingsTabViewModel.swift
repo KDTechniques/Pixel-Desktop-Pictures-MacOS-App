@@ -32,7 +32,7 @@ import SwiftUI
     @ObservationIgnored @Published private(set) var updateIntervalSelection$: DesktopPictureSchedulerInterval = .defaultTimeInterval
     
     let defaults: UserDefaultsManager = .init()
-    let vmError = SettingsTabViewModelError.self
+    let vmError = SettingsTabViewModelErrorModel.self
     @ObservationIgnored var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER

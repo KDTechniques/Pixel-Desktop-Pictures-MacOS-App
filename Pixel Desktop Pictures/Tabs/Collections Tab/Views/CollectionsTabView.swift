@@ -21,7 +21,7 @@ struct CollectionsTabView: View {
                 if !collectionsTabVM.collectionsArray.isEmpty {
                     CollectionsVGridScrollView(scrollPosition: $scrollPosition)
                 } else {
-                    WindowErrorView(model: CollectionsTabWindowError.collectionsTabViewModelInitializationFailed)
+                    WindowErrorView(model: CollectionsTabWindowErrorModel.collectionsTabViewModelInitializationFailed)
                 }
             }
             .background(Color.windowBackground)
@@ -44,6 +44,6 @@ struct CollectionsTabView: View {
 //            }
         
         
-        WindowErrorView(model: CollectionsTabWindowError.collectionsTabViewModelInitializationFailed)
+        WindowErrorView(model: CollectionsTabWindowErrorModel.collectionsTabViewModelInitializationFailed)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  QueryImageLocalDatabaseManagerError.swift
+//  QueryImageLocalDatabaseManagerErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-11.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum QueryImageLocalDatabaseManagerError: LocalizedError {
+enum QueryImageLocalDatabaseManagerErrorModel: LocalizedError {
     case failedToCreateQueryImages(_ error: Error)
     case failedToFetchQueryImages(_ error: Error)
     case failedToUpdateQueryImages(_ error: Error)

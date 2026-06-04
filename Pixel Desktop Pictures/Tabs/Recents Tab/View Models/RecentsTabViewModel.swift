@@ -21,7 +21,7 @@ final class RecentsTabViewModel {
     // MARK: - ASSIGNED PROPERTIES
     private(set) var recentsArray: [Recent] = []
     private let maxRecentsCount: Int = 102
-    private let vmError = RecentsTabViewModelError.self
+    private let vmError = RecentsTabViewModelErrorModel.self
     
     // MARK: - INTERNAL FUNCTIONS
     

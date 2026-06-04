@@ -32,7 +32,7 @@ struct UnsplashImageAPIService {
     /// It attempts to fetch a random image using the provided API  Key.
     /// If the call is successful, the key is considered valid. If it fails, an error is thrown.
     ///
-    /// - Throws: `UnsplashImageAPIServiceError.apiKeyValidationFailed`: If the API call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.apiKeyValidationFailed`: If the API call fails,
     /// the function wraps the underlying error in this custom error type to indicate
     /// that the key validation was unsuccessful.
     func validateAPIKey() async throws {
@@ -40,7 +40,7 @@ struct UnsplashImageAPIService {
             let _ = try await getRandomImage()
             Logger.log("✅: API key has been validated.")
         } catch {
-            Logger.log(UnsplashImageAPIServiceError.failedToFetchAPIKey(error).localizedDescription)
+            Logger.log(UnsplashImageAPIServiceErrorModel.failedToFetchAPIKey(error).localizedDescription)
             throw error
         }
     }
@@ -49,7 +49,7 @@ struct UnsplashImageAPIService {
     /// This function performs a network call to retrieve a random image and returns the corresponding model.
     ///
     /// - Returns: An `UnsplashRandomImage` object representing the fetched random image.
-    /// - Throws: `UnsplashImageAPIServiceError.randomImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
@@ -59,7 +59,7 @@ struct UnsplashImageAPIService {
             Logger.log("✅: Random image has been returned.")
             return randomImage
         } catch {
-            Logger.log(UnsplashImageAPIServiceError.failedToFetchRandomImage(error).localizedDescription)
+            Logger.log(UnsplashImageAPIServiceErrorModel.failedToFetchRandomImage(error).localizedDescription)
             throw error
         }
     }
@@ -74,7 +74,7 @@ struct UnsplashImageAPIService {
     ///
     /// - Returns: An `UnsplashQueryImages` object containing the query-based image results.
     ///
-    /// - Throws: `UnsplashImageAPIServiceError.queryImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
@@ -88,7 +88,7 @@ struct UnsplashImageAPIService {
             Logger.log("✅: Query images has been returned.")
             return queryImages
         } catch {
-            Logger.log(UnsplashImageAPIServiceError.failedToFetchQueryImages(error).localizedDescription)
+            Logger.log(UnsplashImageAPIServiceErrorModel.failedToFetchQueryImages(error).localizedDescription)
             throw error
         }
     }

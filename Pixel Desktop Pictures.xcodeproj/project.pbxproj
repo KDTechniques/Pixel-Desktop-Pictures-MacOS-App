@@ -15,9 +15,22 @@
 		829048972D17F9840032417F /* Pixel Desktop Pictures.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pixel Desktop Pictures.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0B9349FC2FCFCC080057CFB7 /* Exceptions for "Pixel Desktop Pictures" folder in "Pixel Desktop Pictures" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Global/Views/Reusable/Window Error/Global Window Error/Models/GlobalWindowError.swift",
+			);
+			target = 829048962D17F9840032417F /* Pixel Desktop Pictures */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		829048992D17F9840032417F /* Pixel Desktop Pictures */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0B9349FC2FCFCC080057CFB7 /* Exceptions for "Pixel Desktop Pictures" folder in "Pixel Desktop Pictures" target */,
+			);
 			path = "Pixel Desktop Pictures";
 			sourceTree = "<group>";
 		};

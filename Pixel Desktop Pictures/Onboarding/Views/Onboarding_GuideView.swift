@@ -17,7 +17,7 @@ struct Onboarding_GuideView: View {
             HStack {
                 Text("Click on the")
                 Image(.logo)
-                Text("icon in the top-left corner of the menu bar to open the app.")
+                Text("icon in the top-left corner of the Menu Bar to open the app.")
             }
             .font(.title3)
             

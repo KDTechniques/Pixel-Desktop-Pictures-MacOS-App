@@ -26,7 +26,7 @@ extension CollectionsTabViewModel {
             setQueryImagesArray(queryImagesArray)
             Logger.log(queryImagesArray.isEmpty ? "⚠️: Fetched query images array found empty." : "✅: Query images array has been fetched")
         } catch {
-            Logger.log(CollectionsViewModelError.failedSomethingOnQueryImages(error).localizedDescription)
+            Logger.log(CollectionsViewModelErrorModel.failedSomethingOnQueryImages(error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedSomethingOnQueryImages)
             throw error
         }

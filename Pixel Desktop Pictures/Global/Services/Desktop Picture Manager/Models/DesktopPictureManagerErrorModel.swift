@@ -1,5 +1,5 @@
 //
-//  DesktopPictureManagerError.swift
+//  DesktopPictureManagerErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-23.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum DesktopPictureManagerError: LocalizedError {
+enum DesktopPictureManagerErrorModel: LocalizedError {
     case failedToSetDesktopPictureForScreens(screen: String, _ error: Error)
     case failedToPrepareAndSetDesktopPicture(_ error: Error)
     case currentDesktopPictureFileURLStringFoundNil

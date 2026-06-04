@@ -40,13 +40,13 @@ struct FirstTimeEmptyRecentsWindowErrorMessageView: View {
 
 // MARK: - PREVIEWS
 #Preview("First Time Empty Recents Window ErrorMessage View") {
-    WindowErrorView(model: RecentsTabWindowError.firstTimeEmptyRecents)
+    WindowErrorView(model: RecentsTabWindowErrorModel.firstTimeEmptyRecents)
         .padding()
         .previewModifier
 }
 
 #Preview("Window Error View - Random") {
-    WindowErrorView(model: GlobalWindowError.random())
+    WindowErrorView(model: GlobalWindowErrorModel.random())
         .padding()
         .previewModifier
 }

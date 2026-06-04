@@ -20,7 +20,7 @@ final class MainTabViewModel {
     private(set) var centerItem: ImageContainerCenterItems = .retryIcon
     let defaults: UserDefaultsManager = .init()
     private(set) var currentImage: UnsplashImage?
-    let vmError = MainTabViewModelError.self
+    let vmError = MainTabViewModelErrorModel.self
     let errorPopupVM: ErrorPopupViewModel = .shared
     let errorPopup = MainTabErrorPopup.self
     

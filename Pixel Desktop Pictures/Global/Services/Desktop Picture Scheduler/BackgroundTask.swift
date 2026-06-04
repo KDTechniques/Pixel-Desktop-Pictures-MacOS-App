@@ -53,9 +53,9 @@ extension DesktopPictureScheduler {
         activity.schedule { completion in
             Task { [weak self] in
                 guard let self else {
-                    Logger.log(DesktopPictureSchedulerError.taskDeallocated.localizedDescription)
+                    Logger.log(DesktopPictureSchedulerErrorModel.taskDeallocated.localizedDescription)
                     completion(.deferred)
-                    throw DesktopPictureSchedulerError.taskDeallocated
+                    throw DesktopPictureSchedulerErrorModel.taskDeallocated
                 }
                 
                 await performBackgroundTask()

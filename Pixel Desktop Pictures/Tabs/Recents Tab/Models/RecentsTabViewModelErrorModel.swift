@@ -1,5 +1,5 @@
 //
-//  RecentsTabViewModelError.swift
+//  RecentsTabViewModelErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-19.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum RecentsTabViewModelError: LocalizedError {
+enum RecentsTabViewModelErrorModel: LocalizedError {
     case initializationFailed(_ error: Error)
     case failedToAddRecentsArray(_ error: Error)
     case failedToValidateExceededRecentItems(_ error: Error)

@@ -24,24 +24,10 @@ struct OnboardingView: View {
     // MARK: - BODY
     var body: some View {
         VStack {
-            // Image Grid
-            VStack(spacing: OnboardingImageGridValues.spacing) {
-                Onboarding_ImageGridView(
-                    rates: OnboardingImageGridValues.widthPatternRates,
-                    urlCases: OnboardingImageGridValues.urlCases
-                )
-                
-                Onboarding_ImageGridView(
-                    rates: OnboardingImageGridValues.widthPatternRates.reversed(),
-                    urlCases: OnboardingImageGridValues.urlCases.reversed()
-                )
-            }
-            
+            imageGrid
             Onboarding_LogoNTextView()
             Onboarding_GuideView()
-            
-            ButtonView(title: "Got It", type: .regular) { action() }
-                .padding(.horizontal)
+            ctaButton
         }
         .padding(.bottom)
         .frame(width: OnboardingImageGridValues.getImageGridWidth())
@@ -58,6 +44,25 @@ struct OnboardingView: View {
 
 // MARK: - EXTENSIONS
 extension OnboardingView {
+    private var imageGrid: some View {
+        VStack(spacing: OnboardingImageGridValues.spacing) {
+            Onboarding_ImageGridView(
+                rates: OnboardingImageGridValues.widthPatternRates,
+                urlCases: OnboardingImageGridValues.urlCases
+            )
+            
+            Onboarding_ImageGridView(
+                rates: OnboardingImageGridValues.widthPatternRates.reversed(),
+                urlCases: OnboardingImageGridValues.urlCases.reversed()
+            )
+        }
+    }
+    
+    private var ctaButton: some View {
+        ButtonView(title: "Got It", type: .regular) { action() }
+            .padding(.horizontal)
+    }
+    
     private func windowStroke(_ colorScheme: ColorScheme) -> some View {
         RoundedRectangle(cornerRadius: 10)
             .fill(.clear)
