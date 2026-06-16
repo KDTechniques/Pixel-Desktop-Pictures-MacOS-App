@@ -26,6 +26,7 @@ struct DownloadButtonView: View {
         .buttonStyle(.plain)
         .opacity(downloadState == .none ? 1 : 0)
         .overlay(alignment: .trailing) { overlay }
+        .disabled(mainTabVM.disableSetDesktopPictureButton())
     }
 }
 

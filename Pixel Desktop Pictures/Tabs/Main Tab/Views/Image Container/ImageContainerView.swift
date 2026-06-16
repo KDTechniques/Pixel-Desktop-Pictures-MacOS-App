@@ -41,6 +41,7 @@ struct ImageContainerView: View {
             .overlay(alignment: .bottomLeading) { locationText }
         }
         .buttonStyle(.plain)
+        .allowsHitTesting(!mainTabVM.disableHitTestingOnImageContainer())
     }
 }
 

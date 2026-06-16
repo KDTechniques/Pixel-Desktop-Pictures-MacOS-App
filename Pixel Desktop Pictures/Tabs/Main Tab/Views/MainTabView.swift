@@ -28,6 +28,7 @@ struct MainTabView: View {
                         showProgress: showProgress,
                         type: .regular
                     ) { await setDesktopPicture() }
+                        .disabled(mainTabVM.disableSetDesktopPictureButton())
                     
                     // Author and Download Button
                     footer

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ImageAuthorView: View {
     // MARK: - INJECTED PROPERTIES
+    @Environment(MainTabViewModel.self) private var mainTabVM
     let name: String
     let link: String
     
@@ -20,12 +21,15 @@ struct ImageAuthorView: View {
     
     // MARK: - BODY
     var body: some View {
-        if let url: URL = .init(string: link) {
-            Link(destination: url) { label }
-                .buttonStyle(.plain)
-        } else {
-            label
+        Group {
+            if let url: URL = .init(string: link) {
+                Link(destination: url) { label }
+                    .buttonStyle(.plain)
+            } else {
+                label
+            }
         }
+        .disabled(mainTabVM.disableSetDesktopPictureButton())
     }
 }
 
@@ -34,6 +38,7 @@ struct ImageAuthorView: View {
     ImageAuthorView(name: "John Doe", link: "")
         .padding()
         .background(Color.windowBackground)
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS

@@ -30,7 +30,7 @@ final class APIKeyManager {
     let errorModel = APIKeyManagerErrorModel.self
     
     // Publishers
-    private(set) var apiKeyValidationState: APIKeyValidityStates?
+    private(set) var apiKeyValidationState: APIKeyValidityStates = .unknown
     
     @ObservationIgnored private(set) var apiKey: String?
     @ObservationIgnored private(set) var failedAPIKeyIndexes: Set<Int> = []
@@ -57,7 +57,7 @@ final class APIKeyManager {
         apiKey = key
     }
     
-    func setAPIKeyValidationState(_ state: APIKeyValidityStates?) {
+    func setAPIKeyValidationState(_ state: APIKeyValidityStates) {
         apiKeyValidationState = state
     }
     
