@@ -27,14 +27,14 @@ struct Onboarding_ImageGridView: View {
     var body: some View {
         HStack(spacing: OnboardingImageGridValues.spacing) {
             ForEach(closeRange, id: \.self) { index in
-                WebImage(url: .init(string: urlCases[index].rawValue))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(
-                        width: OnboardingImageGridValues.getWidth(rates[index]),
-                        height: OnboardingImageGridValues.imageFrameHeight
-                    )
-                    .clipped()
+                WebImage(url: .init(string: urlCases[index].rawValue), options: [.progressiveLoad])
+                .resizable()
+                .scaledToFill()
+                .frame(
+                    width: OnboardingImageGridValues.getWidth(rates[index]),
+                    height: OnboardingImageGridValues.imageFrameHeight
+                )
+                .clipped()
             }
         }
     }

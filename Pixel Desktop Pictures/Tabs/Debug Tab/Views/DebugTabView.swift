@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct DebugTabView: View {
     // MARK: - BODY
     var body: some View {
         VStack {
-            
+            Button("Clear Cache & Disk") {
+                SDImageCache.shared.clearMemory()
+                SDImageCache.shared.clearDisk()
+            }
         }
     }
 }
@@ -33,7 +37,7 @@ struct DebugTabView: View {
  
  2. another section to check persistency of time intervals. It must show the saved data & time of the interval and when it's going to call the next iteration, like a range as it's decided by the system we can't state an exact date and time but a range.
  
- 3. 
+ 3.
  
  
  

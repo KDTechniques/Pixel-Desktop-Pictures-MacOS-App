@@ -56,6 +56,7 @@ extension OnboardingView {
                 urlCases: OnboardingImageGridValues.urlCases.reversed()
             )
         }
+        .id(NetworkManager.shared.connectionStatus)
     }
     
     private var ctaButton: some View {
