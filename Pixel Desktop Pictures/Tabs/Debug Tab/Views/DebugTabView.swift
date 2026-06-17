@@ -16,6 +16,18 @@ struct DebugTabView: View {
                 SDImageCache.shared.clearMemory()
                 SDImageCache.shared.clearDisk()
             }
+            
+            
+            Button("Check cache") {
+                // A size of 0 bytes means the disk cache is completely empty
+               print(SDImageCache.shared.totalDiskCount() == 0)
+                print(SDImageCache.shared.totalDiskCount().description)
+                
+            }
+            
+            
+            
+            
         }
     }
 }

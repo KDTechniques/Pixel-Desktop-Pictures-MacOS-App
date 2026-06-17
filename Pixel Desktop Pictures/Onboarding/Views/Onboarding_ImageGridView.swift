@@ -23,21 +23,33 @@ struct Onboarding_ImageGridView: View {
     // MARK: - ASSIGNED PROPERTIES
     private var closeRange: ClosedRange<Int>
     @State private var isSuccess: Bool = false
+    @State private var id: String = UUID().uuidString
     
     // MARK: - BODY
     var body: some View {
         HStack(spacing: OnboardingImageGridValues.spacing) {
             ForEach(closeRange, id: \.self) { index in
-                WebImage(url: .init(string: urlCases[index].rawValue), options: [.progressiveLoad])
-                    .onSuccess { _, _, _ in isSuccess = true }
-                    .resizable()
-                    .scaledToFill()
-                    .frame(
-                        width: OnboardingImageGridValues.getWidth(rates[index]),
-                        height: OnboardingImageGridValues.imageFrameHeight
-                    )
-                    .clipped()
-                    .id(isSuccess == true ? "" : NetworkManager.shared.connectionStatus.rawValue)
+                WebImage(
+                    url: .init(string: urlCases[index].rawValue),
+                    options: [.progressiveLoad],
+                    context: [
+                        .storeCacheType: SDImageCacheType.none.rawValue,
+                        .originalStoreCacheType: SDImageCacheType.none.rawValue
+                    ]
+                )
+                .onSuccess { _, _, _ in isSuccess = true }
+                .onFailure { _ in isSuccess = false }
+                .placeholder { placeholder }
+                .resizable()
+                .scaledToFill()
+                .frame(
+                    width: OnboardingImageGridValues.getWidth(rates[index]),
+                    height: OnboardingImageGridValues.imageFrameHeight
+                )
+                .background(placeholder)
+                .clipped()
+                .id(id)
+                .onChange(of: NetworkManager.shared.connectionStatus) { onNetworkConnectionChange($1) }
             }
         }
     }
@@ -55,5 +67,21 @@ struct Onboarding_ImageGridView: View {
             rates: OnboardingImageGridValues.widthPatternRates,
             urlCases: OnboardingImageGridValues.urlCases.reversed()
         )
+    }
+}
+
+#Preview("OnboardingView") {
+    OnboardingView() { }
+}
+
+// MARK: - EXTENSIONS
+extension Onboarding_ImageGridView {
+    private var placeholder: some View {
+        Color.placeholder
+    }
+    
+    private func onNetworkConnectionChange(_ status: InternetConnectionStatus) {
+        guard !isSuccess, status == .connected else { return }
+        id = UUID().uuidString
     }
 }
