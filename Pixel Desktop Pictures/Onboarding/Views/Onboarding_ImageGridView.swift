@@ -22,19 +22,22 @@ struct Onboarding_ImageGridView: View {
     
     // MARK: - ASSIGNED PROPERTIES
     private var closeRange: ClosedRange<Int>
+    @State private var isSuccess: Bool = false
     
     // MARK: - BODY
     var body: some View {
         HStack(spacing: OnboardingImageGridValues.spacing) {
             ForEach(closeRange, id: \.self) { index in
                 WebImage(url: .init(string: urlCases[index].rawValue), options: [.progressiveLoad])
-                .resizable()
-                .scaledToFill()
-                .frame(
-                    width: OnboardingImageGridValues.getWidth(rates[index]),
-                    height: OnboardingImageGridValues.imageFrameHeight
-                )
-                .clipped()
+                    .onSuccess { _, _, _ in isSuccess = true }
+                    .resizable()
+                    .scaledToFill()
+                    .frame(
+                        width: OnboardingImageGridValues.getWidth(rates[index]),
+                        height: OnboardingImageGridValues.imageFrameHeight
+                    )
+                    .clipped()
+                    .id(isSuccess == true ? "" : NetworkManager.shared.connectionStatus.rawValue)
             }
         }
     }
