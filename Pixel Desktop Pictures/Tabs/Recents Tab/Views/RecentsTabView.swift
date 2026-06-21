@@ -13,7 +13,7 @@ struct RecentsTabView: View {
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
-    private let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues = VGridValues.self
     private var condition1: Bool { mainTabVM.currentImage != nil && recentsTabVM.recentsArray.isEmpty }
     private var condition2: Bool { mainTabVM.currentImage == nil && recentsTabVM.recentsArray.isEmpty }
     private var condition3: Bool { recentsTabVM.recentsArray.count <= 12 }
@@ -22,12 +22,11 @@ struct RecentsTabView: View {
     // MARK: - BODY
     var body: some View {
         TabContentWithWindowErrorView(tab: .recents) {
-            
             Group {
                 if condition1 {
-                    WindowErrorView(model: RecentsTabWindowError.recentsTabViewModelInitializationFailed)
+                    WindowErrorView(model: RecentsTabWindowErrorModel.recentsTabViewModelInitializationFailed)
                 } else if condition2 {
-                    WindowErrorView(model: RecentsTabWindowError.firstTimeEmptyRecents)
+                    WindowErrorView(model: RecentsTabWindowErrorModel.firstTimeEmptyRecents)
                 } else {
                     RecentsVGridScrollView()
                         .scrollDisabled(condition3)
@@ -41,16 +40,8 @@ struct RecentsTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Recents Tab View") {
-    @Previewable @State var networkManager: NetworkManager = .shared
-    @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
-    
     RecentsTabView()
-        .environment(networkManager)
-        .environment(apiAccessKeyManager)
         .previewModifier
-        .onFirstTaskViewModifier {
-            await apiAccessKeyManager.apiAccessKeyCheckup()
-        }
 }
 
 // MARK: - EXTENSIONS

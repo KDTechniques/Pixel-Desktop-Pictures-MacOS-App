@@ -14,15 +14,18 @@ import SwiftData
  This actor ensures that all database operations are performed in a thread-safe manner, leveraging Swift's concurrency model.
  */
 actor QueryImageLocalDatabaseManager {
-    // MARK: - INJECTED PROPERTIES
-    let localDatabaseManager: LocalDatabaseManager
+    // MARK: - SINGLETON
+    static let shared: QueryImageLocalDatabaseManager = .init()
     
     // MARK: - INITIALIZER
-    init(localDatabaseManager: LocalDatabaseManager) {
-        self.localDatabaseManager = localDatabaseManager
+    private init() {
+        
     }
     
-    // MARK: FUNCTIONS
+    // MARK: - ASSIGNED PROPERTIES
+    let localDatabaseManager: LocalDatabaseManager = .shared
+    
+    // MARK: PUBLIC FUNCTIONS
     
     // MARK: - Create Operations
     
@@ -33,12 +36,12 @@ actor QueryImageLocalDatabaseManager {
     func addQueryImages(_ newItems: [QueryImage]) async throws {
         do {
             for object in newItems {
-                await localDatabaseManager.container.mainContext.insert(object)
+                localDatabaseManager.insertToContext(object)
             }
             
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
-            Logger.log(QueryImageLocalDatabaseManagerError.failedToCreateQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerErrorModel.failedToCreateQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -56,10 +59,10 @@ actor QueryImageLocalDatabaseManager {
                 predicate: #Predicate<QueryImage> { collectionNames.contains($0.query) }
             )
             
-            let queryImages: [QueryImage] = try await localDatabaseManager.container.mainContext.fetch(descriptor)
+            let queryImages: [QueryImage] = try localDatabaseManager.fetchFromContext(descriptor)
             return queryImages
         } catch {
-            Logger.log(QueryImageLocalDatabaseManagerError.failedToFetchQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerErrorModel.failedToFetchQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -72,7 +75,7 @@ actor QueryImageLocalDatabaseManager {
         do {
             try await localDatabaseManager.saveContext()
         } catch {
-            Logger.log(QueryImageLocalDatabaseManagerError.failedToUpdateQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerErrorModel.failedToUpdateQueryImages(error).localizedDescription)
             throw error
         }
     }

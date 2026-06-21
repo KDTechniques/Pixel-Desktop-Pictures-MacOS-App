@@ -22,7 +22,7 @@ extension CollectionsTabViewModel {
         
         do {
             // First, remove the collection from the local database.
-            try await getCollectionManager().deleteCollection(at: item)
+            try getCollectionManager().deleteCollection(at: item)
             
             // Dismiss popup and wait for a fully dismiss happens
             presentPopup(false, for: .collectionUpdatePopOver)

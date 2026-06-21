@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MainTabView: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(\.appEnvironment) private var appEnvironment
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
@@ -23,15 +22,8 @@ struct MainTabView: View {
                 ImageContainerView()
                 
                 VStack {
-                    // Set Desktop Picture Button
-                    ButtonView(
-                        title: "Set Desktop Picture",
-                        showProgress: showProgress,
-                        type: .regular
-                    ) { await setDesktopPicture() }
-                    
-                    // Author and Download Button
-                    footer
+                    setDesktopPictureButton
+                    footer // Author and Download Button
                 }
                 .padding()
             }
@@ -41,17 +33,9 @@ struct MainTabView: View {
 
 // MARK: - PREVIEWS
 #Preview("Main Tab View") {
-    @Previewable @State var networkManager: NetworkManager = .shared
-    @Previewable @State var apiAccessKeyManager: APIAccessKeyManager = .init()
-    
     PreviewView {
         MainTabView()
             .frame(maxHeight: .infinity)
-            .environment(networkManager)
-            .environment(apiAccessKeyManager)
-            .onFirstTaskViewModifier {
-                apiAccessKeyManager.apiAccessKeyStatus = .connected
-            }
     }
 }
 
@@ -70,14 +54,33 @@ extension MainTabView {
         }
         .padding(.top)
         .opacity(condition ? 0 : 1)
-        .disabled(condition)
+        .disabled(condition || mainTabVM.disableOnFirstLaunch())
+    }
+    
+    private var setDesktopPictureButton: some View {
+        ButtonView(
+            title: "Set Desktop Picture",
+            showProgress: showProgress,
+            type: .regular
+        ) { await setDesktopPicture() }
+            .disabled(mainTabVM.disableOnFirstLaunch())
     }
     
     // MARK: - FUNCTIONS
     
     private func setDesktopPicture() async {
         showProgress = true
-        try? await mainTabVM.setDesktopPicture(environment: appEnvironment)
+        
+        do {
+            try await setDesktopPictureTask()
+        } catch {
+            let operation: MainTabDeferredOperationModel = .init(type: .setDesktopPicture, action: setDesktopPictureTask)
+            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
+        }
+    }
+    
+    private func setDesktopPictureTask() async throws {
+        try await mainTabVM.setDesktopPicture()
         showProgress = false
     }
 }

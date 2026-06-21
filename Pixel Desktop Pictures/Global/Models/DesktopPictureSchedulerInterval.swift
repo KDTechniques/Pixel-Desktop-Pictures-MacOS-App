@@ -19,8 +19,8 @@ enum DesktopPictureSchedulerInterval: String, Codable, CaseIterable {
         return self.rawValue.capitalized
     }
     
-    func timeInterval(environment: AppEnvironment) -> TimeInterval {
-        switch environment {
+    var timeInterval: TimeInterval {
+        switch appEnvironment {
         case .production:
             switch self {
             case .hourly:

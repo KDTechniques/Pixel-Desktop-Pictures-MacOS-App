@@ -18,7 +18,7 @@ struct CollectionsVGridScrollView: View {
     }
     
     // MARK: - ASSIGNED PROPERTIES
-    let vGridValues: VGridValues.Type = VGridValues.self
+    let vGridValues = VGridValues.self
     let nonScrollableItemsCount: Int = 8
     
     // MARK: - BODY

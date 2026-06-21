@@ -14,30 +14,17 @@ import Foundation
  */
 actor QueryImageManager {
     // MARK: - SINGLETON
-    private static var singleton: QueryImageManager?
-    
-    // MARK: - PROPERTIES
-    let localDatabaseManager: QueryImageLocalDatabaseManager
+    static var shared: QueryImageManager = .init()
     
     // MARK: - INITIALIZER
-    private init(localDatabaseManager: QueryImageLocalDatabaseManager) {
-        self.localDatabaseManager = localDatabaseManager
-    }
-    
-    // MARK: - INTERNAL FUNCTIONS
-    
-    /// Returns a shared singleton instance of `QueryImageManager`.
-    /// - Parameter localDatabaseManager: An instance of `QueryImageLocalDatabaseManager` to manage local database operations.
-    /// - Returns: The shared `QueryImageManager` instance.
-    static func shared(localDatabaseManager: QueryImageLocalDatabaseManager) -> QueryImageManager {
-        guard singleton == nil else {
-            return singleton!
-        }
+    private init() {
         
-        let newInstance: Self = .init(localDatabaseManager: localDatabaseManager)
-        singleton = newInstance
-        return newInstance
     }
+    
+    // MARK: - ASSIGNED PROPERTIES
+    let queryImageDatabaseManager: QueryImageLocalDatabaseManager = .shared
+    
+    // MARK: PUBLIC FUNCTIONS
     
     // MARK: - Create Operations
     
@@ -45,7 +32,7 @@ actor QueryImageManager {
     /// - Parameter newItems: An array of `QueryImage` objects to be added to the database.
     /// - Throws: An error if the operation fails, such as if the context cannot be saved.
     func addQueryImages(_ newItems: [QueryImage]) async throws {
-        try await localDatabaseManager.addQueryImages(newItems)
+        try await queryImageDatabaseManager.addQueryImages(newItems)
     }
     
     // MARK: - Read Operations
@@ -55,7 +42,7 @@ actor QueryImageManager {
     /// - Returns: An array of `QueryImage` objects that match the specified collection names.
     /// - Throws: An error if the operation fails, such as if the fetch request cannot be executed.
     func fetchQueryImages(for collectionNames: [String]) async throws -> [QueryImage] {
-        try await localDatabaseManager.fetchQueryImages(for: collectionNames)
+        try await queryImageDatabaseManager.fetchQueryImages(for: collectionNames)
     }
     
     /// Retrieves the next or current `UnsplashQueryImage` for a given `QueryImage` item.
@@ -112,7 +99,7 @@ actor QueryImageManager {
             // If query results contains the next index, return the next query image item.
             let nextQueryImage: UnsplashQueryImage = queryImages.results[index]
             item.currentImageIndex = index
-            try await localDatabaseManager.updateQueryImages()
+            try await queryImageDatabaseManager.updateQueryImages()
             
             return nextQueryImage
         }
@@ -148,7 +135,7 @@ actor QueryImageManager {
             imageAPIService: imageAPIService
         )
         
-        try await localDatabaseManager.updateQueryImages()
+        try await queryImageDatabaseManager.updateQueryImages()
         
         return nextImageData
     }

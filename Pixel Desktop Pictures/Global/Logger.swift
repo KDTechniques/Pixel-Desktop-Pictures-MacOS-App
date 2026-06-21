@@ -13,7 +13,7 @@ struct Logger {
     static func log(_ message: String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
         let fileNameWithoutPath = (fileName as NSString).lastPathComponent
         let DateString: String = Date.now.formatted(date: .numeric, time: .standard)
-        let formatted = "\(DateString): [\(fileNameWithoutPath):\(lineNumber)] \(functionName): \(message)\n"
+        let formatted = "\(message) | \(functionName) | [\(fileNameWithoutPath):\(lineNumber)] | \(DateString)\n"
         
         print(formatted)
         messages.append(formatted)

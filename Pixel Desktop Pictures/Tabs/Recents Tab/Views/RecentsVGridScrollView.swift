@@ -12,17 +12,19 @@ struct RecentsVGridScrollView: View {
     @Environment(RecentsTabViewModel.self) private var recentsTabVM
     
     // MARK: - ASSGNED PROPERTIES
-    private let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues = VGridValues.self
     
     // MARK: - BODY
     var body: some View {
-        ScrollView(.vertical) {
-            LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(recentsTabVM.recentsArray, id: \.id) { recentItem in
-                    RecentsVGridImageView(item: recentItem)
+        ZStack {
+            ScrollView(.vertical) {
+                LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
+                    ForEach(recentsTabVM.recentsArray, id: \.id) { recentItem in
+                        RecentsVGridImageView(item: recentItem)
+                    }
                 }
+                .padding([.horizontal, .bottom])
             }
-            .padding([.horizontal, .bottom])
         }
     }
 }

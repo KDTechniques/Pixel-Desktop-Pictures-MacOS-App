@@ -6,101 +6,93 @@
 //
 
 import SwiftUI
-import SwiftData
-import SDWebImageSwiftUI
-import Sparkle
+import TipKit
+import AppKit
+
+let appEnvironment: AppEnvironment = .production  // Note: Change to `.mock` as needed
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
-    // MARK: - ASSIGNED PROPERTIES
-    private let appEnvironment: AppEnvironment = .production // Note: Change to `.production` as needed
-    let networkManager: NetworkManager = .shared
-    @State private var tabsVM: TabsViewModel = .init()
-    
     // MARK: - INJECTED PROPETIES
-    @State private var apiAccessKeyManager: APIAccessKeyManager
     @State private var settingsTabVM: SettingsTabViewModel
     @State private var mainTabVM: MainTabViewModel
     @State private var recentsTabVM: RecentsTabViewModel
     @State private var collectionsTabVM: CollectionsTabViewModel
+    @State private var apiKeyManager: APIKeyManager
     
     // MARK: - INITIALIZER
     init() {
-        let apiAccessKeyManagerInstance: APIAccessKeyManager = .init()
-        apiAccessKeyManager = apiAccessKeyManagerInstance
+        try? Tips.configure()
         
-        do {
-            let localDatabaseManagerInstance: LocalDatabaseManager = try .init(appEnvironment: appEnvironment)
+#if DEBUG
+        try? Tips.resetDatastore()
+#endif
+        
+        let apiKeyManagerInstance: APIKeyManager = .init()
+        apiKeyManager = apiKeyManagerInstance
+        
+        // COLLECTIONS Related
+        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiKeyManager: apiKeyManagerInstance)
+        collectionsTabVM = collectionsTabVMInstance
+        
+        // RECENTS Related
+        let recentsTabVMInstance: RecentsTabViewModel = .init()
+        recentsTabVM = recentsTabVMInstance
+        
+        // MAIN Tab Related
+        let mainTabVMInstance: MainTabViewModel = .init(
+            collectionsTabVM: collectionsTabVMInstance,
+            recentsTabVM: recentsTabVMInstance,
+            apiKeyManager: apiKeyManagerInstance
+        )
+        mainTabVM = mainTabVMInstance
+        
+        // SETTINGS Tab Related
+        let settingsTabVMInstance: SettingsTabViewModel = .init(mainTabVM: mainTabVMInstance)
+        settingsTabVM = settingsTabVMInstance
+        
+        Task {
+            await withThrowingTaskGroup(of: Void.self) { group in
+                // Run all the initializations concurrently
+                group.addTask { await apiKeyManagerInstance.initializeAPIKeyManager() }
+                group.addTask { await collectionsTabVMInstance.initializeCollectionsViewModel() }
+                group.addTask { await recentsTabVMInstance.initializeRecentsTabViewModel() }
+                group.addTask { await mainTabVMInstance.initializeMainTabViewModel() }
+                group.addTask { await settingsTabVMInstance.initializeSettingsTabVM() }
+            }
             
-            // COLLECTIONS Related
-            let collectionLocalDatabaseManagerInstance: CollectionLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
-            let collectionManagerInstance: CollectionManager = .shared(localDatabaseManager: collectionLocalDatabaseManagerInstance)
-            let queryImageLocalDatabaseManagerInstance: QueryImageLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
-            let queryImageManagerInstance: QueryImageManager = .shared(localDatabaseManager: queryImageLocalDatabaseManagerInstance)
-            let collectionsTabVMInstance: CollectionsTabViewModel = .init(
-                apiAccessKeyManager: apiAccessKeyManagerInstance,
-                collectionManager: collectionManagerInstance,
-                queryImageManager: queryImageManagerInstance
-            )
-            collectionsTabVM = collectionsTabVMInstance
-            
-            // RECENTS Related
-            let recentLocalDatabaseManagerInstance: RecentLocalDatabaseManager = .init(localDatabaseManager: localDatabaseManagerInstance)
-            let recentManagerInstance: RecentManager = .shared(localDatabaseManager: recentLocalDatabaseManagerInstance)
-            let recentsTabVMInstance: RecentsTabViewModel = .init(recentManager: recentManagerInstance)
-            recentsTabVM = recentsTabVMInstance
-            
-            // MAIN Tab Related
-            let mainTabVMInstance: MainTabViewModel = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
-            mainTabVM = mainTabVMInstance
-            
-            // SETTINGS Tab Related
-            settingsTabVM = .init(appEnvironment: appEnvironment, mainTabVM: mainTabVMInstance)
-        } catch {
-            Logger.log("❌: Unable to initialize the app properly. Due to local database initialization. \(error.localizedDescription)")
-            fatalError()
+            Logger.log("✅: Pixel Desktop Pictures is ready to use!")
         }
     }
     
-    class AppDelegate: NSObject, NSApplicationDelegate {
-        private let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-        
-        func applicationDidFinishLaunching(_ notification: Notification) {
-            // Automatically check for updates when app launches
-            updaterController.updater.checkForUpdatesInBackground()
-        }
-    }
+    // MARK: - ASSIGNED PROPERTIES
+    @AppStorage("isInitialLaunch") private var isInitialLaunch = true
+    @State private var tabsVM: TabsViewModel = .init()
     
     // MARK: - BODY
     var body: some Scene {
-        MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .logo) {
+        WindowGroup {
+            OnboardingView() {
+                NSApp.windows.first?.close()
+#if DEBUG
+                isInitialLaunch = !true // set to true later
+#else
+                isInitialLaunch = false
+#endif
+            }
+        }
+        .windowStyle(.plain)
+        .defaultLaunchBehavior(isInitialLaunch ? .presented : .suppressed)
+        .restorationBehavior(.disabled)
+        
+        MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .menuBarIcon) {
             TabsView()
-            
-            // Service Environment Values
-                .environment(\.appEnvironment, appEnvironment)
-                .environment(networkManager)
-                .environment(apiAccessKeyManager)
-            
-            // Tabs Environment Values
+                .environment(apiKeyManager)
                 .environment(tabsVM)
                 .environment(settingsTabVM)
                 .environment(mainTabVM)
                 .environment(recentsTabVM)
                 .environment(collectionsTabVM)
-            
-                .onFirstTaskViewModifier {
-                    // MARK: - Service Initializations
-                    Task { await apiAccessKeyManager.initializeAPIAccessKeyManager() }
-                    
-                    // MARK: - Tabs Initializations
-                    // Note: Don't change the order below
-                    Task {
-                        await collectionsTabVM.initializeCollectionsViewModel()
-                        await mainTabVM.initializeMainTabViewModel()
-                    }
-                    
-                    Task { await recentsTabVM.initializeRecentsTabViewModel() }
-                }
         }
         .menuBarExtraStyle(.window)
     }

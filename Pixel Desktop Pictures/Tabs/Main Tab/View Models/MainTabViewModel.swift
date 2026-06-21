@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @MainActor
 @Observable
@@ -13,20 +14,26 @@ final class MainTabViewModel {
     // MARK: - INJECTED PROPERTIES
     let collectionsTabVM: CollectionsTabViewModel
     let recentsTabVM: RecentsTabViewModel
+    let apiKeyManager: APIKeyManager
     
     // MARK: - ASSIGNED PROPERTIES
     private let desktopPictureManager: DesktopPictureManager = .shared
     private(set) var centerItem: ImageContainerCenterItems = .retryIcon
-    let defaults: UserDefaultsManager = .shared
+    let defaults: UserDefaultsManager = .init()
     private(set) var currentImage: UnsplashImage?
-    let vmError: MainTabViewModelError.Type = MainTabViewModelError.self
+    let vmError = MainTabViewModelErrorModel.self
     let errorPopupVM: ErrorPopupViewModel = .shared
-    let errorPopup: MainTabErrorPopup.Type = MainTabErrorPopup.self
+    let errorPopup = MainTabErrorPopup.self
+    var mainTabDeferredOperations: Set<MainTabDeferredOperationModel> = []
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
-    init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel) {
+    init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel, apiKeyManager: APIKeyManager) {
         self.collectionsTabVM = collectionsTabVM
         self.recentsTabVM = recentsTabVM
+        self.apiKeyManager = apiKeyManager
+        
+        validAPIKeySubscriber()
     }
     
     // MARK: - SETTERS
@@ -48,13 +55,13 @@ final class MainTabViewModel {
     /// Sets the current image as the desktop wallpaper.
     ///
     /// - Note: Downloads the image to the documents directory and applies it as the desktop wallpaper.
-    func setDesktopPicture(environment: AppEnvironment) async throws {
+    func setDesktopPicture() async throws {
         // Early exit if the current image is not available.
         guard let currentImage else { return }
         
         do {
             // Get the documents directory based on app environment
-            let documentsDirectory: UnsplashImageDirectoryProtocol = DirectoryTypes.documents(environment).directory
+            let documentsDirectory: UnsplashImageDirectoryProtocol = DirectoryTypes.documents.directory
             
             // Download the image to documents directory
             let savedPathURL: URL = try await ImageDownloadManager.shared.downloadImage(url: currentImage.imageQualityURLStrings.full, to: documentsDirectory)
@@ -80,5 +87,21 @@ final class MainTabViewModel {
             try? await saveCurrentImageToUserDefaults(item)
             Logger.log("✅: Saved current image to user defaults.")
         }
+    }
+    
+    // MARK: - PRIVATE FUNCTIONS
+    private func validAPIKeySubscriber() {
+        apiKeyManager.apiKeyValidationStatePublisher
+            .dropFirst()
+            .removeDuplicates()
+            .compactMap { $0 == .valid ? $0 : nil }
+            .sink { state in
+                guard state == .valid else { return }
+                
+                Task { [weak self] in
+                    await self?.executeDeferredOperations()
+                }
+            }
+            .store(in: &cancellables)
     }
 }

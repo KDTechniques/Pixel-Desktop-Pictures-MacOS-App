@@ -14,11 +14,11 @@ enum UserDefaultKeys: String {
     case timeIntervalSelectionKey
     case endpointSelectionKey
     case selectedCollectionsKey
-    case apiAccessKey
-    case apiAccessKeyStatusKey
+    case apiKey
     case timeIntervalDoubleKey
     case executionTimeIntervalSince1970Key
     case currentDesktopPictureFileURLStringKey
     case currentImageKey
     case desktopSchedulerBackgroundTaskFailureKey
+    case launchAtLoginAlert
 }

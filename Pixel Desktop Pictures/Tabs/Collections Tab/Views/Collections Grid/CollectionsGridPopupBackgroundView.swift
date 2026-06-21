@@ -22,13 +22,7 @@ struct CollectionsGridPopupBackgroundView: View {
 // MARK: - PREVIEWS
 #Preview("Collections Grid Popup Background View") {
     CollectionsGridPopupBackgroundView()
-        .environment(
-            CollectionsTabViewModel(
-                apiAccessKeyManager: .init(),
-                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-            )
-        )
+        .previewModifier
 }
 
 // MARK: - EXTENSIONS

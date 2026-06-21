@@ -21,7 +21,7 @@ struct RecentsVGridImageView: View {
     
     // MARK: - ASSIGNED PROPERTIES
     @State private var imageQualitiesURLStrings: UnsplashImageResolution?
-    private let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues = VGridValues.self
     
     // MARK: - BODY
     var body: some View {

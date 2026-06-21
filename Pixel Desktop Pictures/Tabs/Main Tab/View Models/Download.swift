@@ -19,7 +19,7 @@ extension MainTabViewModel {
         }
         
         // Get the downloads directory based on app environment
-        let downloadsDirectory = DirectoryTypes.downloads(environment).directory
+        let downloadsDirectory = DirectoryTypes.downloads.directory
         
         do {
             // Download the image to downloads directory

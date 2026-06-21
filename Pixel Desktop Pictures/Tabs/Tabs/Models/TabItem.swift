@@ -16,19 +16,25 @@ import SwiftUI
  This enum also includes shared constants for UI layout and animations.
  */
 enum TabItem: String, CaseIterable {
-    case main, recents, collections, settings
+    case main, recents, collections, settings, debug
     
     @ViewBuilder
     var content: some View {
         switch self {
         case .main:
             MainTabView()
+            
         case .recents:
             RecentsTabView()
+            
         case .collections:
             CollectionsTabView()
+            
         case .settings:
             SettingsTabView()
+            
+        case .debug:
+            DebugTabView()
         }
     }
     
@@ -36,12 +42,18 @@ enum TabItem: String, CaseIterable {
         switch self {
         case .main:
             return "photo.on.rectangle.angled.fill"
+            
         case .recents:
             return "clock.fill"
+            
         case .collections:
             return "square.grid.2x2.fill"
+            
         case .settings:
             return "gearshape.fill"
+            
+        case .debug:
+            return "ladybug.fill"
         }
     }
     
@@ -50,7 +62,7 @@ enum TabItem: String, CaseIterable {
     
     var contentHeight: CGFloat {
         switch self {
-        case .main, .settings:
+        case .main, .settings, .debug:
             return CGFloat.nan // Placeholder for dynamic sizing via GeometryReader
         case .recents:
             return (VGridValues.height*4) + (VGridValues.spacing*3) + (VGridValues.spacing/2)

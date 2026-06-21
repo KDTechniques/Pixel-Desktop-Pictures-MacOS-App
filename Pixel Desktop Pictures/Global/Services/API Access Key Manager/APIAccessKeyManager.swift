@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyManager.swift
+//  APIKeyManager.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-07.
@@ -9,206 +9,187 @@ import Foundation
 import Combine
 
 /**
- A class responsible for managing the API access key, its validation, and status updates.
- It interacts with UserDefaults for persistence and ensures the access key's validity through API calls.
+ A class responsible for managing the API key, its validation, and status updates.
+ It interacts with UserDefaults for persistence and ensures the key's validity through API calls.
  */
 @MainActor
 @Observable
-final class APIAccessKeyManager {
+final class APIKeyManager {
+    // MARK: - INNITIALIZER
+    init() {
+        apiKeyFailureSubscriber()
+        networkConnectionStatusSubscriber()
+    }
+    
     // MARK: - ASSIGNED PROPERTIES
-    private let defaults: UserDefaultsManager = .shared
-    private var cancellables: Set<AnyCancellable> = []
     
-    /// Current status of the API access key, which updates and triggers status change handling logic.
-    var apiAccessKeyStatus: APIAccessKeyValidityStatus = .notFound {
-        didSet { apiAccessKeyStatus$ = apiAccessKeyStatus }
-    }
-    @ObservationIgnored @Published private var apiAccessKeyStatus$: APIAccessKeyValidityStatus = .notFound
+    // Managers/Services
+    let defaults: UserDefaultsManager = .init()
+    let networkManager: NetworkManager = .shared
     
-    @ObservationIgnored private var apiAccessKey: String?
-    private let errorModel: APIAccessKeyManagerError.Type = APIAccessKeyManagerError.self
+    // Models
+    let errorModel = APIKeyManagerErrorModel.self
     
-    // MARK: - INTERNAL FUNCTIONS
-    
-    /// Initializes the API Access Key Manager.
-    ///
-    /// Sets up status subscribers and retrieves the stored API access key status.
-    /// Logs successful initialization.
-    func initializeAPIAccessKeyManager() async {
-        apiAccessKeyStatusSubscriber()
-        await getNAssignAPIAccessKeyStatusFromUserDefaults()
-        Logger.log("✅: `API Access Key Manager` has been initialized.")
+    // Publishers
+    private(set) var apiKeyValidationState: APIKeyValidityStates = .unknown { didSet { apiKeyValidationState$ = apiKeyValidationState } }
+    @ObservationIgnored @Published private var apiKeyValidationState$: APIKeyValidityStates = .unknown
+    var apiKeyValidationStatePublisher: AnyPublisher<APIKeyValidityStates, Never> {
+        $apiKeyValidationState$.eraseToAnyPublisher()
     }
     
-    /// Retrieves the current API access key.
-    ///
-    /// - Returns: The stored API access key or nil if not found.
-    /// - Fetches key from UserDefaults if not already in memory.
-    func getAPIAccessKey() async -> String? {
-        guard let apiAccessKey else {
-            guard let tempAPIAccessKey: String = await getAPIAccessKeyFromUserDefaults() else {
-                return nil
-            }
-            
-            apiAccessKey = tempAPIAccessKey
-            return tempAPIAccessKey
+    
+    @ObservationIgnored private(set) var apiKey: String?
+    @ObservationIgnored private(set) var failedAPIKeyIndexes: Set<Int> = []
+    @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
+    
+    /// one api key grands 50 request per hour, so globally we can handle 50 x 10 (500) requests per hour for all users.
+    let apiKeys: [String] = [
+        "tYJmkmA0ZXLhmoPDiGEvIJxAHjI2V9d_BY2b2ueumR8",
+        "7ej27jdK3xA-t6PhPiFYfPts0jUsv-WLQxa61g0gDrI",
+        "LI1BeRqbbuTbwNTDNAscF_CG0HDTxSclXOJrqZuBX9Q",
+        "WNifUUadNzXFz6khL7UmV4s5rBqG7KICTVUrIWcIp8k",
+        "ZMy5hQsko63OaazqDYweHOgzL4_-LHOE0fsTrAEiOW0",
+        "45bPf1xzjNsvfHOngiI3ZHEHbRhOUXS3TuqRvyX_c0U",
+        "cd8awUo1YKKAqZmSM_7h7VRJTsmOClsikdXwY67mNEY",
+        "nVV_ujxWJ5rBPjgoxBfszkQ3bvKheTbJdKX4rLEKyb8",
+        "ExtS6bLb-Ou4gX-hBVEh7wupzZR9tAZwONR86ZWXzBo",
+        "w9sxe_6HWTkUq6xZHRfZHLccukzf4_hN9iKedOA5RSE",
+    ]
+    
+    // MARK: - SETTERS
+    
+    func setAPIKey(_ key: String?) {
+        apiKey = key
+    }
+    
+    func setAPIKeyValidationState(_ state: APIKeyValidityStates) {
+        apiKeyValidationState = state
+    }
+    
+    func insertFailedAPIKeyIndexOn(key: String) {
+        guard let index: Int = apiKeys.getMatchedIndex(for: key) else { return }
+        failedAPIKeyIndexes.insert(index)
+    }
+    
+    func removeFailedAPIKeyIndexOn(key: String) {
+        guard let index: Int = apiKeys.getMatchedIndex(for: key) else { return }
+        failedAPIKeyIndexes.remove(index)
+    }
+    
+    func removeAllFailedAPIKeyIndexes() {
+        failedAPIKeyIndexes.removeAll()
+    }
+    
+    func initializeAPIKeyManager() async {
+        // First set the validation state to .unknown
+        /// because we don't know what the exact state is when everything startup, so we begin with neural state called .unknown
+        setAPIKeyValidationState(.unknown)
+        
+        // Then get the api key from user defaults.
+        /// if the saved api key is nil, we take the first available api key from the api keys array and proceed with the validation.
+        let apiKey: String? = getAPIKeyFromUserDefaults() ?? apiKeys.first
+        
+        guard let apiKey else { /// This guard statement must not ever get called for any reason.
+            Utilities.quitApp()
+            return
         }
         
-        Logger.log("✅: API access key has been returned.")
-        return apiAccessKey
-    }
-    
-    /// Performs a validity check on the stored API access key.
-    ///
-    /// Retrieves the key from UserDefaults and attempts to connect.
-    /// Logs an error if the checkup fails.
-    func apiAccessKeyCheckup() async {
-        // Get the API access key from UserDefaults to ensure we always work with a valid API key, in case changes happen.
-        guard let apiAccessKey: String = await getAPIAccessKeyFromUserDefaults() else { return }
-        
-        do {
-            try await connectAPIAccessKey(key: apiAccessKey)
-            Logger.log("✅: API access key checkup has been completed.")
-        } catch {
-            Logger.log(errorModel.apiAccessKeyCheckupFailed.localizedDescription)
-        }
-    }
-    
-    /// Validates and connects an API access key.
-    ///
-    /// - Parameter key: The API access key to validate.
-    /// - Throws: Errors related to key validation or connection.
-    /// - Updates the access key status based on validation result.
-    func connectAPIAccessKey(key: String) async throws {
-        // Exit early if the provided key is empty.
-        guard !key.isEmpty else {
-            Logger.log(errorModel.EmptyAPIAccessKey.localizedDescription)
-            throw errorModel.EmptyAPIAccessKey
-        }
-        
-        // Set the status to `validating` and proceeed.
-        apiAccessKeyStatus = .validating
-        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: key)
-        
-        do {
-            // Validate the key and set the status to `connected`, and then save the key to user defaults.
-            try await imageAPIService.validateAPIAccessKey()
-            apiAccessKeyStatus = .connected
-            await saveAPIAccessKeyToUserDefaults(key)
-            Logger.log("✅: API access key has been connected.")
-        } catch  {
-            Logger.log(error.localizedDescription)
-            handleURLError(error)
-        }
-    }
-    
-    /// Handles URL-related errors during API access key validation.
-    ///
-    /// - Parameter error: The error encountered during key validation.
-    /// - Determines and sets the appropriate API access key status.
-    func handleURLError(_ error: Error?) {
-        if let urlError = error as? URLError {
-            apiAccessKeyStatus = {
-                switch urlError.code {
-                case .notConnectedToInternet:
-                    return .failed
-                case .clientCertificateRejected:
-                    return .rateLimited
-                case .userAuthenticationRequired:
-                    return .invalid
-                default:
-                    Logger.log(urlError.localizedDescription)
-                    return .connected
-                }
-            }()
-        }
+        await validateAPIKey(apiKey)
     }
     
     // MARK: - PRIVATE FUNCTIONS
-    
-    /// Subscribes to changes in the API access key status.
-    ///
-    /// Sets up a Combine subscriber to handle status changes and trigger appropriate actions.
-    private func apiAccessKeyStatusSubscriber() {
-        $apiAccessKeyStatus$
-            .dropFirst(2)
+    private func apiKeyFailureSubscriber() {
+        let failureStates: [APIKeyValidityStates] = [.invalid, .rateLimited, .allRateLimited]
+        
+        $apiKeyValidationState$
+            .dropFirst()
             .removeDuplicates()
-            .sink { status in
-                Task { @MainActor [weak self] in
-                    guard let self else { return }
-                    Logger.log("✅: API access key status subscriber got triggered.")
-                    await onAPIAccessKeyStatusChange(status)
+            .compactMap { failureStates.contains($0) ? $0 : nil } // Omit non-failure states as we're handling errors here.
+            .sink { [weak self] state in
+                guard let self else { return }
+                
+                Logger.log("❔: apiKeyValidationState: \(state.rawValue)")
+                Logger.log(errorModel.failureDetected.localizedDescription)
+                
+                switch state {
+                case .invalid, .rateLimited: invalid_RateLimited(state)
+                case .failed: failed()
+                case .allRateLimited: allRateLimited()
+                    
+                default: // Default case will never get executed
+                    return
                 }
             }
             .store(in: &cancellables)
     }
     
-    /// Retrieves the API access key from UserDefaults.
-    ///
-    /// - Returns: The stored API access key or nil if not found.
-    /// - Updates the access key status if no key is present.
-    private func getAPIAccessKeyFromUserDefaults() async -> String? {
-        guard let apiAccessKey: String = await defaults.get(key: .apiAccessKey) as? String else {
-            apiAccessKeyStatus = .notFound
-            Logger.log(errorModel.apiAccessKeyNotFound.localizedDescription)
-            return nil
+    private func networkConnectionStatusSubscriber() {
+        networkManager.$connectionStatus$
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] state in
+                guard let self, apiKeyValidationState == .failed, state == .connected else { return }
+                
+                Logger.log("✅: Revalidating API key on network connection.")
+                
+                Task { [weak self] in
+                    await self?.validateNextAPIKey()
+                }
+            }
+            .store(in: &cancellables)
+        
+    }
+}
+
+// MARK: - EXTENSIONS
+private extension APIKeyManager {
+    private func invalid_RateLimited(_ state: APIKeyValidityStates) {
+        switch state {
+        case .invalid:
+            Logger.log(errorModel.invalidAPIKey.localizedDescription)
+            
+        case .rateLimited:
+            Logger.log(errorModel.rateLimitedAPIKey.localizedDescription)
+            
+        default:
+            break
         }
         
-        Logger.log("✅: API access key has been return.")
-        return apiAccessKey
-    }
-    
-    /// Handles changes in the API access key status.
-    ///
-    /// - Parameter status: The new API access key status.
-    /// - Saves the status to UserDefaults based on the current status.
-    private func onAPIAccessKeyStatusChange(_ status: APIAccessKeyValidityStatus) async {
-        do {
-            switch status {
-            case .notFound, .validating, .failed:
-                try await saveAPIAccessKeyStatusToUserDefaults(.notFound)
-            case .invalid:
-                try await saveAPIAccessKeyStatusToUserDefaults(.invalid)
-            case .connected, .rateLimited:
-                try await saveAPIAccessKeyStatusToUserDefaults(.connected)
-            }
-        } catch {
-            Logger.log("❌: Saving `\(status)` status to user defaults. \(error.localizedDescription)")
+        /// Invalid means the current api key is not working
+        /// It's time to validate the next available api key from the api keys array.
+        
+        /// If there's no next available api key means we are rate limited on all the keys we have.
+        guard let nextAPIKey: String = getNextAvailableAPIKey() else {
+            setAPIKeyValidationState(.allRateLimited)
+            return
         }
+        
+        /// If there's a next available api key, we validate
+        Task { [weak self] in await self?.validateAPIKey(nextAPIKey) }
     }
     
-    /// Saves the API access key to UserDefaults.
-    ///
-    /// - Parameter key: The API access key to be stored.
-    private func saveAPIAccessKeyToUserDefaults(_ key: String) async {
-        await defaults.save(key: .apiAccessKey, value: key)
-        Logger.log("✅: API access key has been saved to user defaults.")
-    }
-    
-    /// Saves the API access key status to UserDefaults.
-    ///
-    /// - Parameter status: The API access key status to be stored.
-    /// - Throws: Errors related to saving the status.
-    private func saveAPIAccessKeyStatusToUserDefaults(_ status: APIAccessKeyValidityStatus) async throws {
-        try await defaults.saveModel(key: .apiAccessKeyStatusKey, value: status)
-        Logger.log("✅: API access key status has been saved to user defaults.")
-    }
-    
-    /// Retrieves and assigns the API access key status from UserDefaults.
-    ///
-    /// Sets the current API access key status based on the stored value.
-    /// Defaults to .notFound if no status is found.
-    private func getNAssignAPIAccessKeyStatusFromUserDefaults() async {
-        do {
-            guard let apiAccessKeyStatus: APIAccessKeyValidityStatus = try await defaults.getModel(key: .apiAccessKeyStatusKey, type: APIAccessKeyValidityStatus.self) else {
-                apiAccessKeyStatus = .notFound
-                return
-            }
-            
-            self.apiAccessKeyStatus = apiAccessKeyStatus
-            Logger.log("✅: API access key status has been fetched and assigned from user defaults.")
-        } catch {
-            Logger.log(errorModel.apiAccessKeyStatusNotFound.localizedDescription)
+    private func failed() {
+        Task {
+            await ErrorPopupViewModel.shared
+                .addError(GlobalErrorPopup.connectionTimeout)
         }
+        
+        Logger.log(errorModel.timeout.localizedDescription)
+    }
+    
+    private func allRateLimited() {
+        Logger.log(errorModel.allRateLimited.localizedDescription)
+        
+        /// Now it's time to clear all the `failedAPIKeyIndexes` and iterate again to find a valid api key.
+        removeAllFailedAPIKeyIndexes()
+        
+        /// Then get an api key from the api keys array as `failedAPIKeyIndexes` are empty.
+        guard let nextAPIKey: String = getNextAvailableAPIKey() else { return }
+        
+        Task { [weak self] in
+            await self?.validateAPIKey(nextAPIKey)
+        }
+        
+        Logger.log("⚠️: Validating an API key after the all rate limited error.")
     }
 }

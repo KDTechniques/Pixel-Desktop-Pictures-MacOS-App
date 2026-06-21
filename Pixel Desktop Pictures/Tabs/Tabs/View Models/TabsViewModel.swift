@@ -13,7 +13,7 @@ import Foundation
     private(set) var tabSelection: TabItem = .main
     private(set) var selectedTabContentHeight: CGFloat = .infinity
     
-    // MARK: - INTERNAL FUNCTIONS
+    // MARK: - PUBLIC FUNCTIONS
     
     func setTabSelection(_ tab: TabItem) {
         tabSelection = tab
@@ -23,6 +23,6 @@ import Foundation
     func setTabContentHeight(height: CGFloat, from tab: TabItem) {
         guard tab == tabSelection else { return }
         selectedTabContentHeight = height
-        Logger.log("✅: Tab content has been assigned.")
     }
 }
+

@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct TabContentWithWindowErrorView<T: View>: View {
-    // MARK: - PROPERTIES
-    @Environment(NetworkManager.self) private var networkManager
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
+    // MARK: - INJECTED PROPERTIES
+    @Environment(APIKeyManager.self) private var apiKeyManager
     let tab: TabItem
     let content: T
     
-    let errorModel = GlobalWindowError.self
+    // MARK: - ASSIGNED PROPERTIES
+    private let networkManager: NetworkManager = .shared
+    private let errorModel = GlobalWindowErrorModel.self
     
     // MARK: - INITIALIZERS
     init(tab: TabItem, @ViewBuilder _ content: () -> T) {
@@ -31,15 +32,13 @@ struct TabContentWithWindowErrorView<T: View>: View {
     var body: some View {
         Group {
             if networkManager.connectionStatus == .connected {
-                switch apiAccessKeyManager.apiAccessKeyStatus {
-                case .notFound, .validating, .failed:
-                    WindowErrorView(model: errorModel.apiAccessKeyNotFound)
-                case .invalid:
-                    WindowErrorView(model: errorModel.apiAccessKeyInvalid)
-                case .rateLimited:
-                    WindowErrorView(model: errorModel.apiAccessRateLimited)
-                case .connected :
+                switch apiKeyManager.apiKeyValidationState {
+                case .unknown, .validating, .valid:
                     content
+                      
+                case .invalid, .failed, .rateLimited, .allRateLimited:
+                    content
+                        .onAppearViewModifier(apiKeyManager: apiKeyManager)
                 }
             } else {
                 WindowErrorView(model: errorModel.notConnectedToInternet)
@@ -52,6 +51,15 @@ struct TabContentWithWindowErrorView<T: View>: View {
 // MARK: - PREVIEWS
 #Preview("Tab Content with Error View") {
     TabContentWithWindowErrorView(tab: .random(), Color.debug)
-        .environment(NetworkManager.shared)
         .previewModifier
+}
+
+fileprivate extension View {
+    func onAppearViewModifier(apiKeyManager: APIKeyManager) -> some View {
+        self
+            .onAppear {
+                guard apiKeyManager.apiKeyValidationState == .failed else { return }
+                Task { await apiKeyManager.validateNextAPIKey() }
+            }
+    }
 }

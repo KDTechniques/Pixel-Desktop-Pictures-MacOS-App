@@ -13,7 +13,6 @@ fileprivate enum DownloadState: CaseIterable {
 
 struct DownloadButtonView: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(\.appEnvironment) private var appEnvironment
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
@@ -22,7 +21,7 @@ struct DownloadButtonView: View {
     // MARK: - BODY
     var body: some View {
         Button("Download") {
-            Task { await handleTask() }
+            Task { await downloadImage() }
         }
         .buttonStyle(.plain)
         .opacity(downloadState == .none ? 1 : 0)
@@ -35,12 +34,6 @@ struct DownloadButtonView: View {
     DownloadButtonView()
         .padding()
         .previewModifier
-        .environment(MainTabViewModel(collectionsTabVM: .init(
-            apiAccessKeyManager: .init(),
-            collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock))),
-            queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))),
-                                      recentsTabVM: .init(recentManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .mock)))))
-        )
 }
 
 // MARK: - EXTENTIONS
@@ -66,16 +59,21 @@ extension DownloadButtonView {
     }
     
     // MARK: - FUNCTIONS
-    private func handleTask() async {
+    private func downloadImage() async {
         downloadState = .downloading
         
         do {
-            try await mainTabVM.downloadImageToDevice(environment: appEnvironment)
-            downloadState = .downloaded
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            downloadState = .none
+            try await downloadImageTask()
         } catch {
-            downloadState = .none
+            let operation: MainTabDeferredOperationModel = .init(type: .download, action: downloadImageTask)
+            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
         }
+    }
+    
+    private func downloadImageTask() async throws {
+        try await mainTabVM.downloadImageToDevice(environment: appEnvironment)
+        downloadState = .downloaded
+        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        downloadState = .none
     }
 }

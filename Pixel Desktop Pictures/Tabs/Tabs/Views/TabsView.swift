@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct TabsView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
+    @Environment(SettingsTabViewModel.self) private var settingsVM
     
     // MARK: - BODY
     var body: some View {
@@ -31,13 +33,12 @@ struct TabsView: View {
         }
         .frame(width: TabItem.allWindowWidth)
         .background(Color.windowBackground)
+        .onFirstAppearViewModifier { settingsVM.handleLaunchAtLoginAlertOnTabViewAppear() }
     }
 }
 
 // MARK: - PREVIEWS
 #Preview("Tabs View") {
-    @Previewable @State var networkManager: NetworkManager = .shared
     TabsView()
-        .environment(networkManager)
         .previewModifier
 }

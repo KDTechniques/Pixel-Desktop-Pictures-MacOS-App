@@ -9,13 +9,16 @@ import Foundation
 import SwiftData
 
 actor RecentLocalDatabaseManager {
-    // MARK: - INJECTED PROPERTIES
-    let localDatabaseManager: LocalDatabaseManager
+    //  MARK: - SINGLETON
+    static let shared: RecentLocalDatabaseManager = .init()
     
     // MARK: - INITIALIZER
-    init(localDatabaseManager: LocalDatabaseManager) {
-        self.localDatabaseManager = localDatabaseManager
+    private init() {
+        
     }
+    
+    // MARK: - INJECTED PROPERTIES
+    let localDatabaseManager: LocalDatabaseManager = .shared
     
     // MARK: FUNCTIONS
     
@@ -23,12 +26,12 @@ actor RecentLocalDatabaseManager {
     
     @MainActor
     func addRecent(_ newItem: Recent) async throws {
-        await localDatabaseManager.container.mainContext.insert(newItem)
+        localDatabaseManager.insertToContext(newItem)
         
         do {
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
-            Logger.log(CollectionLocalDatabaseManagerError.failedToCreateCollection(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerErrorModel.failedToCreateCollection(error).localizedDescription)
             throw error
         }
     }
@@ -42,14 +45,11 @@ actor RecentLocalDatabaseManager {
                 sortBy: [SortDescriptor(\.timestamp, order: .reverse)] // Descending order
             )
             
-            let recentsArray: [Recent] = try await localDatabaseManager
-                .container
-                .mainContext
-                .fetch(descriptor)
+            let recentsArray: [Recent] = try localDatabaseManager.fetchFromContext(descriptor)
             
             return recentsArray
         } catch {
-            Logger.log(CollectionLocalDatabaseManagerError.failedToFetchCollections(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerErrorModel.failedToFetchCollections(error).localizedDescription)
             throw error
         }
     }
@@ -60,7 +60,7 @@ actor RecentLocalDatabaseManager {
         do {
             try await localDatabaseManager.saveContext()
         } catch {
-            Logger.log(QueryImageLocalDatabaseManagerError.failedToUpdateQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerErrorModel.failedToUpdateQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -70,13 +70,13 @@ actor RecentLocalDatabaseManager {
     @MainActor
     func deleteRecents(at items: [Recent]) async throws {
         for item in items {
-            await localDatabaseManager.container.mainContext.delete(item)
+            localDatabaseManager.deleteFromContext(item)
         }
         
         do {
-            try await localDatabaseManager.saveContext()
+            try localDatabaseManager.saveContext()
         } catch {
-            Logger.log(CollectionLocalDatabaseManagerError.failedToDeleteCollection(error).localizedDescription)
+            Logger.log(CollectionLocalDatabaseManagerErrorModel.failedToDeleteCollection(error).localizedDescription)
             throw error
         }
     }

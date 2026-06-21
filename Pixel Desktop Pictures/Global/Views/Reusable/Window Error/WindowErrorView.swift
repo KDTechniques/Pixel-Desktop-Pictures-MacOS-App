@@ -33,6 +33,6 @@ struct WindowErrorView<T: WindowErrorProtocol>: View {
 
 // MARK: - PREVIEWS
 #Preview("Window Error View") {
-    WindowErrorView(model: GlobalWindowError.random())
+    WindowErrorView(model: GlobalWindowErrorModel.random())
         .previewModifier
 }

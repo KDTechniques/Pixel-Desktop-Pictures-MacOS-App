@@ -33,12 +33,5 @@ struct AddNewCollectionView: View {
 #Preview("Add New Collection View") {
     AddNewCollectionView()
         .frame(width: TabItem.allWindowWidth)
-        .environment(
-            CollectionsTabViewModel(
-                apiAccessKeyManager: .init(),
-                collectionManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production))),
-                queryImageManager: .shared(localDatabaseManager: .init(localDatabaseManager: try! .init(appEnvironment: .production)))
-            )
-        )
         .previewModifier
 }

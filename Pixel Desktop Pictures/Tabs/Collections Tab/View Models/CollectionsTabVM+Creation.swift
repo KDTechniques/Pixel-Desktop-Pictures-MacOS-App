@@ -38,7 +38,7 @@ extension CollectionsTabViewModel {
             )
             
             // First, add the new item to local database.
-            try await getCollectionManager().addCollections([collectionItem])
+            try getCollectionManager().addCollections([collectionItem])
             
             // Then, add the item to the collections array.
             appendCollectionsArray(collectionItem)
@@ -47,11 +47,10 @@ extension CollectionsTabViewModel {
             setShowCreateButtonProgress(false)
             presentPopup(false, for: .collectionCreationPopOver)
             Logger.log("✅: `\(collectionName)` collection has been created")
-        } catch {
+        } catch let error {
             setShowCreateButtonProgress(false)
             Logger.log(getVMError().failedToCreateCollection(collectionName: collectionName, error).localizedDescription)
             await getErrorPopupVM().addError(getErrorPopup().failedToCreateCollection(error))
-            getAPIAccessKeyManager().handleURLError(error)
         }
     }
     

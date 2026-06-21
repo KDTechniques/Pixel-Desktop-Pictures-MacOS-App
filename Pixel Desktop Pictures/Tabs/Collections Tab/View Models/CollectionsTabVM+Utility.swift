@@ -8,68 +8,6 @@
 import SwiftUI
 
 extension CollectionsTabViewModel {
-    /// Initializes the Collections ViewModel by fetching collections and query images from the local database or creating default data.
-    ///
-    /// This function attempts to retrieve collections stored in the local database. If no collections are found,
-    /// it creates a default set of collections and their associated `QueryImage` data, saves them to the database,
-    /// and prepares the collections array for use. For subsequent launches, persistent data is used to initialize the view model.
-    ///
-    /// If an error occurs during initialization, the function falls back to setting default or empty collections,
-    /// and displays an error popup.
-    ///
-    /// - Important: The function ensures that the `Collections Tab View Model` is initialized correctly with either
-    /// persistent or default data to prevent the app from running in an inconsistent state.
-    func initializeCollectionsViewModel() async {
-        do {
-            // Try to fetch collections from local database, if available.
-            let fetchedCollectionsArray: [Collection] = try await getCollectionManager().getCollections()
-            
-            // Handle the case where no collections are found in local database.
-            guard !fetchedCollectionsArray.isEmpty else {
-                // Use the default values as the initial data or fallback option.
-                let defaultCollectionsArray: [Collection] = try Collection.getDefaultCollectionsArray()
-                
-                // Omit the `RANDOM` collection, and map only collection names for processing
-                let collectionNamesArray: [String] = defaultCollectionsArray
-                    .filter { $0.name != Collection.randomKeywordString }
-                    .map({ $0.name })
-                
-                // Fetch and add initial `QueryImage`s to local database
-                try await fetchAndAddInitialQueryImages(with: collectionNamesArray)
-                
-                // Save the default collections array to local database.
-                try await getCollectionManager().addCollections(defaultCollectionsArray)
-                
-                // Then prepare the collections array.
-                setCollectionsArray(defaultCollectionsArray)
-                Logger.log("✅: Initial default collections array has been added to local database")
-                return
-            }
-            
-            // After the initial launch, persistent data is available for use.
-            setCollectionsArray(fetchedCollectionsArray)
-            
-            // Prepare query images array with selected collections fetched from the local database.
-            try await getAndSetQueryImagesArray()
-            
-            Logger.log("✅: Collections has been fetched from the local database")
-            Logger.log("✅: `Collections Tab View Model` has been initialized!")
-        } catch {
-            Logger.log(getVMError().failedToInitializeCollectionsTabVM(error).localizedDescription)
-            
-            do {
-                let defaultCollectionsArray: [Collection] = try Collection.getDefaultCollectionsArray()
-                setCollectionsArray(defaultCollectionsArray)
-                Logger.log("⚠️: Default collections array has been added.")
-            } catch {
-                setCollectionsArray([]) // The window error will be taken care of from view level
-                Logger.log("⚠️: Empty collections array has been assigned.")
-            }
-            
-            await getErrorPopupVM().addError(getErrorPopup().somethingWentWrong)
-        }
-    }
-    
     /// Presents or dismisses a popup with a smooth animation and resets related components when dismissed.
     ///
     /// This function animates the display of a popup by updating its presentation state and type.
@@ -113,20 +51,20 @@ extension CollectionsTabViewModel {
         Logger.log("✅: Scroll position has been animated on collection items array change.")
     }
     
-    /// Retrieves an instance of `UnsplashImageAPIService` configured with the API access key.
+    /// Retrieves an instance of `UnsplashImageAPIService` configured with the API key.
     ///
-    /// This function fetches the API access key from the `APIAccessKeyManager` and uses it to initialize
-    /// an instance of `UnsplashImageAPIService`. If the API access key is not available, an error is thrown.
+    /// This function fetches the API key from the `APIKeyManager` and uses it to initialize
+    /// an instance of `UnsplashImageAPIService`. If the API key is not available, an error is thrown.
     ///
     /// - Returns: A configured instance of `UnsplashImageAPIService`.
-    /// - Throws: An error if the API access key is not found.
+    /// - Throws: An error if the API key is not found.
     func getImageAPIServiceInstance() async throws -> UnsplashImageAPIService {
-        guard let apiAccessKey: String = await getAPIAccessKeyManager().getAPIAccessKey() else {
-            Logger.log(getVMError().apiAccessKeyNotFound.localizedDescription)
-            throw getVMError().apiAccessKeyNotFound
+        guard let apiKey: String = await getAPIKeyManager().getAPIKey() else {
+            Logger.log(getVMError().apiKeyNotFound.localizedDescription)
+            throw getVMError().apiKeyNotFound
         }
         
-        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        let imageAPIService: UnsplashImageAPIService = .init(apiKey: apiKey)
         
         Logger.log("✅: Image api instance has been returned.")
         return imageAPIService

@@ -23,7 +23,7 @@ extension DesktopPictureScheduler {
             await saveExecutionTimeSince1970ToUserDefaults(from: executionTimeIntervalSince1970)
             Logger.log("✅: Calculated, scheduled, and saved execution time interval since 1970 to user defaults.")
         } catch {
-            Logger.log("\(String(describing: DesktopPictureSchedulerError.executionTimeProcessingFailed.errorDescription)) \(error.localizedDescription)")
+            Logger.log("\(String(describing: DesktopPictureSchedulerErrorModel.executionTimeProcessingFailed.errorDescription)) \(error.localizedDescription)")
         }
     }
     

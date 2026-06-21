@@ -8,18 +8,18 @@
 import Foundation
 
 enum DirectoryTypes {
-    case downloads(_ environment:  AppEnvironment)
-    case documents(_ environment:  AppEnvironment)
+    case downloads
+    case documents
     
     var directory: UnsplashImageDirectoryProtocol  {
         switch self {
-        case .downloads(let environment):
-            return environment == .production
+        case .downloads:
+            return appEnvironment == .production
             ? UnsplashImageDirectory.downloadsDirectory
             : MockUnsplashImageDirectory.downloadsDirectory
             
-        case .documents(let environment):
-            return environment == .production
+        case .documents:
+            return appEnvironment == .production
             ? UnsplashImageDirectory.documentsDirectory
             : MockUnsplashImageDirectory.documentsDirectory
         }

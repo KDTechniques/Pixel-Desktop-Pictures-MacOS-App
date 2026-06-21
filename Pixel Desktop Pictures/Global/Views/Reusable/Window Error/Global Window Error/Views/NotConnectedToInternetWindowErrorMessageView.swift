@@ -16,7 +16,7 @@ struct NotConnectedToInternetWindowErrorMessageView: View {
 
 // MARK: - PREVIEWS
 #Preview("Not Connected to Internet Window Error Message View") {
-    WindowErrorView(model: GlobalWindowError.notConnectedToInternet)
+    WindowErrorView(model: GlobalWindowErrorModel.notConnectedToInternet)
         .padding()
         .previewModifier
 }

@@ -19,7 +19,7 @@ struct UpdateCollectionPreviewImageView: View {
     }
     
     // MARK: - ASSIGNED PROPERTIES
-    private let vGridValues: VGridValues.Type = VGridValues.self
+    private let vGridValues = VGridValues.self
     private var collectionModelManager: CollectionManager { collectionsTabVM.getCollectionManager() }
     @State private var imageURLString: String?
     @State private var showImage: Bool = false
