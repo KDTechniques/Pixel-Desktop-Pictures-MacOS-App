@@ -26,7 +26,6 @@ struct DownloadButtonView: View {
         .buttonStyle(.plain)
         .opacity(downloadState == .none ? 1 : 0)
         .overlay(alignment: .trailing) { overlay }
-        .disabled(mainTabVM.disableSetDesktopPictureButton())
     }
 }
 
@@ -66,15 +65,8 @@ extension DownloadButtonView {
         do {
             try await downloadImageTask()
         } catch {
-            await mainTabVM.apiKeyManager.onUnsplashImageAPIFailure(error) {
-                Task {
-                    do {
-                        try await downloadImageTask()
-                    } catch {
-                        downloadState = .none
-                    }
-                }
-            }
+            let operation: MainTabDeferredOperationModel = .init(type: .download, action: downloadImageTask)
+            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
         }
     }
     

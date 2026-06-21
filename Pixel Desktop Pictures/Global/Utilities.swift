@@ -7,6 +7,7 @@
 
 import Foundation
 import AppKit
+import SDWebImageSwiftUI
 
 struct Utilities {
     /// Retrieves the app's version and build number from the main bundle.
@@ -48,13 +49,10 @@ struct Utilities {
         NSApp.terminate(nil)
     }
     
-    static func handleURLError(_ error: Error) -> APIKeyValidityStates {
+    static func APIKeyValidityStateOnURLError(_ error: Error) -> APIKeyValidityStates {
         guard let urlError: URLError = error as? URLError else { return .failed }
         
         switch urlError.code {
-        case .notConnectedToInternet:
-            return .noInternet
-            
         case .clientCertificateRejected:
             return .rateLimited
             
@@ -64,5 +62,9 @@ struct Utilities {
         default:
             return .failed
         }
+    }
+    
+    static func isImageCacheOrDiskEmpty() -> Bool {
+        return SDImageCache.shared.totalDiskCount() == 0
     }
 }

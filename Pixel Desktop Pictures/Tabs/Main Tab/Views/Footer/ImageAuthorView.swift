@@ -29,7 +29,6 @@ struct ImageAuthorView: View {
                 label
             }
         }
-        .disabled(mainTabVM.disableSetDesktopPictureButton())
     }
 }
 

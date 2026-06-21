@@ -42,6 +42,7 @@ struct ImageContainerView: View {
         }
         .buttonStyle(.plain)
         .allowsHitTesting(!mainTabVM.disableHitTestingOnImageContainer())
+        .disabled(mainTabVM.disableOnFirstLaunch())
     }
 }
 
@@ -92,9 +93,8 @@ extension ImageContainerView {
         do {
             try await mainTabVM.setNextImage()
         } catch {
-            await mainTabVM.apiKeyManager.onUnsplashImageAPIFailure(error) {
-                Task { try? await mainTabVM.setNextImage() }
-            }
+            let operation: MainTabDeferredOperationModel = .init(type: .nextImage, action: mainTabVM.setNextImage)
+            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
         }
     }
 }

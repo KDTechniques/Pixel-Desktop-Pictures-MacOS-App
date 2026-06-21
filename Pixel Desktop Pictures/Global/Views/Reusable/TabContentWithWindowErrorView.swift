@@ -36,14 +36,16 @@ struct TabContentWithWindowErrorView<T: View>: View {
                 case .rateLimited:
                     WindowErrorView(model: errorModel.apiRateLimited)
                     
-                case .connected, .unknown:
+                case .valid, .unknown:
                     content
+                        .onAppearViewModifier(apiKeyManager: apiKeyManager)
                     
                 case .validating:
                     if apiKeyManager.getAPIKeyFromUserDefaults().isNil() {
                         SettingThingsUpView()
                     } else {
                         content
+                            .onAppearViewModifier(apiKeyManager: apiKeyManager)
                     }
                     
                 default:
@@ -61,4 +63,14 @@ struct TabContentWithWindowErrorView<T: View>: View {
 #Preview("Tab Content with Error View") {
     TabContentWithWindowErrorView(tab: .random(), Color.debug)
         .previewModifier
+}
+
+fileprivate extension View {
+    func onAppearViewModifier(apiKeyManager: APIKeyManager) -> some View {
+        self
+            .onAppear {
+                guard apiKeyManager.apiKeyValidationState == .failed else { return }
+                Task { await apiKeyManager.validateCurrentAPIKey() }
+            }
+    }
 }

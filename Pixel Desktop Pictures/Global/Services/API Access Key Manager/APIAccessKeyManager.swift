@@ -17,7 +17,8 @@ import Combine
 final class APIKeyManager {
     // MARK: - INNITIALIZER
     init() {
-        networkConnectionSubscriber()
+        apiKeyFailureSubscriber()
+        networkConnectionStatusSubscriber()
     }
     
     // MARK: - ASSIGNED PROPERTIES
@@ -30,7 +31,12 @@ final class APIKeyManager {
     let errorModel = APIKeyManagerErrorModel.self
     
     // Publishers
-    private(set) var apiKeyValidationState: APIKeyValidityStates = .unknown
+    private(set) var apiKeyValidationState: APIKeyValidityStates = .unknown { didSet { apiKeyValidationState$ = apiKeyValidationState } }
+    @ObservationIgnored @Published private var apiKeyValidationState$: APIKeyValidityStates = .unknown
+    var apiKeyValidationStatePublisher: AnyPublisher<APIKeyValidityStates, Never> {
+        $apiKeyValidationState$.eraseToAnyPublisher()
+    }
+    
     
     @ObservationIgnored private(set) var apiKey: String?
     @ObservationIgnored private(set) var failedAPIKeyIndexes: Set<Int> = []
@@ -61,38 +67,37 @@ final class APIKeyManager {
         apiKeyValidationState = state
     }
     
-    func insertFailedAPIKeyIndex(_ index: Int) {
+    func insertFailedAPIKeyIndexOn(key: String) {
+        guard let index: Int = apiKeys.getMatchedIndex(for: key) else { return }
         failedAPIKeyIndexes.insert(index)
     }
     
-    func removeFailedAPIKeyIndex(_ index: Int) {
+    func removeFailedAPIKeyIndexOn(key: String) {
+        guard let index: Int = apiKeys.getMatchedIndex(for: key) else { return }
         failedAPIKeyIndexes.remove(index)
     }
     
     // MARK: - PUBLIC FUNCTIONS
     
     func initializeAPIKeyManager() async {
+        setAPIKeyValidationState(.unknown)
+        
         // First get the api key from user defaults.
         /// if the saved api key is nil, we take the first available api key from the api keys array and proceed with the validation.
         let apiKey: String? = getAPIKeyFromUserDefaults() ?? apiKeys.first
         
-        guard let apiKey else { return }
+        guard let apiKey else { return } // this guard statement must not ever get called for any reason.
         
-        // Even if the key is not nil, it might be invalid, rate limited or something else at the moment.
-        /// Yet we still assign the value to the api key and set the validation state to `.unknown`.
-        /// while `.unknown` state is being handled by the front end for better user experience we perform the validation in the background to make sure the api key is valid.
-        /// Ex: even if the retrieved key is invalid we can show the usual UI to the user, until we are done processing the validation.
-        /// If user tries to reload the next image while the invalid api is there, they will see a circular progress or something like that until we finish processing the api key validation.
+        // Validate the API key and set it as `the` API key
+        await validateAPIKey(apiKey)
         setAPIKey(apiKey)
-        setAPIKeyValidationState(.unknown)
-        await handleAPIKeyValidation(apiKey)
     }
     
     /// Retrieves the current API key.
     ///
     /// - Returns: The stored API key or nil if not found.
     /// - Fetches key from UserDefaults if not already in memory.
-    func getAPIKey() async -> String? {
+    func getAPIKey() -> String? {
         guard let apiKey else {
             guard let savedAPIKey: String = getAPIKeyFromUserDefaults() else {
                 return nil
@@ -106,43 +111,7 @@ final class APIKeyManager {
         return apiKey
     }
     
-    func onUnsplashImageAPIFailure(_ error: Error, retryAction: () async -> Void) async {
-        let validationState: APIKeyValidityStates = Utilities.handleURLError(error)
-        
-        switch validationState {
-        case .invalid, .failed, .rateLimited:
-            guard let apiKey else { return }
-            await onAPIKeyValidationFailure(apiKey)
-            
-            await retryAction()
-            
-        default:
-            break
-        }
-    }
-    
-    // MARK: - PRIVATE FUNCTIONS
-    
-    private func networkConnectionSubscriber() {
-        networkManager.$connectionStatus$
-            .removeDuplicates()
-            .debounce(for: .seconds(5), scheduler: DispatchQueue.main)
-            .sink { [weak self] connection in
-                guard
-                    let self,
-                    connection == .connected,
-                    apiKeyValidationState == .noInternet,
-                    apiKeyValidationState != .validating else { return }
-                
-                Task { [weak self] in
-                    await self?.initializeAPIKeyManager()
-                }
-            }
-            .store(in: &cancellables)
-        
-    }
-    
-    private func handleAPIKeyValidation(_ key: String) async {
+    func validateAPIKey(_ key: String) async {
         // We don't try to validate an api key when there's one already validating in the background
         guard apiKeyValidationState != .validating else { return }
         
@@ -159,51 +128,91 @@ final class APIKeyManager {
             // Handle Successful API  Key Validation
             /// here we save the valid api key to user defaults
             /// then assign the valid key to the api key property
-            /// finally set the validity state to `.connected`
+            /// finally set the validity state to `.valid`
             saveAPIKeyToUserDefaults(key)
             setAPIKey(key)
-            setAPIKeyValidationState(.connected)
+            setAPIKeyValidationState(.valid)
             print("✅: Successful API key validation.")
-        } catch let error {
+        } catch (let error) {
             // In case of api key invalidation we have to figure out a way to iterate through other available api keys from the api keys array and find a valid key.
             /// error can be due to not having connected to the internet, rate limited or invalid, so we need to handle it properly while maintaining better UX.
-            let validationState: APIKeyValidityStates = Utilities.handleURLError(error)
-            
-            /// user might see a specific UI only when the app is  not connected to the internet or api key validation is failed.
-            /// that means for some reason if all api keys are rate limited, invalid or failed we have to show a specific message to the user asking to try again later.
-            validationState == .noInternet ? setAPIKeyValidationState(validationState) : ()
+            let validationState: APIKeyValidityStates = Utilities.APIKeyValidityStateOnURLError(error)
+            setAPIKeyValidationState(validationState)
+            insertFailedAPIKeyIndexOn(key: key)
             Logger.log(errorModel.apiKeyValidationFailed(error).localizedDescription)
-            
-            await onAPIKeyValidationFailure(key)
         }
     }
     
-    private func onAPIKeyValidationFailure(_ key: String) async {
-        switch apiKeyValidationState {
-        case .invalid, .failed, .rateLimited:
-            // Get the index of the failed API key from API keys array
-            guard let failedAPIKeyIndex: Int = apiKeys.getMatchedIndex(for: key) else { return }
-            
-            // Insert the failed API key index to a set to keep track of failed indexes and to get the next available API key
-            insertFailedAPIKeyIndex(failedAPIKeyIndex)
-            
-            // Making sure not to iterate over once all the API keys are rate limited
-            /// That means no point of going over 0th index to the rest if everything is rate limited, because the next iteration is more likely to give the same rate limited error results.
-            /// It's way better to ask user to wait for an hour before trying the next validation iteration.
-            guard failedAPIKeyIndexes.count != apiKeys.count else {
-                setAPIKeyValidationState(.rateLimited)
-                return
+    func validateCurrentAPIKey() async {
+        guard let currentAPIKey: String = getAPIKey() else { return }
+        await validateAPIKey(currentAPIKey)
+    }
+    
+    // MARK: - PRIVATE FUNCTIONS
+    private func apiKeyFailureSubscriber() {
+        let failureStates: [APIKeyValidityStates] = [.invalid, .rateLimited]
+        
+        $apiKeyValidationState$
+            .dropFirst()
+            .removeDuplicates()
+            .compactMap { failureStates.contains($0) ? $0 : nil } // Omit non-failure states as we're handling errors here.
+            .sink { [weak self] state in
+                guard let self else { return }
+                switch state {
+                case .invalid, .rateLimited:
+                    /// invalid means the current api key is not working
+                    /// It's time to validate the next available api key from the api keys array.
+                    
+                    /// if there's no next available api key means we are rate limited on all the keys we have.
+                    guard let nextAPIKey: String = getNextAvailableAPIKey() else {
+                        setAPIKeyValidationState(.allRateLimited)
+                        Logger.log("⚠️: All Rate Limited!")
+                        return
+                    }
+                    
+                    /// if there's a next available api key, we validate
+                    Task { [weak self] in await self?.validateAPIKey(nextAPIKey) }
+                    return
+                    
+                case .failed:
+                    Task { await ErrorPopupViewModel.shared.addError(GlobalErrorPopup.connectionTimeout) }
+                    return
+                    
+                default: // Default case will never get executed
+                    return
+                }
             }
-            
-            // Attempt to validate the next available API key
-            let nextAPIKeyIndex: Int = apiKeys.getNextIndex(failedAPIKeyIndex)
-            let nextAPIKey: String = apiKeys[nextAPIKeyIndex]
-            
-            /// Note: The following line of code is bit unsafe so handle it safely when modifying in future implementations.
-            /// This iterates over another set of API key validations. If not handled properly it could lead to memory leak and eventually app will crash!
-            await handleAPIKeyValidation(nextAPIKey)
-        default:
-            break
+            .store(in: &cancellables)
+    }
+    
+    private func getNextAvailableAPIKey() -> String? {
+        let limit = apiKeys.count
+        
+        // Filter the range to find numbers NOT in the set
+        let availableIndexes: [Int] = (0..<limit).filter { !failedAPIKeyIndexes.contains($0) }
+        
+        // Safely grab a random element from the remaining choices
+        guard let randomIndex: Int = availableIndexes.randomElement() else {
+            // If available indexes are empty that means all the api keys have been failed.
+            /// that means we have encountered the rate limited issue.
+            return nil
         }
+        
+        return apiKeys[randomIndex]
+    }
+    
+    private func networkConnectionStatusSubscriber() {
+        networkManager.$connectionStatus$
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] state in
+                guard let self, apiKeyValidationState == .failed, state == .connected else { return }
+                
+                Task { [weak self] in
+                    await self?.validateCurrentAPIKey()
+                }
+            }
+            .store(in: &cancellables)
+        
     }
 }

@@ -132,7 +132,7 @@ extension DesktopPictureScheduler {
         } catch {
             Logger.log("❌: Failed to perform background task. \(error.localizedDescription)")
             
-            guard Utilities.handleURLError(error) == .noInternet else { return }
+            guard Utilities.APIKeyValidityStateOnURLError(error) == .failed else { return }
             setDidBackgroundTaskFailOnInternetFailure(true)
             Logger.log("⚠️✅: Background task has been rescheduled to run when connected to the internet properly.")
         }

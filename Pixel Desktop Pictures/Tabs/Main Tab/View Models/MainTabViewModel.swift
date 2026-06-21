@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @MainActor
 @Observable
@@ -23,12 +24,16 @@ final class MainTabViewModel {
     let vmError = MainTabViewModelErrorModel.self
     let errorPopupVM: ErrorPopupViewModel = .shared
     let errorPopup = MainTabErrorPopup.self
+    var mainTabDeferredOperations: Set<MainTabDeferredOperationModel> = []
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - INITIALIZER
     init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel, apiKeyManager: APIKeyManager) {
         self.collectionsTabVM = collectionsTabVM
         self.recentsTabVM = recentsTabVM
         self.apiKeyManager = apiKeyManager
+        
+        validAPIKeySubscriber()
     }
     
     // MARK: - SETTERS
@@ -82,5 +87,21 @@ final class MainTabViewModel {
             try? await saveCurrentImageToUserDefaults(item)
             Logger.log("✅: Saved current image to user defaults.")
         }
+    }
+    
+    // MARK: - PRIVATE FUNCTIONS
+    private func validAPIKeySubscriber() {
+        apiKeyManager.apiKeyValidationStatePublisher
+            .dropFirst()
+            .removeDuplicates()
+            .compactMap { $0 == .valid ? $0 : nil }
+            .sink { state in
+                guard state == .valid else { return }
+                
+                Task { [weak self] in
+                    await self?.executeDeferredOperations()
+                }
+            }
+            .store(in: &cancellables)
     }
 }

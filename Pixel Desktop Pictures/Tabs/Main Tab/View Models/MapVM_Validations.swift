@@ -8,20 +8,11 @@
 import Foundation
 
 extension MainTabViewModel {
-    func disableSetDesktopPictureButton() -> Bool {
-        let condition1: Bool = {
-            switch apiKeyManager.apiKeyValidationState {
-            case .unknown, .noInternet, .validating, .invalid, .failed, .rateLimited:
-                return true
-                
-            case .connected:
-                return false
-            }
-        }()
-        let condition2: Bool = centerItem == .progressView
-        let condition3: Bool = currentImage != nil
+    func disableOnFirstLaunch() -> Bool {
+        let condition1: Bool = Utilities.isImageCacheOrDiskEmpty()
+        let condition2: Bool = apiKeyManager.apiKeyValidationState == .unknown
         
-        return condition1 && condition2 && condition3
+        return condition1 && condition2
     }
     
     func disableHitTestingOnImageContainer() -> Bool {
