@@ -42,7 +42,7 @@ struct TabContentWithWindowErrorView<T: View>: View {
                     
                 case .validating:
                     if apiKeyManager.getAPIKeyFromUserDefaults().isNil() {
-                        SettingThingsUpView()
+                        
                     } else {
                         content
                             .onAppearViewModifier(apiKeyManager: apiKeyManager)
@@ -70,7 +70,7 @@ fileprivate extension View {
         self
             .onAppear {
                 guard apiKeyManager.apiKeyValidationState == .failed else { return }
-                Task { await apiKeyManager.validateCurrentAPIKey() }
+                Task { await apiKeyManager.validateNextAPIKey() }
             }
     }
 }

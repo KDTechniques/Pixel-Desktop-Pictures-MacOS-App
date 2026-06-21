@@ -18,7 +18,7 @@ extension APIKeyManager {
             return nil
         }
         
-        Logger.log("✅: Returned API key.")
+        Logger.log("✅: Returned API key from user defaults.")
         return apiKey
     }
     

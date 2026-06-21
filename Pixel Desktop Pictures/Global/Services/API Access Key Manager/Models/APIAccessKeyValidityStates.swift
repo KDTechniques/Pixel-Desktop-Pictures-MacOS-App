@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum APIKeyValidityStates: CaseIterable, Codable {
+enum APIKeyValidityStates: String, CaseIterable, Codable {
     case unknown
     case validating
     case valid

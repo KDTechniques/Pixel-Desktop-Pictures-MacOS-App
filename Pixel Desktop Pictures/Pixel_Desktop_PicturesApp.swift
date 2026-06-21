@@ -51,13 +51,17 @@ struct Pixel_Desktop_PicturesApp: App {
         let settingsTabVMInstance: SettingsTabViewModel = .init(mainTabVM: mainTabVMInstance)
         settingsTabVM = settingsTabVMInstance
         
-        
         Task {
-            await apiKeyManagerInstance.initializeAPIKeyManager()
-            await collectionsTabVMInstance.initializeCollectionsViewModel()
-            await recentsTabVMInstance.initializeRecentsTabViewModel()
-            await mainTabVMInstance.initializeMainTabViewModel()
-            await settingsTabVMInstance.initializeSettingsTabVM()
+            await withThrowingTaskGroup(of: Void.self) { group in
+                // Run all the initializations concurrently
+                group.addTask { await apiKeyManagerInstance.initializeAPIKeyManager() }
+                group.addTask { await collectionsTabVMInstance.initializeCollectionsViewModel() }
+                group.addTask { await recentsTabVMInstance.initializeRecentsTabViewModel() }
+                group.addTask { await mainTabVMInstance.initializeMainTabViewModel() }
+                group.addTask { await settingsTabVMInstance.initializeSettingsTabVM() }
+            }
+            
+            Logger.log("✅: Pixel Desktop Pictures is ready to use!")
         }
     }
     
