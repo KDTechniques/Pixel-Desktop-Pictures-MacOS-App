@@ -33,23 +33,12 @@ struct TabContentWithWindowErrorView<T: View>: View {
         Group {
             if networkManager.connectionStatus == .connected {
                 switch apiKeyManager.apiKeyValidationState {
-                case .rateLimited:
-                    WindowErrorView(model: errorModel.apiRateLimited)
-                    
-                case .valid, .unknown:
+                case .unknown, .validating, .valid:
+                    content
+                      
+                case .invalid, .failed, .rateLimited, .allRateLimited:
                     content
                         .onAppearViewModifier(apiKeyManager: apiKeyManager)
-                    
-                case .validating:
-                    if apiKeyManager.getAPIKeyFromUserDefaults().isNil() {
-                        
-                    } else {
-                        content
-                            .onAppearViewModifier(apiKeyManager: apiKeyManager)
-                    }
-                    
-                default:
-                    WindowErrorView(model: errorModel.apiKeyFailed)
                 }
             } else {
                 WindowErrorView(model: errorModel.notConnectedToInternet)

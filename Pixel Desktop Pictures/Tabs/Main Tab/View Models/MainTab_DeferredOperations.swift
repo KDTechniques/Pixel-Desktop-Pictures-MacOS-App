@@ -10,8 +10,8 @@ import Foundation
 extension MainTabViewModel {
     // MARK: - PUBLIC FUNCTIONS
     func checkAPIKeyValidationBeforeExecution(operation: MainTabDeferredOperationModel) async {
-        // First check whether an API key is being validated in the background or not.
-        let conditions: [APIKeyValidityStates] = [.validating, .invalid]
+        // First check whether an API key is being processed in the background or not.
+        let conditions: [APIKeyValidityStates] = [.unknown, .validating, .invalid, .failed, .rateLimited, .allRateLimited]
         guard conditions.contains( apiKeyManager.apiKeyValidationState) else {
             // If API key is valid at the time, we execute the passed action.
             do {
