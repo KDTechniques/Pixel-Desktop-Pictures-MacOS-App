@@ -7,22 +7,9 @@
 
 import SwiftUI
 import TipKit
+import AppKit
 
 let appEnvironment: AppEnvironment = .production  // Note: Change to `.mock` as needed
-
-/// one api access key grands 50 request per hour, so 50 x 10 is 500  requests per hour.
-let apiAccessKeys: [String] = [ // invalid key for testing purposes: 2do6EHZxsHAQ_Aprpob3hGXHaBPDGHYscSt9hPlxuIQ
-    "tYJmkmA0ZXLhmoPDiGEvIJxAHjI2V9d_BY2b2ueumR8",
-    "7ej27jdK3xA-t6PhPiFYfPts0jUsv-WLQxa61g0gDrI",
-    "LI1BeRqbbuTbwNTDNAscF_CG0HDTxSclXOJrqZuBX9Q",
-    "WNifUUadNzXFz6khL7UmV4s5rBqG7KICTVUrIWcIp8k",
-    "ZMy5hQsko63OaazqDYweHOgzL4_-LHOE0fsTrAEiOW0",
-    "45bPf1xzjNsvfHOngiI3ZHEHbRhOUXS3TuqRvyX_c0U",
-    "cd8awUo1YKKAqZmSM_7h7VRJTsmOClsikdXwY67mNEY",
-    "nVV_ujxWJ5rBPjgoxBfszkQ3bvKheTbJdKX4rLEKyb8",
-    "ExtS6bLb-Ou4gX-hBVEh7wupzZR9tAZwONR86ZWXzBo",
-    "w9sxe_6HWTkUq6xZHRfZHLccukzf4_hN9iKedOA5RSE",
-]
 
 @main
 struct Pixel_Desktop_PicturesApp: App {
@@ -31,7 +18,7 @@ struct Pixel_Desktop_PicturesApp: App {
     @State private var mainTabVM: MainTabViewModel
     @State private var recentsTabVM: RecentsTabViewModel
     @State private var collectionsTabVM: CollectionsTabViewModel
-    @State private var apiAccessKeyManager: APIAccessKeyManager
+    @State private var apiKeyManager: APIKeyManager
     
     // MARK: - INITIALIZER
     init() {
@@ -41,11 +28,11 @@ struct Pixel_Desktop_PicturesApp: App {
         try? Tips.resetDatastore()
 #endif
         
-        let apiAccessKeyManagerInstance: APIAccessKeyManager = .init()
-        apiAccessKeyManager = apiAccessKeyManagerInstance
+        let apiKeyManagerInstance: APIKeyManager = .init()
+        apiKeyManager = apiKeyManagerInstance
         
         // COLLECTIONS Related
-        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiAccessKeyManager: apiAccessKeyManagerInstance)
+        let collectionsTabVMInstance: CollectionsTabViewModel = .init(apiKeyManager: apiKeyManagerInstance)
         collectionsTabVM = collectionsTabVMInstance
         
         // RECENTS Related
@@ -53,31 +40,54 @@ struct Pixel_Desktop_PicturesApp: App {
         recentsTabVM = recentsTabVMInstance
         
         // MAIN Tab Related
-        let mainTabVMInstance: MainTabViewModel = .init(collectionsTabVM: collectionsTabVMInstance, recentsTabVM: recentsTabVMInstance)
+        let mainTabVMInstance: MainTabViewModel = .init(
+            collectionsTabVM: collectionsTabVMInstance,
+            recentsTabVM: recentsTabVMInstance,
+            apiKeyManager: apiKeyManagerInstance
+        )
         mainTabVM = mainTabVMInstance
         
         // SETTINGS Tab Related
         let settingsTabVMInstance: SettingsTabViewModel = .init(mainTabVM: mainTabVMInstance)
         settingsTabVM = settingsTabVMInstance
         
-        
         Task {
-            await apiAccessKeyManagerInstance.initializeAPIAccessKeyManager()
-            await collectionsTabVMInstance.initializeCollectionsViewModel()
-            await recentsTabVMInstance.initializeRecentsTabViewModel()
-            await mainTabVMInstance.initializeMainTabViewModel()
-            await settingsTabVMInstance.initializeSettingsTabVM()
+            await withThrowingTaskGroup(of: Void.self) { group in
+                // Run all the initializations concurrently
+                group.addTask { await apiKeyManagerInstance.initializeAPIKeyManager() }
+                group.addTask { await collectionsTabVMInstance.initializeCollectionsViewModel() }
+                group.addTask { await recentsTabVMInstance.initializeRecentsTabViewModel() }
+                group.addTask { await mainTabVMInstance.initializeMainTabViewModel() }
+                group.addTask { await settingsTabVMInstance.initializeSettingsTabVM() }
+            }
+            
+            Logger.log("✅: Pixel Desktop Pictures is ready to use!")
         }
     }
     
     // MARK: - ASSIGNED PROPERTIES
+    @AppStorage("isInitialLaunch") private var isInitialLaunch = true
     @State private var tabsVM: TabsViewModel = .init()
     
     // MARK: - BODY
     var body: some Scene {
+        WindowGroup {
+            OnboardingView() {
+                NSApp.windows.first?.close()
+#if DEBUG
+                isInitialLaunch = !true // set to true later
+#else
+                isInitialLaunch = false
+#endif
+            }
+        }
+        .windowStyle(.plain)
+        .defaultLaunchBehavior(isInitialLaunch ? .presented : .suppressed)
+        .restorationBehavior(.disabled)
+        
         MenuBarExtra("Pixel Desktop Pictures MacOS App", image: .menuBarIcon) {
             TabsView()
-                .environment(apiAccessKeyManager)
+                .environment(apiKeyManager)
                 .environment(tabsVM)
                 .environment(settingsTabVM)
                 .environment(mainTabVM)

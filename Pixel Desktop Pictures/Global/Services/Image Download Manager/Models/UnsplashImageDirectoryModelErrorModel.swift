@@ -1,5 +1,5 @@
 //
-//  UnsplashImageDirectoryModelError.swift
+//  UnsplashImageDirectoryModelErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-02.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum UnsplashImageDirectoryModelError: LocalizedError {
+enum UnsplashImageDirectoryModelErrorModel: LocalizedError {
     case unableToReadDirectoryPath(directory: FileManager.SearchPathDirectory)
     case fileURLConstructionFailed(directory: FileManager.SearchPathDirectory, error: Error)
     

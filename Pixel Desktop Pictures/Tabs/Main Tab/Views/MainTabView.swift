@@ -22,15 +22,8 @@ struct MainTabView: View {
                 ImageContainerView()
                 
                 VStack {
-                    // Set Desktop Picture Button
-                    ButtonView(
-                        title: "Set Desktop Picture",
-                        showProgress: showProgress,
-                        type: .regular
-                    ) { await setDesktopPicture() }
-                    
-                    // Author and Download Button
-                    footer
+                    setDesktopPictureButton
+                    footer // Author and Download Button
                 }
                 .padding()
             }
@@ -61,14 +54,33 @@ extension MainTabView {
         }
         .padding(.top)
         .opacity(condition ? 0 : 1)
-        .disabled(condition)
+        .disabled(condition || mainTabVM.disableOnFirstLaunch())
+    }
+    
+    private var setDesktopPictureButton: some View {
+        ButtonView(
+            title: "Set Desktop Picture",
+            showProgress: showProgress,
+            type: .regular
+        ) { await setDesktopPicture() }
+            .disabled(mainTabVM.disableOnFirstLaunch())
     }
     
     // MARK: - FUNCTIONS
     
     private func setDesktopPicture() async {
         showProgress = true
-        try? await mainTabVM.setDesktopPicture()
+        
+        do {
+            try await setDesktopPictureTask()
+        } catch {
+            let operation: MainTabDeferredOperationModel = .init(type: .setDesktopPicture, action: setDesktopPictureTask)
+            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
+        }
+    }
+    
+    private func setDesktopPictureTask() async throws {
+        try await mainTabVM.setDesktopPicture()
         showProgress = false
     }
 }

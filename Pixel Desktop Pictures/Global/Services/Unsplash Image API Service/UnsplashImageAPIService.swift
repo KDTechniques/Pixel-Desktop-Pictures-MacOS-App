@@ -8,11 +8,11 @@
 import Foundation
 
 /**
- Provides an interface for interacting with the Unsplash API. This class is responsible for fetching random images or query-based images from Unsplash and validating the API access key. It handles constructing the necessary network requests, parsing the responses, and decoding the JSON data into the appropriate model objects.
+ Provides an interface for interacting with the Unsplash API. This class is responsible for fetching random images or query-based images from Unsplash and validating the API key. It handles constructing the necessary network requests, parsing the responses, and decoding the JSON data into the appropriate model objects.
  */
 struct UnsplashImageAPIService {
     // MARK: - INJECTED PROPERTIES
-    let apiAccessKey: String
+    let apiKey: String
     
     // MARK: - ASSIGNED PROPERTIES
     private let timeout: TimeInterval = 10
@@ -20,27 +20,27 @@ struct UnsplashImageAPIService {
     static let imagesPerPage: Int = 10
     
     // MARK: - INITIALIZER
-    init(apiAccessKey: String) {
-        self.apiAccessKey = apiAccessKey
+    init(apiKey: String) {
+        self.apiKey = apiKey
     }
     
     // MARK: FUNCTIONS
     
     // MARK: - INTERNAL FUNCTIONS
     
-    /// This function validates the API Access Key by making a network call to the Unsplash API.
-    /// It attempts to fetch a random image using the provided API Access Key.
+    /// This function validates the API  Key by making a network call to the Unsplash API.
+    /// It attempts to fetch a random image using the provided API  Key.
     /// If the call is successful, the key is considered valid. If it fails, an error is thrown.
     ///
-    /// - Throws: `UnsplashImageAPIServiceError.apiAccessKeyValidationFailed`: If the API call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.apiKeyValidationFailed`: If the API call fails,
     /// the function wraps the underlying error in this custom error type to indicate
-    /// that the access key validation was unsuccessful.
-    func validateAPIAccessKey() async throws {
+    /// that the key validation was unsuccessful.
+    func validateAPIKey() async throws {
         do {
-            let _ = try await fetchDataNDecode(for: randomImageURLString, in: UnsplashRandomImage.self)
-            Logger.log("✅: API access key has been validated.")
+            let _ = try await getRandomImage()
+            Logger.log("✅: API key has been validated.")
         } catch {
-            Logger.log(UnsplashImageAPIServiceError.failedToFetchAPIAccessKey(error).localizedDescription)
+            Logger.log(UnsplashImageAPIServiceErrorModel.failedToFetchAPIKey(error).localizedDescription)
             throw error
         }
     }
@@ -49,7 +49,7 @@ struct UnsplashImageAPIService {
     /// This function performs a network call to retrieve a random image and returns the corresponding model.
     ///
     /// - Returns: An `UnsplashRandomImage` object representing the fetched random image.
-    /// - Throws: `UnsplashImageAPIServiceError.randomImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.randomImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
@@ -59,7 +59,7 @@ struct UnsplashImageAPIService {
             Logger.log("✅: Random image has been returned.")
             return randomImage
         } catch {
-            Logger.log(UnsplashImageAPIServiceError.failedToFetchRandomImage(error).localizedDescription)
+            Logger.log(UnsplashImageAPIServiceErrorModel.failedToFetchRandomImage(error).localizedDescription)
             throw error
         }
     }
@@ -74,7 +74,7 @@ struct UnsplashImageAPIService {
     ///
     /// - Returns: An `UnsplashQueryImages` object containing the query-based image results.
     ///
-    /// - Throws: `UnsplashImageAPIServiceError.queryImageModelFetchFailed`: If the network call fails,
+    /// - Throws: `UnsplashImageAPIServiceErrorModel.queryImageModelFetchFailed`: If the network call fails,
     /// the underlying error is wrapped in this custom error type.
     ///
     /// - Important: We could have used a cropped version of the image from the Unsplash API to reduce network usage, but unfortunately, their documentation is somewhat lacking.
@@ -88,7 +88,7 @@ struct UnsplashImageAPIService {
             Logger.log("✅: Query images has been returned.")
             return queryImages
         } catch {
-            Logger.log(UnsplashImageAPIServiceError.failedToFetchQueryImages(error).localizedDescription)
+            Logger.log(UnsplashImageAPIServiceErrorModel.failedToFetchQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -127,9 +127,9 @@ struct UnsplashImageAPIService {
             throw URLError(.badURL)
         }
         
-        // Create a URL Request with Header Passing API Access Key
+        // Create a URL Request with Header Passing API Key
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
-        request.setValue("Client-ID \(apiAccessKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("Client-ID \(apiKey)", forHTTPHeaderField: "Authorization")
         
         // Make the URL Session Request to Get Data and Response
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -146,6 +146,7 @@ struct UnsplashImageAPIService {
         let model: T = try JSONDecoder().decode(T.self, from: data)
         
         Logger.log("✅: Data has been fetched and decoded.")
+        
         // Return Model Object
         return model
     }
@@ -165,10 +166,10 @@ struct UnsplashImageAPIService {
             Logger.log("❌: The request was unacceptable, often due to missing a required parameter. Status code: 400 - Bad Request")
             throw URLError(.badURL)
         case 401:
-            Logger.log("❌: Invalid Access Token. Status code: 401 - Unauthorized") // This occurs when the API Access Key is invalid
+            Logger.log("❌: Invalid  Token. Status code: 401 - Unauthorized") // This occurs when the API  Key is invalid
             throw URLError(.userAuthenticationRequired)
         case 403:
-            Logger.log("❌: Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits
+            Logger.log("❌: Missing permissions to perform request. Status code: 403 - Forbidden") // This occurs when 50 images per hour hits (API rate limit)
             throw URLError(.clientCertificateRejected)
         case 404:
             Logger.log("❌: Resource not found. Status code: 404")

@@ -1,5 +1,5 @@
 //
-//  CollectionsViewModelError.swift
+//  CollectionsViewModelErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-09.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-enum CollectionsViewModelError: LocalizedError {
+enum CollectionsViewModelErrorModel: LocalizedError {
     case failedToInitializeCollectionsTabVM(_ error: Error)
-    case apiAccessKeyNotFound
+    case apiKeyNotFound
     case duplicateCollectionName
     case failedToFetchInitialQueryImages(collectionNames: [String], _ error: Error)
     case failedSomethingOnQueryImages(_ error: Error)
@@ -27,8 +27,8 @@ enum CollectionsViewModelError: LocalizedError {
         switch self {
         case .failedToInitializeCollectionsTabVM(let error):
             return "❌: Failed to initialize `CollectionsTabViewModel`. \(error.localizedDescription)"
-        case .apiAccessKeyNotFound:
-            return "❌: Failed to create a collection item model, because api access key is not found."
+        case .apiKeyNotFound:
+            return "❌: Failed to create a collection item model, because api key is not found."
         case .duplicateCollectionName:
             return "❌: Failed to create a collection item model, because it's already exist."
         case .failedToFetchInitialQueryImages(let collectionNames, let error):

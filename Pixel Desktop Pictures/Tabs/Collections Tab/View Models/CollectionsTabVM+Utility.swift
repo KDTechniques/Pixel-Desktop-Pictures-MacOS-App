@@ -51,20 +51,20 @@ extension CollectionsTabViewModel {
         Logger.log("✅: Scroll position has been animated on collection items array change.")
     }
     
-    /// Retrieves an instance of `UnsplashImageAPIService` configured with the API access key.
+    /// Retrieves an instance of `UnsplashImageAPIService` configured with the API key.
     ///
-    /// This function fetches the API access key from the `APIAccessKeyManager` and uses it to initialize
-    /// an instance of `UnsplashImageAPIService`. If the API access key is not available, an error is thrown.
+    /// This function fetches the API key from the `APIKeyManager` and uses it to initialize
+    /// an instance of `UnsplashImageAPIService`. If the API key is not available, an error is thrown.
     ///
     /// - Returns: A configured instance of `UnsplashImageAPIService`.
-    /// - Throws: An error if the API access key is not found.
+    /// - Throws: An error if the API key is not found.
     func getImageAPIServiceInstance() async throws -> UnsplashImageAPIService {
-        guard let apiAccessKey: String = await getAPIAccessKeyManager().getAPIAccessKey() else {
-            Logger.log(getVMError().apiAccessKeyNotFound.localizedDescription)
-            throw getVMError().apiAccessKeyNotFound
+        guard let apiKey: String = await getAPIKeyManager().getAPIKey() else {
+            Logger.log(getVMError().apiKeyNotFound.localizedDescription)
+            throw getVMError().apiKeyNotFound
         }
         
-        let imageAPIService: UnsplashImageAPIService = .init(apiAccessKey: apiAccessKey)
+        let imageAPIService: UnsplashImageAPIService = .init(apiKey: apiKey)
         
         Logger.log("✅: Image api instance has been returned.")
         return imageAPIService

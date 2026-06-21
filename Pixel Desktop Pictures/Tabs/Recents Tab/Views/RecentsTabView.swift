@@ -22,12 +22,11 @@ struct RecentsTabView: View {
     // MARK: - BODY
     var body: some View {
         TabContentWithWindowErrorView(tab: .recents) {
-            
             Group {
                 if condition1 {
-                    WindowErrorView(model: RecentsTabWindowError.recentsTabViewModelInitializationFailed)
+                    WindowErrorView(model: RecentsTabWindowErrorModel.recentsTabViewModelInitializationFailed)
                 } else if condition2 {
-                    WindowErrorView(model: RecentsTabWindowError.firstTimeEmptyRecents)
+                    WindowErrorView(model: RecentsTabWindowErrorModel.firstTimeEmptyRecents)
                 } else {
                     RecentsVGridScrollView()
                         .scrollDisabled(condition3)

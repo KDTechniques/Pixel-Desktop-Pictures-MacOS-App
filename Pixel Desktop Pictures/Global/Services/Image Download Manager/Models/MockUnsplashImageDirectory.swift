@@ -44,7 +44,7 @@ enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
         guard let directoryURL = FileManager.default
             .urls(for: directory, in: .userDomainMask)
             .first else {
-            throw UnsplashImageDirectoryModelError.unableToReadDirectoryPath(directory: directory)
+            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
         }
         
         let folderURL: URL = directoryURL.appending(path: folderName)
@@ -67,7 +67,7 @@ enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
         guard let directoryURL = fileManager
             .urls(for: directory, in: .userDomainMask)
             .first else {
-            throw UnsplashImageDirectoryModelError.unableToReadDirectoryPath(directory: directory)
+            throw UnsplashImageDirectoryModelErrorModel.unableToReadDirectoryPath(directory: directory)
         }
         
         let folderURL: URL = directoryURL.appending(path: folderName)
@@ -91,7 +91,7 @@ enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
                 }
             }
         } catch {
-            Logger.log("Error accessing directory: \(error.localizedDescription)")
+            Logger.log("Erroring directory: \(error.localizedDescription)")
         }
     }
     
@@ -108,7 +108,7 @@ enum MockUnsplashImageDirectory: UnsplashImageDirectoryProtocol {
             return fileURL
         } catch {
             Logger.log("❌: Constructing file url in \(directory). \(error.localizedDescription)")
-            throw UnsplashImageDirectoryModelError.fileURLConstructionFailed(directory: directory, error: error)
+            throw UnsplashImageDirectoryModelErrorModel.fileURLConstructionFailed(directory: directory, error: error)
         }
     }
 }

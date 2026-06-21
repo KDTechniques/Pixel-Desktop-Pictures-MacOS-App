@@ -11,11 +11,11 @@ import SwiftUI
 @Observable
 final class CollectionsTabViewModel {
     // MARK: - INJECTED PROPERTIES
-    private let apiAccessKeyManager: APIAccessKeyManager
+    private let apiKeyManager: APIKeyManager
     
     // MARK: - INITIALIZER
-    init(apiAccessKeyManager: APIAccessKeyManager) {
-        self.apiAccessKeyManager = apiAccessKeyManager
+    init(apiKeyManager: APIKeyManager) {
+        self.apiKeyManager = apiKeyManager
     }
     
     // MARK: - ASSIGNED PROPERTIES
@@ -105,8 +105,8 @@ final class CollectionsTabViewModel {
 
 // MARK: - GETTERS
 extension CollectionsTabViewModel {
-    func getAPIAccessKeyManager() -> APIAccessKeyManager {
-        return apiAccessKeyManager
+    func getAPIKeyManager() -> APIKeyManager {
+        return apiKeyManager
     }
     
     func getCollectionManager() -> CollectionManager {
@@ -137,8 +137,8 @@ extension CollectionsTabViewModel {
         return .shared
     }
     
-    func getVMError() -> CollectionsViewModelError.Type {
-        return CollectionsViewModelError.self
+    func getVMError() -> CollectionsViewModelErrorModel.Type {
+        return CollectionsViewModelErrorModel.self
     }
 }
 

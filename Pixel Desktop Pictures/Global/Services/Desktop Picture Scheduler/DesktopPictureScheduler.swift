@@ -86,7 +86,7 @@ final class DesktopPictureScheduler {
             Logger.log("✅: `Desktop Picture Scheduler` has been initialized")
             try await scheduleBackgroundTask(with: timeIntervalForScheduler)
         } catch {
-            Logger.log("\(String(describing: DesktopPictureSchedulerError.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
+            Logger.log("\(String(describing: DesktopPictureSchedulerErrorModel.activitySchedulingFailed.errorDescription)) \(error.localizedDescription)")
         }
     }
     

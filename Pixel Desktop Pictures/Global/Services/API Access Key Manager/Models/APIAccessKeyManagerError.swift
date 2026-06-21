@@ -1,5 +1,5 @@
 //
-//  APIAccessKeyManagerError.swift
+//  APIKeyManagerErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-16.
@@ -7,25 +7,37 @@
 
 import Foundation
 
-enum APIAccessKeyManagerError: LocalizedError {
-    case apiAccessKeyNotFound
-    case EmptyAPIAccessKey
-    case apiAccessKeyCheckupFailed
-    case apiAccessKeyValidationFailed(_ error: Error)
+enum APIKeyManagerErrorModel: LocalizedError {
+    case apiKeyNotFound
+    case apiKeyValidationFailed(_ error: Error)
+    case allRateLimited
+    case invalidAPIKey
+    case rateLimitedAPIKey
+    case failureDetected
+    case timeout
     
     var errorDescription: String? {
         switch self {
-        case .apiAccessKeyNotFound:
-            return "❌: Failed to find api access key from user defaults."
+        case .apiKeyNotFound:
+            return "⚠️: Failed to find api key from user defaults."
             
-        case .EmptyAPIAccessKey:
-            return "❌: The passed API access key is empty."
+        case .apiKeyValidationFailed(let error):
+            return "❌: Failed to validate API key. \(error.localizedDescription)"
             
-        case .apiAccessKeyCheckupFailed:
-            return "❌: Failed to perform an API access key checkup."
+        case .allRateLimited:
+            return "❌: All rate limits have been hit."
             
-        case .apiAccessKeyValidationFailed(let error):
-            return "❌: Failed to validate API access key. \(error.localizedDescription)"
+        case .invalidAPIKey:
+            return "⚠️: Invalid API key."
+            
+        case .rateLimitedAPIKey:
+            return "⚠️: Rate limited API key."
+            
+        case .failureDetected:
+            return "⚠️: API key failure detected."
+            
+        case .timeout:
+            return "⚠️: API key validation request timed out."
         }
     }
 }

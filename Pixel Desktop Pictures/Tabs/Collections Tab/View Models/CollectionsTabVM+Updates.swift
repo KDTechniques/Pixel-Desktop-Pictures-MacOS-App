@@ -13,7 +13,7 @@ extension CollectionsTabViewModel {
     /// This function validates the new collection name, updates the collection in the local database,
     /// and handles any errors or UI updates related to the renaming process.
     ///
-    /// - Note: Interacts with the Collection Manager, Error Popup ViewModel, and API Access Key Manager.
+    /// - Note: Interacts with the Collection Manager, Error Popup ViewModel, and API  Key Manager.
     func renameCollection() async {
         // Collection name capitalization for processing and saving to local database.
         let newCollectionName: String = renameTextfieldText.capitalized

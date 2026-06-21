@@ -1,5 +1,5 @@
 //
-//  CollectionLocalDatabaseManagerError.swift
+//  CollectionLocalDatabaseManagerErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-11.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum CollectionLocalDatabaseManagerError: LocalizedError {
+enum CollectionLocalDatabaseManagerErrorModel: LocalizedError {
     case failedToCreateCollection(_ error: Error)
     case failedToFetchCollections(_ error: Error)
     case failedToUpdateCollections(_ error: Error)

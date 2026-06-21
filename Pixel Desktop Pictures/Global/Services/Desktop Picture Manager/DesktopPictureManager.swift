@@ -31,7 +31,7 @@ actor DesktopPictureManager {
     let defaults: UserDefaultsManager = .init()
     let currentDesktopPictureFileURLStringKey: UserDefaultKeys = .currentDesktopPictureFileURLStringKey
     private(set) var currentDesktopPictureFileURLString: String?
-    let managerError = DesktopPictureManagerError.self
+    let managerError = DesktopPictureManagerErrorModel.self
     
     // MARK: - Deinitializer
     deinit {

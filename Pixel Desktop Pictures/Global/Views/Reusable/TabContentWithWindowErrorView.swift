@@ -9,13 +9,13 @@ import SwiftUI
 
 struct TabContentWithWindowErrorView<T: View>: View {
     // MARK: - INJECTED PROPERTIES
-    @Environment(APIAccessKeyManager.self) private var apiAccessKeyManager
+    @Environment(APIKeyManager.self) private var apiKeyManager
     let tab: TabItem
     let content: T
     
     // MARK: - ASSIGNED PROPERTIES
     private let networkManager: NetworkManager = .shared
-    private let errorModel = GlobalWindowError.self
+    private let errorModel = GlobalWindowErrorModel.self
     
     // MARK: - INITIALIZERS
     init(tab: TabItem, @ViewBuilder _ content: () -> T) {
@@ -32,15 +32,13 @@ struct TabContentWithWindowErrorView<T: View>: View {
     var body: some View {
         Group {
             if networkManager.connectionStatus == .connected {
-                switch apiAccessKeyManager.apiAccessKeyValidationState {
-                case .rateLimited:
-                    WindowErrorView(model: errorModel.apiAccessRateLimited)
-                    
-                case .connected, .unknown:
+                switch apiKeyManager.apiKeyValidationState {
+                case .unknown, .validating, .valid:
                     content
-                    
-                default:
-                    WindowErrorView(model: errorModel.apiAccessKeyFailed)
+                      
+                case .invalid, .failed, .rateLimited, .allRateLimited:
+                    content
+                        .onAppearViewModifier(apiKeyManager: apiKeyManager)
                 }
             } else {
                 WindowErrorView(model: errorModel.notConnectedToInternet)
@@ -54,4 +52,14 @@ struct TabContentWithWindowErrorView<T: View>: View {
 #Preview("Tab Content with Error View") {
     TabContentWithWindowErrorView(tab: .random(), Color.debug)
         .previewModifier
+}
+
+fileprivate extension View {
+    func onAppearViewModifier(apiKeyManager: APIKeyManager) -> some View {
+        self
+            .onAppear {
+                guard apiKeyManager.apiKeyValidationState == .failed else { return }
+                Task { await apiKeyManager.validateNextAPIKey() }
+            }
+    }
 }

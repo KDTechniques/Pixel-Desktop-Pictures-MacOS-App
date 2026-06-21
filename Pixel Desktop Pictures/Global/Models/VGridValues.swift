@@ -13,12 +13,12 @@ import SwiftUI
  */
 struct VGridValues {
     static let spacing: CGFloat = 8
-    static var columns: [GridItem] {
+    static let columns: [GridItem] = {
         .init(
             repeating: .init(.flexible(), spacing: spacing),
             count: 3
         )
-    }
+    }()
     static let height: CGFloat = 70
     private static let horizontalPadding: CGFloat = 16*2
     static var width: CGFloat {

@@ -16,13 +16,15 @@ struct RecentsVGridScrollView: View {
     
     // MARK: - BODY
     var body: some View {
-        ScrollView(.vertical) {
-            LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
-                ForEach(recentsTabVM.recentsArray, id: \.id) { recentItem in
-                    RecentsVGridImageView(item: recentItem)
+        ZStack {
+            ScrollView(.vertical) {
+                LazyVGrid(columns: vGridValues.columns, spacing: vGridValues.spacing) {
+                    ForEach(recentsTabVM.recentsArray, id: \.id) { recentItem in
+                        RecentsVGridImageView(item: recentItem)
+                    }
                 }
+                .padding([.horizontal, .bottom])
             }
-            .padding([.horizontal, .bottom])
         }
     }
 }

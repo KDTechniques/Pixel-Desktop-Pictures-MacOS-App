@@ -41,7 +41,7 @@ actor QueryImageLocalDatabaseManager {
             
             try localDatabaseManager.saveContext()
         } catch {
-            Logger.log(QueryImageLocalDatabaseManagerError.failedToCreateQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerErrorModel.failedToCreateQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -62,7 +62,7 @@ actor QueryImageLocalDatabaseManager {
             let queryImages: [QueryImage] = try localDatabaseManager.fetchFromContext(descriptor)
             return queryImages
         } catch {
-            Logger.log(QueryImageLocalDatabaseManagerError.failedToFetchQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerErrorModel.failedToFetchQueryImages(error).localizedDescription)
             throw error
         }
     }
@@ -75,7 +75,7 @@ actor QueryImageLocalDatabaseManager {
         do {
             try await localDatabaseManager.saveContext()
         } catch {
-            Logger.log(QueryImageLocalDatabaseManagerError.failedToUpdateQueryImages(error).localizedDescription)
+            Logger.log(QueryImageLocalDatabaseManagerErrorModel.failedToUpdateQueryImages(error).localizedDescription)
             throw error
         }
     }

@@ -22,20 +22,28 @@ enum CollectionsTabErrorPopup: ErrorPopupProtocol {
         switch self {
         case .duplicateCollectionNameFound:
             return "Duplicate collection name found. Please choose a unique name."
+            
         case .failedToCreateCollection(let error):
             return "Failed to create collection.\(getReason(for: error))"
+            
         case .failedToUpdateCollectionName(let error):
             return "Failed to update collection name.\(getReason(for: error))"
+            
         case .failedToUpdateCollectionThumbnailImage:
             return "Failed to update collection thumbnail image."
+            
         case .failedToUpdateCollectionSelection:
             return "Failed to select/deselect collection."
+            
         case .failedToDeleteCollection:
             return "Failed to delete collection."
+            
         case .emptyCollectionName:
             return "You forgot to enter the collection name."
+            
         case .failedSomethingOnQueryImages:
             return "Something went wrong.\nYou may not be able to set collection based desktop pictures."
+            
         case .somethingWentWrong:
             return "Something went wrong. Please try again later."
         }

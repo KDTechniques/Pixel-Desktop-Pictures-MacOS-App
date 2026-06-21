@@ -1,5 +1,5 @@
 //
-//  RecentsTabWindowError.swift
+//  RecentsTabWindowErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-11.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum RecentsTabWindowError: CaseIterable, WindowErrorProtocol {
+enum RecentsTabWindowErrorModel: CaseIterable, WindowErrorProtocol {
     case recentsTabViewModelInitializationFailed
     case firstTimeEmptyRecents
     

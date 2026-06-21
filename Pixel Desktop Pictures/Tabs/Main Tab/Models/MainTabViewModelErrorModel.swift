@@ -1,5 +1,5 @@
 //
-//  MainTabViewModelError.swift
+//  MainTabViewModelErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-20.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MainTabViewModelError: LocalizedError {
+enum MainTabViewModelErrorModel: LocalizedError {
     case failedToSetNextImage(_ error: Error)
     case failedToSetDesktopPicture(_ error: Error)
     case failedToDownloadImageToDevice(_ error: Error)

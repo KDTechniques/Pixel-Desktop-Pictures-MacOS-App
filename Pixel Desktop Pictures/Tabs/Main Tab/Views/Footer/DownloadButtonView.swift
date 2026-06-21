@@ -21,7 +21,7 @@ struct DownloadButtonView: View {
     // MARK: - BODY
     var body: some View {
         Button("Download") {
-            Task { await handleTask() }
+            Task { await downloadImage() }
         }
         .buttonStyle(.plain)
         .opacity(downloadState == .none ? 1 : 0)
@@ -59,16 +59,21 @@ extension DownloadButtonView {
     }
     
     // MARK: - FUNCTIONS
-    private func handleTask() async {
+    private func downloadImage() async {
         downloadState = .downloading
         
         do {
-            try await mainTabVM.downloadImageToDevice(environment: appEnvironment)
-            downloadState = .downloaded
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            downloadState = .none
+            try await downloadImageTask()
         } catch {
-            downloadState = .none
+            let operation: MainTabDeferredOperationModel = .init(type: .download, action: downloadImageTask)
+            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
         }
+    }
+    
+    private func downloadImageTask() async throws {
+        try await mainTabVM.downloadImageToDevice(environment: appEnvironment)
+        downloadState = .downloaded
+        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        downloadState = .none
     }
 }

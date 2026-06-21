@@ -1,5 +1,5 @@
 //
-//  SettingsTabViewModelError.swift
+//  SettingsTabViewModelErrorModel.swift
 //  Pixel Desktop Pictures
 //
 //  Created by Kavinda Dilshan on 2025-01-20.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SettingsTabViewModelError: LocalizedError {
+enum SettingsTabViewModelErrorModel: LocalizedError {
     case failedToInitializeSettingsTabViewModel(_ error: Error)
     case failedToSaveUpdateIntervalsToUserDefaults(_ error: Error)
     case failedToGetSettingsFromUserDefaults(_ error: Error)

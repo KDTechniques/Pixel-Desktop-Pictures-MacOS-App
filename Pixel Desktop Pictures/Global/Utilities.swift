@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import AppKit
+import SDWebImageSwiftUI
 
 struct Utilities {
     /// Retrieves the app's version and build number from the main bundle.
@@ -33,10 +35,36 @@ struct Utilities {
         return mimeMapping[mimeType] ?? "jpg"
     }
     
-    static func isEntireUserDefaultsEmpty() -> Bool {
-        guard let bundleID = Bundle.main.bundleIdentifier,
-              let _ = UserDefaults.standard.persistentDomain(forName: bundleID) else { return true }
+    static func quitApp() {
+        NSApplication.shared.terminate(nil)
+        Logger.log("✅: App has been quit.")
+    }
+    
+    static func quitNRelaunchApp() {
+        let task = Process()
+        task.launchPath = "/usr/bin/open"
+        task.arguments = [Bundle.main.bundlePath]
+        task.launch()
         
-        return false
+        NSApp.terminate(nil)
+    }
+    
+    static func APIKeyValidityStateOnURLError(_ error: Error) -> APIKeyValidityStates {
+        guard let urlError: URLError = error as? URLError else { return .failed }
+        
+        switch urlError.code {
+        case .clientCertificateRejected:
+            return .rateLimited
+            
+        case .userAuthenticationRequired:
+            return .invalid
+            
+        default:
+            return .failed
+        }
+    }
+    
+    static func isImageCacheOrDiskEmpty() -> Bool {
+        return SDImageCache.shared.totalDiskCount() == 0
     }
 }

@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct LaunchAtLoginAlertModel {
-    private static let title: String = "Launch Pixel Desktop Pictures at Login?"
-    private static let message: String = "This keeps your wallpapers changing automatically. You can turn it off anytime in Settings."
-    private static let primaryButtonlabel: String = "Enable at Login"
-    private static let secondaryButtonlabel: String = "Not Now"
+    private static let title: String = "Launch at Login?"
+    private static let message: String = "This keeps your wallpapers changing automatically."
+    private static let primaryButtonlabel: String = "OK"
+    private static let secondaryButtonlabel: String = "Later"
     
     
     static func showLaunchAtLoginAlert(_ action: () -> Void) {
@@ -27,6 +27,7 @@ struct LaunchAtLoginAlertModel {
         switch response {
         case .alertFirstButtonReturn:
             action()
+            
         default:
             break
         }
