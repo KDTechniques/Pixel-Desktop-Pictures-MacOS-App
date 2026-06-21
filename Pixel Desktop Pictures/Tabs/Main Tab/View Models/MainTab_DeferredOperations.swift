@@ -10,21 +10,18 @@ import Foundation
 extension MainTabViewModel {
     // MARK: - PUBLIC FUNCTIONS
     func checkAPIKeyValidationBeforeExecution(operation: MainTabDeferredOperationModel) async {
-        // First check whether an API key is being processed in the background or not.
-        let conditions: [APIKeyValidityStates] = [.unknown, .validating, .invalid, .failed, .rateLimited, .allRateLimited]
-        guard conditions.contains( apiKeyManager.apiKeyValidationState) else {
-            // If API key is valid at the time, we execute the passed action.
-            do {
-                try await operation.action()
-            } catch {
-                addDeferredOperation(operation)
-            }
-            
+        guard apiKeyManager.apiKeyValidationState == .valid else {
+            // If the API key is not valid at the time, we add the action as a deferred operation to the <set>.
+            addDeferredOperation(operation)
             return
         }
         
-        // If the API key is validating at the time, we add the action as a deferred operation to the <set>.
-        addDeferredOperation(operation)
+        // If API key is valid at the time, we execute the passed action.
+        do {
+            try await operation.action()
+        } catch {
+            addDeferredOperation(operation)
+        }
     }
     
     func executeDeferredOperations() async {
