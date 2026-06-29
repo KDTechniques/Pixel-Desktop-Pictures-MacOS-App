@@ -28,6 +28,7 @@ final class MainTabViewModel {
     private var cancellables: Set<AnyCancellable> = []
     private(set) var showDesktopPictureButtonProgressIndicator: Bool = false
     private(set) var downloadButtonProgressIndicatorState: DownloadStates = .none
+    private(set) var deferredOperationsTask: Task<Void, Never>? = nil
     
     // MARK: - INITIALIZER
     init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel, apiKeyManager: APIKeyManager) {
@@ -66,6 +67,10 @@ final class MainTabViewModel {
                 downloadButtonProgressIndicatorState = .none
             }
         }
+    }
+    
+    func setDeferredOperationsTask(_ task: Task<Void, Never>?) {
+        deferredOperationsTask = task
     }
     
     // MARK: - INTERNAL FUNCTIONS

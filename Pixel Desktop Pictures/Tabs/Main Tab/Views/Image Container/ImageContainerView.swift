@@ -29,6 +29,7 @@ struct ImageContainerView: View {
             )
             .onSuccess { _, _, _ in handleOnSuccess() }
             .onProgress { _, _ in handleOnProgress() }
+            .onFailure { handleOnFailure($0) }
             .resizable()
             .scaledToFill()
             .frame(maxWidth: .infinity)
@@ -85,6 +86,11 @@ extension ImageContainerView {
     
     private func handleOnProgress() {
         isImageLoaded = false
+    }
+    
+    private func handleOnFailure(_ error: Error) {
+        let apiKeyValidityState: APIKeyValidityStates = Utilities.APIKeyValidityStateOnURLError(error)
+        mainTabVM.apiKeyManager.setAPIKeyValidationState(apiKeyValidityState)
     }
     
     private func handleImageRefresh() async {

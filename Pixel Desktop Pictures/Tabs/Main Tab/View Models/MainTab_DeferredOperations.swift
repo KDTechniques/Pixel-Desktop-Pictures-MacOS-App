@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ObjectiveC
 
 extension MainTabViewModel {
     // MARK: - PUBLIC FUNCTIONS
@@ -19,31 +20,42 @@ extension MainTabViewModel {
     }
     
     func executeDeferredOperations() async {
-        guard apiKeyManager.apiKeyValidationState == .valid else { return }
+        guard
+            deferredOperationsTask.isNil(), // Prevent re-entrance if an execution task is already running.
+            !mainTabDeferredOperations.isEmpty,
+            apiKeyManager.apiKeyValidationState == .valid else { return }
         
-        /// create a async concurrent task to execute all the available deferred operations at once asynchronously
-        await withTaskGroup(of: Void.self) { group in
-            // Loop through the set and add each operation to the group
-            for operation in mainTabDeferredOperations {
-                group.addTask {
-                    do {
-                        Logger.log("🏃🏼‍♂️: Executing deferred operation: \(operation.type.rawValue).")
-                        try await operation.action()
-                    } catch {
-                        await MainActor.run { [weak self] in
-                            self?.addDeferredOperation(operation)
+        // Launch a Task to track this run so subsequent calls are ignored until completion
+        let task: Task = .init { [weak self] in
+            guard let self else { return }
+            await withTaskGroup(of: Void.self) { group in
+                for operation in self.mainTabDeferredOperations {
+                    group.addTask {
+                        do {
+                            Logger.log("🏃🏼‍♂️: Executing deferred operation: \(operation.type.rawValue).")
+                            try await operation.action()
+                        } catch {
+                            await MainActor.run { [weak self] in
+                                self?.addDeferredOperation(operation)
+                            }
+                        }
+                        
+                        let _ = await MainActor.run { [weak self] in
+                            self?.mainTabDeferredOperations.remove(operation)
                         }
                     }
-                    
-                    // Hop back to the Main Actor to safely mutate the set
-                    await MainActor.run { [weak self] in
-                        self?.mainTabDeferredOperations.remove(operation)
-                        return
-                    }
-                    
-                    return
                 }
             }
+        }
+        
+        // Store the task reference so re-entrant calls can detect an in-progress run
+        setDeferredOperationsTask(task)
+        
+        // Await completion and then clear the reference
+        await task.value
+        await MainActor.run { [weak self] in
+            self?.setDeferredOperationsTask(nil)
+            Logger.log("✅: Deferred tasks are now all executed.")
         }
     }
     
@@ -78,3 +90,4 @@ extension MainTabViewModel {
         Logger.log("⚠️: Deferred operation is added: \(operation.type.rawValue).")
     }
 }
+

@@ -25,6 +25,7 @@ struct TabsView: View {
                     tab.content
                         .frame(width: TabItem.allWindowWidth)
                         .tag(tab)
+                        .task { await mainTabVM.executeDeferredOperations() }
                 }
                 .background(TabBarHiderView())
             }
@@ -35,12 +36,6 @@ struct TabsView: View {
         .frame(width: TabItem.allWindowWidth)
         .background(Color.windowBackground)
         .onFirstAppearViewModifier { settingsVM.handleLaunchAtLoginAlertOnTabViewAppear() }
-        .onAppear {
-            print("hello");
-            Task {
-                await mainTabVM.executeDeferredOperations()
-            }
-        }
     }
 }
 
