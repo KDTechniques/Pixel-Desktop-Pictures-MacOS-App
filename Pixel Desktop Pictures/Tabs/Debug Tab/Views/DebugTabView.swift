@@ -9,6 +9,8 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct DebugTabView: View {
+    @Environment(MainTabViewModel.self) private var mainTabVM
+    
     // MARK: - BODY
     var body: some View {
         VStack {
@@ -20,13 +22,17 @@ struct DebugTabView: View {
             
             Button("Check cache") {
                 // A size of 0 bytes means the disk cache is completely empty
-               print(SDImageCache.shared.totalDiskCount() == 0)
+                print(SDImageCache.shared.totalDiskCount() == 0)
                 print(SDImageCache.shared.totalDiskCount().description)
                 
             }
             
             
-            
+            Button("Show deferred operations") {
+                for operation in mainTabVM.mainTabDeferredOperations {
+                    print("\(operation.type.rawValue): \(operation.id)")
+                }
+            }
             
         }
     }

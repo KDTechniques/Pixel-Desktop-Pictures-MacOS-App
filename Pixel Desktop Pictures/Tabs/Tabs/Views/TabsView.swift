@@ -12,6 +12,7 @@ struct TabsView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     @Environment(SettingsTabViewModel.self) private var settingsVM
+    @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - BODY
     var body: some View {
@@ -34,6 +35,12 @@ struct TabsView: View {
         .frame(width: TabItem.allWindowWidth)
         .background(Color.windowBackground)
         .onFirstAppearViewModifier { settingsVM.handleLaunchAtLoginAlertOnTabViewAppear() }
+        .onAppear {
+            print("hello");
+            Task {
+                await mainTabVM.executeDeferredOperations()
+            }
+        }
     }
 }
 

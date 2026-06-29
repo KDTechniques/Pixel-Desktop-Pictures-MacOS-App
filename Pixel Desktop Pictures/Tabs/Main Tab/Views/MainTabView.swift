@@ -11,9 +11,6 @@ struct MainTabView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
     
-    // MARK: - ASSIGNED PROPERTIES
-    @State private var showProgress: Bool = false
-    
     // MARK: - BODY
     var body: some View {
         TabContentWithWindowErrorView(tab: .main) {
@@ -60,7 +57,7 @@ extension MainTabView {
     private var setDesktopPictureButton: some View {
         ButtonView(
             title: "Set Desktop Picture",
-            showProgress: showProgress,
+            showProgress: mainTabVM.showDesktopPictureButtonProgressIndicator,
             type: .regular
         ) { await setDesktopPicture() }
             .disabled(mainTabVM.disableOnFirstLaunch())
@@ -69,18 +66,8 @@ extension MainTabView {
     // MARK: - FUNCTIONS
     
     private func setDesktopPicture() async {
-        showProgress = true
-        
-        do {
-            try await setDesktopPictureTask()
-        } catch {
-            let operation: MainTabDeferredOperationModel = .init(type: .setDesktopPicture, action: setDesktopPictureTask)
-            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
+        await mainTabVM.prepareWithDeferredOperation(for: .setDesktopPicture) {
+            try await mainTabVM.setDesktopPicture()
         }
-    }
-    
-    private func setDesktopPictureTask() async throws {
-        try await mainTabVM.setDesktopPicture()
-        showProgress = false
     }
 }

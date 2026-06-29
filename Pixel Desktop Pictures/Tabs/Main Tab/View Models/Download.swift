@@ -18,6 +18,8 @@ extension MainTabViewModel {
             return
         }
         
+        setDownloadButtonProgressIndicatorState(.downloading)
+        
         // Get the downloads directory based on app environment
         let downloadsDirectory = DirectoryTypes.downloads.directory
         
@@ -31,6 +33,7 @@ extension MainTabViewModel {
             
             // Open both folder and file after a successful image download
             openFolderNFile(folderURLString: savedPathFolderURLString,  fileURLString: savedPathFileURLString)
+            setDownloadButtonProgressIndicatorState(.downloaded)
             Logger.log("✅: Downloaded current image to `Downloads` folder path: `\(savedPathFileURL.absoluteString)`")
         } catch {
             Logger.log(vmError.failedToDownloadImageToDevice(error).localizedDescription)

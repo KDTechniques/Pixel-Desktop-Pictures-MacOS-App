@@ -7,16 +7,9 @@
 
 import SwiftUI
 
-fileprivate enum DownloadState: CaseIterable {
-    case none, downloading, downloaded
-}
-
 struct DownloadButtonView: View {
     // MARK: - INJECTED PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
-    
-    // MARK: - ASSIGNED PROPERTIES
-    @State private var downloadState: DownloadState = .none
     
     // MARK: - BODY
     var body: some View {
@@ -24,7 +17,7 @@ struct DownloadButtonView: View {
             Task { await downloadImage() }
         }
         .buttonStyle(.plain)
-        .opacity(downloadState == .none ? 1 : 0)
+        .opacity(mainTabVM.downloadButtonProgressIndicatorState == .none ? 1 : 0)
         .overlay(alignment: .trailing) { overlay }
     }
 }
@@ -51,29 +44,22 @@ extension DownloadButtonView {
     
     @ViewBuilder
     private var overlay: some View {
-        if downloadState == .downloading {
+        switch mainTabVM.downloadButtonProgressIndicatorState {
+        case .none:
+            EmptyView()
+            
+        case .downloading:
             progressIndicator
-        } else if downloadState == .downloaded {
+            
+        case .downloaded:
             checkmark
         }
     }
     
     // MARK: - FUNCTIONS
     private func downloadImage() async {
-        downloadState = .downloading
-        
-        do {
-            try await downloadImageTask()
-        } catch {
-            let operation: MainTabDeferredOperationModel = .init(type: .download, action: downloadImageTask)
-            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
+        await mainTabVM.prepareWithDeferredOperation(for: .download) {
+            try await mainTabVM.downloadImageToDevice(environment: appEnvironment)
         }
-    }
-    
-    private func downloadImageTask() async throws {
-        try await mainTabVM.downloadImageToDevice(environment: appEnvironment)
-        downloadState = .downloaded
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
-        downloadState = .none
     }
 }

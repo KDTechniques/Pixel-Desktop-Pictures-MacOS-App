@@ -88,13 +88,8 @@ extension ImageContainerView {
     }
     
     private func handleImageRefresh() async {
-        guard mainTabVM.centerItem == .retryIcon else { return }
-        
-        do {
+        await mainTabVM.prepareWithDeferredOperation(for: .nextImage) {
             try await mainTabVM.setNextImage()
-        } catch {
-            let operation: MainTabDeferredOperationModel = .init(type: .nextImage, action: mainTabVM.setNextImage)
-            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
         }
     }
 }
