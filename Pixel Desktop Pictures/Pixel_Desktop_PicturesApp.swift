@@ -75,7 +75,7 @@ struct Pixel_Desktop_PicturesApp: App {
             OnboardingView() {
                 NSApp.windows.first?.close()
 #if DEBUG
-                isInitialLaunch = !true // set to true later
+                isInitialLaunch = true
 #else
                 isInitialLaunch = false
 #endif
