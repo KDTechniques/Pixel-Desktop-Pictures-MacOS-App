@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Onboarding_GuideView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(\.colorScheme) private var colorScheme
     
     // MARK: - BODY

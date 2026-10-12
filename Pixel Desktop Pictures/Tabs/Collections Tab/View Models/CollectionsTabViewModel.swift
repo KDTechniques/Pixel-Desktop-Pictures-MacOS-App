@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 @Observable
 final class CollectionsTabViewModel {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     private let apiKeyManager: APIKeyManager
     
     // MARK: - INITIALIZER

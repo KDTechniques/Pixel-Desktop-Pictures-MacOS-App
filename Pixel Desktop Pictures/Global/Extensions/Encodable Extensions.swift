@@ -13,6 +13,22 @@ extension Encodable {
     /// Encodes the model to JSON, handles potential encoding errors, and Logger.logs the result.
     ///
     /// - Note: Provides a formatted JSON string for debugging and logging purposes.
+    ///
+    /// Example:
+    /// ```swift
+    /// struct Person: Encodable {
+    ///     let name: String
+    ///     let age: Int
+    /// }
+    ///
+    /// let user = Person(name: "Kavinda", age: 29)
+    /// user.printLineDescription()
+    /// // Logs pretty-printed JSON, e.g.:
+    /// // {
+    /// //   "name" : "Kavinda",
+    /// //   "age" : 28
+    /// // }
+    /// ```
     func printLineDescription() {
         do {
             let encoder = JSONEncoder()
@@ -33,3 +49,4 @@ extension Encodable {
         }
     }
 }
+

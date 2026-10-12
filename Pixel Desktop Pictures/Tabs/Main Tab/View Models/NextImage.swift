@@ -13,6 +13,8 @@ extension MainTabViewModel {
     /// - Note: Randomly selects a query image or fetches a random Unsplash image
     /// if no valid query is available. Updates the `currentImage` and stores it in UserDefaults.
     func setNextImage() async throws {
+        guard centerItem == .retryIcon else { return }
+        
         setCenterItem(.progressView)
         
         do {
@@ -27,8 +29,9 @@ extension MainTabViewModel {
             // Handle case when the random element is a non-random query. ex: Nature
             try await setNextQueryImage(from: randomQueryImageItem)
             Logger.log("✅: Generated next query image.")
-        } catch {
-            setCenterItem(.retryIcon)
+        } catch let error {
+            let apiKeyValidityState: APIKeyValidityStates = Utilities.APIKeyValidityStateOnURLError(error)
+            apiKeyManager.setAPIKeyValidationState(apiKeyValidityState)
             Logger.log(vmError.failedToSetNextImage(error).localizedDescription)
             await errorPopupVM.addError(errorPopup.failedToGenerateNextImage(error))
             throw error

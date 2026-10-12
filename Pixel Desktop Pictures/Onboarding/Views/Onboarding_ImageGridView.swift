@@ -9,7 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct Onboarding_ImageGridView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let rates: [CGFloat]
     let urlCases: [OnboardingImageGridValues.GridImageTypes]
     

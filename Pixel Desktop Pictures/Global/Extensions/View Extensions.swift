@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 extension View {
-    func setTabContentHeightToTabsViewModelViewModifier(from tab: TabItem) -> some View {
+    func setTabContentHeightToTabsViewModelViewModifier(for tab: TabItem) -> some View {
         return self.modifier(SetTabContentHeightToTabsViewModel(from: tab))
     }
     
@@ -38,7 +38,7 @@ extension View {
 // MARK: - VIEW MODIFIER STRUCTS
 
 fileprivate struct OnFirstAppear: ViewModifier {
-    // MARK: INJECTED PROPERTIES
+    // MARK: INJECTABLE PROPERTIES
     let action: () -> Void
     
     // MARK: ASSIGNED PROPERTIES
@@ -61,7 +61,7 @@ fileprivate struct OnFirstAppear: ViewModifier {
 }
 
 fileprivate struct OnFirstTask: ViewModifier {
-    // MARK: INJECTED PROPERTIES
+    // MARK: INJECTABLE PROPERTIES
     let action: () async -> Void
     
     // MARK: ASSIGNED PROPERTIES

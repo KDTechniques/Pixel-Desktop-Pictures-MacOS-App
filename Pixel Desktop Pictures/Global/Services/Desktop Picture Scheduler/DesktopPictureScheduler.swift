@@ -14,7 +14,7 @@ import Combine
  */
 @MainActor
 final class DesktopPictureScheduler {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     private(set) var timeIntervalSelection: TimeInterval =  DesktopPictureSchedulerInterval.defaultTimeInterval.timeInterval
     let mainTabVM: MainTabViewModel
     

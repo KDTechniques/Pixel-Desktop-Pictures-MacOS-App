@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecentsVGridScrollView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(RecentsTabViewModel.self) private var recentsTabVM
     
     // MARK: - ASSGNED PROPERTIES

@@ -17,7 +17,7 @@ actor LocalDatabaseManager {
     // MARK: SINGLETON
     static let shared: LocalDatabaseManager = .init()
     
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     private let container: ModelContainer
     
     // MARK: - INITIALIZER

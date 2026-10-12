@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollectionNameOverlayView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let collectionName: String
     
     // MARK: - INITIALIZER

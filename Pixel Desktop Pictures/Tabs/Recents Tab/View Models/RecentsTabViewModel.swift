@@ -10,7 +10,7 @@ import Foundation
 @MainActor
 @Observable
 final class RecentsTabViewModel {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let recentManager: RecentManager = .shared
     
     // MARK: - INITIALIZER

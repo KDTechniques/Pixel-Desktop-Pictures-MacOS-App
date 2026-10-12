@@ -12,7 +12,7 @@ struct MainTabDeferredOperationModel: Hashable {
     let type: MainTabDeferredOperationTypes
     let action: () async throws -> ()
     
-    init(type: MainTabDeferredOperationTypes, action: @escaping () async throws -> Void) {
+    init(type: MainTabDeferredOperationTypes, _ action: @escaping () async throws -> Void) {
         self.type = type
         self.action = action
     }
@@ -26,6 +26,6 @@ struct MainTabDeferredOperationModel: Hashable {
     }
 }
 
-enum MainTabDeferredOperationTypes {
+enum MainTabDeferredOperationTypes: String {
     case  nextImage, setDesktopPicture, download
 }

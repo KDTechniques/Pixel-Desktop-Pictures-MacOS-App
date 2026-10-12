@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TabButtonView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     let tab: TabItem
     

@@ -9,9 +9,10 @@ import SwiftUI
 import TipKit
 
 struct TabsView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     @Environment(SettingsTabViewModel.self) private var settingsVM
+    @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - BODY
     var body: some View {
@@ -24,6 +25,7 @@ struct TabsView: View {
                     tab.content
                         .frame(width: TabItem.allWindowWidth)
                         .tag(tab)
+                        .task { await mainTabVM.executeDeferredOperations() }
                 }
                 .background(TabBarHiderView())
             }

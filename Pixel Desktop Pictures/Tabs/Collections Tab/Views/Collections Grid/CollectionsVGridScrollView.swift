@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollectionsVGridScrollView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     @Binding var scrollPosition: ScrollPosition
     

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BlurPlaceholderView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let blurRadius: CGFloat
     
     // MARK: - INITIALIZER

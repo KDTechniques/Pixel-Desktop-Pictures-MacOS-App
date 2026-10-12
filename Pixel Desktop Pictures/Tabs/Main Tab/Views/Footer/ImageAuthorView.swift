@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ImageAuthorView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
     let name: String
     let link: String

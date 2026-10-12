@@ -9,7 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct UpdateCollectionView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
     // MARK: - ASSIGNED PROPERTIES

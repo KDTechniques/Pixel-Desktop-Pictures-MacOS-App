@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecentsTabView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(RecentsTabViewModel.self) private var recentsTabVM
     @Environment(MainTabViewModel.self) private var mainTabVM
     
