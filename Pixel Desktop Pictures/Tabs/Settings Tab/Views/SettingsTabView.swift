@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsTabView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
     
     // MARK: - BODY
@@ -34,7 +34,7 @@ struct SettingsTabView: View {
             }
             .padding([.horizontal, .bottom])
         }
-        .setTabContentHeightToTabsViewModelViewModifier(from: .settings)
+        .setTabContentHeightToTabsViewModelViewModifier(for: .settings)
     }
 }
 

@@ -17,7 +17,7 @@ actor RecentLocalDatabaseManager {
         
     }
     
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let localDatabaseManager: LocalDatabaseManager = .shared
     
     // MARK: FUNCTIONS

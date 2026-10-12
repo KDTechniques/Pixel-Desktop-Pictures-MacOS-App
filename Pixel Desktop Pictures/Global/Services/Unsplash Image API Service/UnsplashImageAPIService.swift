@@ -11,7 +11,7 @@ import Foundation
  Provides an interface for interacting with the Unsplash API. This class is responsible for fetching random images or query-based images from Unsplash and validating the API key. It handles constructing the necessary network requests, parsing the responses, and decoding the JSON data into the appropriate model objects.
  */
 struct UnsplashImageAPIService {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let apiKey: String
     
     // MARK: - ASSIGNED PROPERTIES

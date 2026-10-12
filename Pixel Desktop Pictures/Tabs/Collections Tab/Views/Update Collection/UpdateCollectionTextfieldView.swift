@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UpdateCollectionTextfieldView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     let collectionName: String
     

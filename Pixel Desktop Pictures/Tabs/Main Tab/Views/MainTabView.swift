@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainTabView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - BODY

@@ -11,7 +11,7 @@ import Combine
 @MainActor
 @Observable
 final class MainTabViewModel {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let collectionsTabVM: CollectionsTabViewModel
     let recentsTabVM: RecentsTabViewModel
     let apiKeyManager: APIKeyManager

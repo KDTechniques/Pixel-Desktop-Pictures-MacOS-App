@@ -9,7 +9,7 @@ import SwiftUI
 import TipKit
 
 struct TabsView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     @Environment(SettingsTabViewModel.self) private var settingsVM
     @Environment(MainTabViewModel.self) private var mainTabVM

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollectionsTabView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(CollectionsTabViewModel.self) private var collectionsTabVM
     
     // MARK: - ASSIGNED PROPERTIES

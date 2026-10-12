@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TabContentWithWindowErrorView<T: View>: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(APIKeyManager.self) private var apiKeyManager
     let tab: TabItem
     let content: T
@@ -44,7 +44,7 @@ struct TabContentWithWindowErrorView<T: View>: View {
                 WindowErrorView(model: errorModel.notConnectedToInternet)
             }
         }
-        .setTabContentHeightToTabsViewModelViewModifier(from: tab)
+        .setTabContentHeightToTabsViewModelViewModifier(for: tab)
     }
 }
 
