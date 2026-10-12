@@ -37,14 +37,10 @@ final class ErrorPopupViewModel {
     /// - Note: The error will be processed and shown sequentially with delays, and duplicate errors will not be added to the queue.
     func addError(_ error: any ErrorPopupProtocol) async {
         let errorTitle: String = error.title
-        // Add the error only if it's not already in the queue or being displayed
-        if !errorQueue.contains(errorTitle) && currentError != errorTitle {
-            errorQueue.append(errorTitle)
-        }
         
-        if !isProcessing {
-            await showNextError()
-        }
+        // Add the error only if it's not already in the queue or being displayed
+        !errorQueue.contains(errorTitle) && currentError != errorTitle ? errorQueue.append(errorTitle) : ()
+        !isProcessing ? await showNextError() : ()
     }
     
     // MARK: - PRIVATE FUNCTIONS

@@ -11,7 +11,7 @@ import Combine
 @MainActor
 @Observable
 final class MainTabViewModel {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let collectionsTabVM: CollectionsTabViewModel
     let recentsTabVM: RecentsTabViewModel
     let apiKeyManager: APIKeyManager
@@ -26,6 +26,9 @@ final class MainTabViewModel {
     let errorPopup = MainTabErrorPopup.self
     var mainTabDeferredOperations: Set<MainTabDeferredOperationModel> = []
     private var cancellables: Set<AnyCancellable> = []
+    private(set) var showDesktopPictureButtonProgressIndicator: Bool = false
+    private(set) var downloadButtonProgressIndicatorState: DownloadStates = .none
+    private(set) var deferredOperationsTask: Task<Void, Never>? = nil
     
     // MARK: - INITIALIZER
     init(collectionsTabVM: CollectionsTabViewModel, recentsTabVM: RecentsTabViewModel, apiKeyManager: APIKeyManager) {
@@ -45,6 +48,31 @@ final class MainTabViewModel {
         centerItem = value
     }
     
+    func setDesktopPictureButtonProgressIndicatorVisibility(_ value: Bool) {
+        showDesktopPictureButtonProgressIndicator = value
+    }
+    
+    func setDownloadButtonProgressIndicatorState(_ state: DownloadStates) {
+        switch state {
+        case .none:
+            return
+            
+        case .downloading:
+            downloadButtonProgressIndicatorState = state
+            
+        case .downloaded:
+            Task {
+                downloadButtonProgressIndicatorState = state
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                downloadButtonProgressIndicatorState = .none
+            }
+        }
+    }
+    
+    func setDeferredOperationsTask(_ task: Task<Void, Never>?) {
+        deferredOperationsTask = task
+    }
+    
     // MARK: - INTERNAL FUNCTIONS
     
     /// Initializes the ViewModel by fetching the current image from UserDefaults.
@@ -59,6 +87,8 @@ final class MainTabViewModel {
         // Early exit if the current image is not available.
         guard let currentImage else { return }
         
+        setDesktopPictureButtonProgressIndicatorVisibility(true)
+        
         do {
             // Get the documents directory based on app environment
             let documentsDirectory: UnsplashImageDirectoryProtocol = DirectoryTypes.documents.directory
@@ -68,6 +98,7 @@ final class MainTabViewModel {
             
             // Then set the desktop picture.
             try await desktopPictureManager.setDesktopPicture(from: savedPathURL)
+            setDesktopPictureButtonProgressIndicatorVisibility(false)
             Logger.log("✅: Current image has been set as desktop picture")
         } catch {
             Logger.log(vmError.failedToSetDesktopPicture(error).localizedDescription)
@@ -95,12 +126,12 @@ final class MainTabViewModel {
             .dropFirst()
             .removeDuplicates()
             .compactMap { $0 == .valid ? $0 : nil }
-            .sink { state in
-                guard state == .valid else { return }
-                
+            .sink { _ in
                 Task { [weak self] in
                     await self?.executeDeferredOperations()
                 }
+                
+                return
             }
             .store(in: &cancellables)
     }

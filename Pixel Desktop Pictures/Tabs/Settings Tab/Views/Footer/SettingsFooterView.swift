@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsFooterView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(SettingsTabViewModel.self) private var settingsTabVM
     
     // MARK: - BODY

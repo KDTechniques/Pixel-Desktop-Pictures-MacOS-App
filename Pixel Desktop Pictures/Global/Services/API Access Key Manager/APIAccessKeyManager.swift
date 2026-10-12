@@ -37,7 +37,6 @@ final class APIKeyManager {
         $apiKeyValidationState$.eraseToAnyPublisher()
     }
     
-    
     @ObservationIgnored private(set) var apiKey: String?
     @ObservationIgnored private(set) var failedAPIKeyIndexes: Set<Int> = []
     @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
@@ -98,8 +97,9 @@ final class APIKeyManager {
     }
     
     // MARK: - PRIVATE FUNCTIONS
+    
     private func apiKeyFailureSubscriber() {
-        let failureStates: [APIKeyValidityStates] = [.invalid, .rateLimited, .allRateLimited]
+        let failureStates: [APIKeyValidityStates] = [.failed, .invalid, .rateLimited, .allRateLimited]
         
         $apiKeyValidationState$
             .dropFirst()
@@ -112,9 +112,9 @@ final class APIKeyManager {
                 Logger.log(errorModel.failureDetected.localizedDescription)
                 
                 switch state {
-                case .invalid, .rateLimited: invalid_RateLimited(state)
-                case .failed: failed()
-                case .allRateLimited: allRateLimited()
+                case .invalid, .rateLimited: handleInvalidOrRateLimited(state)
+                case .failed: handleFailed()
+                case .allRateLimited: handleAllRateLimited()
                     
                 default: // Default case will never get executed
                     return
@@ -143,7 +143,7 @@ final class APIKeyManager {
 
 // MARK: - EXTENSIONS
 private extension APIKeyManager {
-    private func invalid_RateLimited(_ state: APIKeyValidityStates) {
+    private func handleInvalidOrRateLimited(_ state: APIKeyValidityStates) {
         switch state {
         case .invalid:
             Logger.log(errorModel.invalidAPIKey.localizedDescription)
@@ -155,20 +155,21 @@ private extension APIKeyManager {
             break
         }
         
-        /// Invalid means the current api key is not working
+        /// Invalid means the current api key is not recognized.
         /// It's time to validate the next available api key from the api keys array.
         
-        /// If there's no next available api key means we are rate limited on all the keys we have.
+        /// If there's no next api key available means we are rate limited on all the keys we have.
         guard let nextAPIKey: String = getNextAvailableAPIKey() else {
             setAPIKeyValidationState(.allRateLimited)
             return
         }
         
-        /// If there's a next available api key, we validate
+        /// If there's a next api key available, we validate.
         Task { [weak self] in await self?.validateAPIKey(nextAPIKey) }
     }
     
-    private func failed() {
+    /// shows a error popup when api key validation is failed.
+    private func handleFailed() {
         Task {
             await ErrorPopupViewModel.shared
                 .addError(GlobalErrorPopup.connectionTimeout)
@@ -177,7 +178,7 @@ private extension APIKeyManager {
         Logger.log(errorModel.timeout.localizedDescription)
     }
     
-    private func allRateLimited() {
+    private func handleAllRateLimited() {
         Logger.log(errorModel.allRateLimited.localizedDescription)
         
         /// Now it's time to clear all the `failedAPIKeyIndexes` and iterate again to find a valid api key.

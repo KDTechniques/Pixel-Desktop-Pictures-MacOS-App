@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ImageContainerOverlayCenterView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabsVM
     let centerItem: ImageContainerCenterItems
     let action: () async -> Void

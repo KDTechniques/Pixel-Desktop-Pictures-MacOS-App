@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CollectionPopOverSecondaryButtonView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let title: String
     let systemImageName: String
     let foregroundColor: Color

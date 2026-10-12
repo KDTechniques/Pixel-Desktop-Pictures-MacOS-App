@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FirstTimeEmptyRecentsWindowErrorMessageView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(TabsViewModel.self) private var tabsVM
     
     // MARK: - BODY

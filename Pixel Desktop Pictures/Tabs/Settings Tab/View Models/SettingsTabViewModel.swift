@@ -10,7 +10,7 @@ import SwiftUI
 
 @MainActor
 @Observable final class SettingsTabViewModel {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     let desktopPictureScheduler: DesktopPictureScheduler
     
     // MARK: - ASSIGNED PROPERTIES

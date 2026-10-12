@@ -9,7 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct ImageContainerView: View {
-    // MARK: - INJECTED PROPERTIES
+    // MARK: - INJECTABLE PROPERTIES
     @Environment(MainTabViewModel.self) private var mainTabVM
     
     // MARK: - ASSIGNED PROPERTIES
@@ -29,6 +29,7 @@ struct ImageContainerView: View {
             )
             .onSuccess { _, _, _ in handleOnSuccess() }
             .onProgress { _, _ in handleOnProgress() }
+            .onFailure { handleOnFailure($0) }
             .resizable()
             .scaledToFill()
             .frame(maxWidth: .infinity)
@@ -87,14 +88,14 @@ extension ImageContainerView {
         isImageLoaded = false
     }
     
+    private func handleOnFailure(_ error: Error) {
+        let apiKeyValidityState: APIKeyValidityStates = Utilities.APIKeyValidityStateOnURLError(error)
+        mainTabVM.apiKeyManager.setAPIKeyValidationState(apiKeyValidityState)
+    }
+    
     private func handleImageRefresh() async {
-        guard mainTabVM.centerItem == .retryIcon else { return }
-        
-        do {
+        await mainTabVM.prepareWithDeferredOperation(for: .nextImage) {
             try await mainTabVM.setNextImage()
-        } catch {
-            let operation: MainTabDeferredOperationModel = .init(type: .nextImage, action: mainTabVM.setNextImage)
-            await mainTabVM.checkAPIKeyValidationBeforeExecution(operation: operation)
         }
     }
 }
